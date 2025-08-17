@@ -8,25 +8,25 @@
     </div>
     <nav class="flex-1 p-4 space-y-2">
       <NuxtLink to="/" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-view-dashboard">대시보드</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-view-dashboard">대시보드</v-btn>
       </NuxtLink>
       <NuxtLink to="/string-utils" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-alphabetical">문자열</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-alphabetical">문자열</v-btn>
       </NuxtLink>
       <NuxtLink to="/number-utils" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-numeric">숫자</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-numeric">숫자</v-btn>
       </NuxtLink>
       <NuxtLink to="/date-utils" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-calendar">날짜/시간</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-calendar">날짜/시간</v-btn>
       </NuxtLink>
       <NuxtLink to="/encoding-utils" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-code-tags">인코딩/디코딩</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-tags">인코딩/디코딩</v-btn>
       </NuxtLink>
       <NuxtLink to="/json-utils" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-code-json">JSON/객체</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-json">JSON/객체</v-btn>
       </NuxtLink>
         <NuxtLink to="/timer-json" custom v-slot="{ navigate, href }">
-          <v-btn :href="href" @click="navigate" block variant="text" class="justify-start" prepend-icon="mdi-timer">타이머 Json 생성</v-btn>
+          <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer">타이머 Json 생성</v-btn>
         </NuxtLink>
     </nav>
   </aside>

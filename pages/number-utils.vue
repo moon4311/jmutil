@@ -1,80 +1,56 @@
 <template>
   <div>
     <h2 class="text-xl font-bold mb-4">숫자 유틸리티</h2>
-    <!-- 아코디언: 진수 변환 -->
-    <div class="mb-4">
-      <button
-        @click="showBase = !showBase"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showBase ? 'bg-blue-100 text-blue-700' : 'bg-blue-50 text-blue-500 hover:bg-blue-100'"
-      >
-        진수 변환
-        <v-icon :color="showBase ? 'blue' : 'blue-lighten-2'">{{ showBase ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showBase" class="p-4 bg-white rounded-b shadow">
-          <div class="mb-4">
-            <label class="block mb-1 font-semibold">숫자 입력</label>
-            <v-text-field v-model="input" type="number" placeholder="숫자를 입력하세요" />
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-            <div>
-              <label class="block mb-1 font-semibold">2진수</label>
-              <CopyInput :model-value="binaryResult" />
-            </div>
-            <div>
-              <label class="block mb-1 font-semibold">16진수</label>
-              <CopyInput :model-value="hexResult" />
-            </div>
-          </div>
+    <GroupPanel v-model="showBlue" title="진수 변환" color="blue">
+      <div class="mb-4">
+        <label class="block mb-1 font-semibold">숫자 입력</label>
+        <v-text-field v-model="input" type="number" placeholder="숫자를 입력하세요" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+        <div>
+          <label class="block mb-1 font-semibold">2진수</label>
+          <CopyInput :model-value="binaryResult" />
         </div>
-      </transition>
-    </div>
+        <div>
+          <label class="block mb-1 font-semibold">16진수</label>
+          <CopyInput :model-value="hexResult" />
+        </div>
+      </div>
+    </GroupPanel>
 
-    <!-- 아코디언: 랜덤수 생성 -->
-    <div class="mb-4">
-      <button
-        @click="showRandom = !showRandom"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showRandom ? 'bg-green-100 text-green-700' : 'bg-green-50 text-green-500 hover:bg-green-100'">
-        랜덤수 생성
-        <v-icon :color="showRandom ? 'green' : 'green-lighten-2'">{{ showRandom ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showRandom" class="p-4 bg-white rounded-b shadow">
-          <div class="flex flex-col md:flex-row gap-4 mb-4">
-            <div class="flex-1">
-              <label class="block mb-1 font-semibold">범위 (최소 ~ 최대)</label>
-              <div class="flex gap-2">
-                <v-text-field v-model.number="randMin" type="number" placeholder="최소값" hide-details density="compact" />
-                <span class="self-center">~</span>
-                <v-text-field v-model.number="randMax" type="number" placeholder="최대값" hide-details density="compact" />
-              </div>
-            </div>
-            <div style="min-width:120px">
-              <label class="block mb-1 font-semibold">갯수</label>
-              <v-text-field v-model.number="randCount" type="number" min="1" max="100" placeholder="갯수" hide-details density="compact" />
-            </div>
-            <div class="flex items-end">
-              <v-btn color="primary" @click="generateRandomNumbers">생성</v-btn>
-            </div>
-          </div>
-          <div v-if="randomNumbers.length > 0" class="mt-2">
-            <label class="block mb-1 font-semibold">결과 목록</label>
-            <CopyInput :model-value="randomNumbers.join(', ')" />
+    <GroupPanel v-model="showGreen" title="랜덤수 생성" color="green">
+      <div class="flex flex-col md:flex-row gap-4 mb-4">
+        <div class="flex-1">
+          <label class="block mb-1 font-semibold">범위 (최소 ~ 최대)</label>
+          <div class="flex gap-2">
+            <v-text-field v-model.number="randMin" type="number" placeholder="최소값" hide-details density="compact" />
+            <span class="self-center">~</span>
+            <v-text-field v-model.number="randMax" type="number" placeholder="최대값" hide-details density="compact" />
           </div>
         </div>
-      </transition>
-    </div>
+        <div style="min-width:120px">
+          <label class="block mb-1 font-semibold">갯수</label>
+          <v-text-field v-model.number="randCount" type="number" min="1" max="100" placeholder="갯수" hide-details density="compact" />
+        </div>
+        <div class="flex items-end">
+          <v-btn color="primary" @click="generateRandomNumbers">생성</v-btn>
+        </div>
+      </div>
+      <div v-if="randomNumbers.length > 0" class="mt-2">
+        <label class="block mb-1 font-semibold">결과 목록</label>
+        <CopyInput :model-value="randomNumbers.join(', ')" />
+      </div>
+    </GroupPanel>
   </div>
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
 import CopyInput from '@/components/CopyInput.vue';
-// 진수 변환/랜덤수 생성 아코디언 상태
-const showBase = ref(true);
-const showRandom = ref(false);
+import GroupPanel from '@/components/GroupPanel.vue';
+// 아코디언 상태
+const showBlue = ref(true);
+const showGreen = ref(true);
 
 // 진수 변환
 const input = ref('');

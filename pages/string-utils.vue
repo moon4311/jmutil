@@ -14,99 +14,67 @@
       />
     </div>
 
-    <!-- 그룹1: 대/소문자/Trim -->
-    <div class="mb-4">
-      <button
-        @click="showCase = !showCase"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showCase ? 'bg-blue-100 text-blue-700' : 'bg-blue-50 text-blue-500 hover:bg-blue-100'"
-      >
-        대/소문자/Trim 변환
-        <v-icon :color="showCase ? 'blue' : 'blue-lighten-2'">{{ showCase ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showCase" class="p-4 bg-white rounded-b shadow grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block mb-1 font-semibold">대문자 결과</label>
-            <CopyInput :model-value="upperResult" />
-          </div>
-          <div>
-            <label class="block mb-1 font-semibold">소문자 결과</label>
-            <CopyInput :model-value="lowerResult" />
-          </div>
-          <div>
-            <label class="block mb-1 font-semibold">Trim 결과</label>
-            <CopyInput :model-value="trimResult" />
-          </div>
+    <GroupPanel v-model="showBlue" title="대/소문자/Trim 변환" color="blue">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block mb-1 font-semibold">대문자 결과</label>
+          <CopyInput :model-value="upperResult" />
         </div>
-      </transition>
-    </div>
+        <div>
+          <label class="block mb-1 font-semibold">소문자 결과</label>
+          <CopyInput :model-value="lowerResult" />
+        </div>
+        <div>
+          <label class="block mb-1 font-semibold">Trim 결과</label>
+          <CopyInput :model-value="trimResult" />
+        </div>
+      </div>
+    </GroupPanel>
 
-    <!-- 그룹2: 표기법 -->
-    <div class="mb-4">
-      <button
-        @click="showCaseType = !showCaseType"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showCaseType ? 'bg-green-100 text-green-700' : 'bg-green-50 text-green-500 hover:bg-green-100'"
-      >
-        표기법 변환
-        <v-icon :color="showCaseType ? 'green' : 'green-lighten-2'">{{ showCaseType ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showCaseType" class="p-4 bg-white rounded-b shadow grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block mb-1 font-semibold">카멜표기 결과</label>
-            <CopyInput :model-value="camelResult" />
-          </div>
-          <div>
-            <label class="block mb-1 font-semibold">스네이크표기 결과</label>
-            <CopyInput :model-value="snakeResult" />
-          </div>
+    <GroupPanel v-model="showGreen" title="표기법 변환" color="green">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block mb-1 font-semibold">카멜표기 결과</label>
+          <CopyInput :model-value="camelResult" />
         </div>
-      </transition>
-    </div>
+        <div>
+          <label class="block mb-1 font-semibold">스네이크표기 결과</label>
+          <CopyInput :model-value="snakeResult" />
+        </div>
+      </div>
+    </GroupPanel>
 
-    <!-- 그룹3: 패딩 -->
-    <div class="mb-4">
-      <button
-        @click="showPad = !showPad"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showPad ? 'bg-purple-100 text-purple-700' : 'bg-purple-50 text-purple-500 hover:bg-purple-100'"
-      >
-        패딩(LPad/RPad)
-        <v-icon :color="showPad ? 'purple' : 'purple-lighten-2'">{{ showPad ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showPad" class="p-4 bg-white rounded-b shadow grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block mb-1 font-semibold">LPad 결과</label>
-            <div class="flex gap-2 mb-1">
-              <v-text-field v-model="lpadLen" type="number" label="길이" style="max-width:80px" density="compact" hide-details />
-              <v-text-field v-model="lpadChar" label="채울문자" style="max-width:80px" density="compact" hide-details />
-            </div>
-            <CopyInput :model-value="lpadResult" />
+    <GroupPanel v-model="showPurple" title="패딩(LPad/RPad)" color="purple">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block mb-1 font-semibold">LPad 결과</label>
+          <div class="flex gap-2 mb-1">
+            <v-text-field v-model="lpadLen" type="number" label="길이" style="max-width:80px" density="compact" hide-details />
+            <v-text-field v-model="lpadChar" label="채울문자" style="max-width:80px" density="compact" hide-details />
           </div>
-          <div>
-            <label class="block mb-1 font-semibold">RPad 결과</label>
-            <div class="flex gap-2 mb-1">
-              <v-text-field v-model="rpadLen" type="number" label="길이" style="max-width:80px" density="compact" hide-details />
-              <v-text-field v-model="rpadChar" label="채울문자" style="max-width:80px" density="compact" hide-details />
-            </div>
-            <CopyInput :model-value="rpadResult" />
-          </div>
+          <CopyInput :model-value="lpadResult" />
         </div>
-      </transition>
-    </div>
+        <div>
+          <label class="block mb-1 font-semibold">RPad 결과</label>
+          <div class="flex gap-2 mb-1">
+            <v-text-field v-model="rpadLen" type="number" label="길이" style="max-width:80px" density="compact" hide-details />
+            <v-text-field v-model="rpadChar" label="채울문자" style="max-width:80px" density="compact" hide-details />
+          </div>
+          <CopyInput :model-value="rpadResult" />
+        </div>
+      </div>
+    </GroupPanel>
   </div>
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
 import CopyInput from '@/components/CopyInput.vue';
+import GroupPanel from '@/components/GroupPanel.vue';
 const input = ref('');
-const showCase = ref(true);
-const showCaseType = ref(true);
-const showPad = ref(true);
+const showBlue = ref(true);
+const showGreen = ref(true);
+const showPurple = ref(true);
 
 const upperResult = computed(() => input.value.toUpperCase());
 const lowerResult = computed(() => input.value.toLowerCase());

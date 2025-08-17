@@ -1,19 +1,8 @@
 <template>
   <div>
-    <h2 class="text-xl font-bold mb-4">날짜/시간 유틸리티</h2>
-
-    <!-- 날짜 -> 타임스탬프 변환 (아코디언) -->
-    <div class="mb-4">
-      <button
-        @click="showDateToTs = !showDateToTs"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showDateToTs ? 'bg-blue-100 text-blue-700' : 'bg-blue-50 text-blue-500 hover:bg-blue-100'"
-      >
-        날짜 → 타임스탬프 변환
-        <v-icon :color="showDateToTs ? 'blue' : 'blue-lighten-2'">{{ showDateToTs ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showDateToTs" class="p-4 bg-white rounded-b shadow">
+    <h2 class="text-xl font-bold mb-4">날짜 유틸리티</h2>
+    <GroupPanel v-model="showBlue" title="날짜 → 타임스탬프 변환" color="blue">
+      <div v-show="showBlue" class="p-4 bg-white rounded-b shadow">
           <div class="flex gap-4">
             <!-- 왼쪽: 날짜 입력 -->
             <div class="flex-1">
@@ -168,109 +157,86 @@
             </div>
           </div>
         </div>
-      </transition>
-    </div>
+    </GroupPanel>
 
-    <!-- 타임스탬프 -> 날짜 변환 -->
-    <div class="mb-4">
-      <button
-        @click="showTsToDate = !showTsToDate"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showTsToDate ? 'bg-green-100 text-green-700' : 'bg-green-50 text-green-500 hover:bg-green-100'"
-      >
-        타임스탬프 → 날짜/일시 변환
-        <v-icon :color="showTsToDate ? 'green' : 'green-lighten-2'">{{ showTsToDate ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showTsToDate" class="p-4 bg-white rounded-b shadow">
-          <div class="flex gap-4">
-            <div class="flex-1">
-              <label class="block mb-1 font-semibold">타임스탬프 입력</label>
-              <v-text-field v-model="timestampInput" placeholder="숫자만 입력" @input="onTimestampInput" />
-            </div>
-            <div class="flex items-center px-2">→</div>
-            <div class="flex-1">
-              <label class="block mb-1 font-semibold">날짜/일시</label>
-              <CopyInput :model-value="timestampDate" />
-            </div>
+    <GroupPanel v-model="showGreen" title="타임스탬프 → 날짜/일시 변환" color="green">
+      <div v-show="showGreen" class="p-4 bg-white rounded-b shadow">
+        <div class="flex gap-4">
+          <div class="flex-1">
+            <label class="block mb-1 font-semibold">타임스탬프 입력</label>
+            <v-text-field v-model="timestampInput" placeholder="숫자만 입력" @input="onTimestampInput" />
+          </div>
+          <div class="flex items-center px-2">→</div>
+          <div class="flex-1">
+            <label class="block mb-1 font-semibold">날짜/일시</label>
+            <CopyInput :model-value="timestampDate" />
           </div>
         </div>
-      </transition>
-    </div>
-
-    <!-- 날짜 차이/계산 -->
-    <div class="mb-4">
-      <button
-        @click="showCalc = !showCalc"
-        class="w-full flex justify-between items-center p-3 rounded-t shadow font-semibold transition-colors duration-200"
-        :class="showCalc ? 'bg-purple-100 text-purple-700' : 'bg-purple-50 text-purple-500 hover:bg-purple-100'"
-      >
-        날짜 차이/계산
-        <v-icon :color="showCalc ? 'purple' : 'purple-lighten-2'">{{ showCalc ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </button>
-      <transition name="fade">
-        <div v-show="showCalc" class="p-4 bg-white rounded-b shadow">
-          <div class="flex gap-4 mb-4">
-            <div class="flex-1">
-              <label class="block mb-1 font-semibold">날짜1</label>
-              <v-text-field 
-                v-model="diffDate1" 
-                type="date"
-                @change="calculateDateDiff"
-                hide-details
-                density="compact"
-              />
-            </div>
-            <div class="flex-1">
-              <label class="block mb-1 font-semibold">날짜2</label>
-              <v-text-field 
-                v-model="diffDate2" 
-                type="date"
-                @change="calculateDateDiff"
-                hide-details
-                density="compact"
-              />
-            </div>
+      </div>
+    </GroupPanel>
+    <GroupPanel v-model="showPurple" title="날짜 차이/계산" color="purple">
+      <div v-show="showPurple" class="p-4 bg-white rounded-b shadow">
+        <div class="flex gap-4 mb-4">
+          <div class="flex-1">
+            <label class="block mb-1 font-semibold">날짜1</label>
+            <v-text-field 
+              v-model="diffDate1" 
+              type="date"
+              @change="calculateDateDiff"
+              hide-details
+              density="compact"
+            />
           </div>
-          <div class="mb-4">
-            <label class="block mb-1 font-semibold">차이(일)</label>
-            <CopyInput :model-value="dateDiffResult" />
-          </div>
-          <div class="mb-2">
-            <label class="block mb-1 font-semibold">날짜 + N일</label>
-            <div class="flex gap-2 mb-2">
-              <v-text-field 
-                v-model="addDate" 
-                type="date" 
-                style="width: 160px" 
-                @change="calculateAddDate"
-                hide-details
-                density="compact"
-              />
-              <v-text-field 
-                v-model.number="addDays" 
-                placeholder="N" 
-                type="number" 
-                style="width: 100px" 
-                @input="calculateAddDate"
-                hide-details
-                density="compact"
-              />
-            </div>
-            <CopyInput :model-value="addDateResult" />
+          <div class="flex-1">
+            <label class="block mb-1 font-semibold">날짜2</label>
+            <v-text-field 
+              v-model="diffDate2" 
+              type="date"
+              @change="calculateDateDiff"
+              hide-details
+              density="compact"
+            />
           </div>
         </div>
-      </transition>
-    </div>
+        <div class="mb-4">
+          <label class="block mb-1 font-semibold">차이(일)</label>
+          <CopyInput :model-value="dateDiffResult" />
+        </div>
+        <div class="mb-2">
+          <label class="block mb-1 font-semibold">날짜 + N일</label>
+          <div class="flex gap-2 mb-2">
+            <v-text-field 
+              v-model="addDate" 
+              type="date" 
+              style="width: 160px" 
+              @change="calculateAddDate"
+              hide-details
+              density="compact"
+            />
+            <v-text-field 
+              v-model.number="addDays" 
+              placeholder="N" 
+              type="number" 
+              style="width: 100px" 
+              @input="calculateAddDate"
+              hide-details
+              density="compact"
+            />
+          </div>
+          <CopyInput :model-value="addDateResult" />
+        </div>
+      </div>
+    </GroupPanel>
   </div>
 </template>
 <script setup>
 import { ref, nextTick, computed, watchEffect, onMounted } from 'vue';
 import CopyInput from '@/components/CopyInput.vue';
+import GroupPanel from '@/components/GroupPanel.vue';
 
-const showDateToTs = ref(true);
-const showTsToDate = ref(true);
-const showCalc = ref(true);
+const showBlue = ref(true);
+const showGreen = ref(true);
+const showPurple = ref(true);
 
 // 오늘 날짜와 현재 시각 구하기
 function getToday() {

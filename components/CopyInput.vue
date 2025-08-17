@@ -18,7 +18,7 @@
 import { ref, getCurrentInstance } from 'vue';
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Number],
     required: true
   }
 });
