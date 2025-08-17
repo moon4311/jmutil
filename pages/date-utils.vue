@@ -230,6 +230,7 @@
   </div>
 </template>
 <script setup>
+definePageMeta({ layout: 'default' })
 import { ref, nextTick, computed, watchEffect, onMounted } from 'vue';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';

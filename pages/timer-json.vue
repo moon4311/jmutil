@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-xl font-bold mb-4">타이머 원본 데이터 Json 생성</h1>
+    <h2 class="text-xl font-bold mb-4">타이머 원본 데이터 Json 생성</h2>
     <p class="mb-4 text-gray-600">세트 개수를 입력하면, 각 세트마다 시작(state:1), 기록(state:2), 정지(state:0) 데이터가 시간순으로 생성됩니다.</p>
     <div class="border rounded p-4 bg-gray-50 mb-4 flex flex-col gap-3 md:flex-row md:items-end md:gap-6">
       <div>
@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'default' })
 import { ref } from 'vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
 

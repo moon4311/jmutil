@@ -18,6 +18,23 @@ pnpm install
 pnpm dev
 ```
 
+## 빌드 방법
+
+### 개발 서버 실행
+```bash
+pnpm dev
+```
+
+### 프로덕션 빌드
+```bash
+pnpm build
+```
+
+### 프로덕션 빌드 미리보기
+```bash
+pnpm preview
+```
+
 ## 특징
 - TypeScript 비활성 (JS 전용)
 - Tailwind는 Nuxt 모듈 사용 (CLI init 불필요)

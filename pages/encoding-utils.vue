@@ -1,55 +1,53 @@
 <template>
   <div>
     <h2 class="text-xl font-bold mb-4">인코딩/디코딩 유틸리티</h2>
-    <div class="flex gap-4 items-center">
-      <!-- 좌측: 인코딩 입력 -->
-      <div class="flex-1">
-        <label class="block mb-1 font-semibold">인코딩</label>
-        <v-select
-          v-model="encodeType"
-          :items="encodeTypes"
-          class="mb-2"
-          label="인코딩 방식"
-        />
+    <v-select
+      v-model="encodeType"
+      :items="encodeTypes"
+      class="mb-2"
+      label="인코딩/디코딩 방식"
+      />
+    <GroupPanel v-model="showBlue" title="인코딩" color="blue">
+      <div class="mb-4">
+        <label class="block mb-1 font-semibold">인코딩할 텍스트</label>
         <v-textarea
           v-model="encodeInput"
-          placeholder="인코딩할 텍스트 입력"
-          rows="8"
+          placeholder="인코딩할 텍스트를 입력하세요"
+          rows="6"
           @input="onEncodeInput"
         />
       </div>
-      <!-- 우측: 디코딩 입력 -->
-      <div class="flex-1">
-        <label class="block mb-1 font-semibold">디코딩</label>
-        <v-select
-          v-model="decodeType"
-          :items="decodeTypes"
-          class="mb-2"
-          label="디코딩 방식"
-        />
+      <div>
+        <label class="block mb-1 font-semibold">인코딩 결과</label>
+        <CopyTextArea :model-value="encoded" rows="4" />
+      </div>
+    </GroupPanel>
+
+    <GroupPanel v-model="showGreen" title="디코딩" color="green">
+      <div class="mb-4">
+        <label class="block mb-1 font-semibold">디코딩할 텍스트</label>
         <v-textarea
           v-model="decodeInput"
-          placeholder="디코딩할 텍스트 입력"
-          rows="8"
+          placeholder="디코딩할 텍스트를 입력하세요"
+          rows="6"
           @input="onDecodeInput"
         />
       </div>
-    </div>
-    <div class="flex gap-4 mt-4">
-      <div class="flex-1">
-        <label class="block mb-1 font-semibold">인코딩 결과</label>
-        <v-textarea :value="encoded" readonly rows="4" />
-      </div>
-      <div class="flex-1">
+      <div>
         <label class="block mb-1 font-semibold">디코딩 결과</label>
-        <v-textarea :value="decoded" readonly rows="4" />
+        <CopyTextArea :model-value="decoded" rows="4" />
       </div>
-    </div>
+    </GroupPanel>
   </div>
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import GroupPanel from '@/components/GroupPanel.vue';
+import CopyTextArea from '@/components/CopyTextArea.vue';
+
+const showBlue = ref(true);
+const showGreen = ref(true);
 
 const encodeInput = ref('');
 const decodeInput = ref('');
@@ -62,10 +60,8 @@ const encodeTypes = [
   { title: 'HEX', value: 'hex' },
   { title: 'Unicode', value: 'unicode' },
 ];
-const decodeTypes = encodeTypes;
 
 const encodeType = ref('base64');
-const decodeType = ref('base64');
 
 const onEncodeInput = () => {
   try {
@@ -96,7 +92,7 @@ const onEncodeInput = () => {
 
 const onDecodeInput = () => {
   try {
-    switch (decodeType.value) {
+    switch (encodeType.value) {
       case 'base64':
         decoded.value = decodeURIComponent(escape(atob(decodeInput.value)));
         break;
@@ -120,4 +116,12 @@ const onDecodeInput = () => {
     decoded.value = '디코딩 오류';
   }
 };
+
+// encodeType이 변경될 때마다 인코딩 재실행
+watch(encodeType, () => {
+  if (encodeInput.value) {
+    onEncodeInput();
+  }
+});
+
 </script>

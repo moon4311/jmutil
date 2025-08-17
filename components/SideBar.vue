@@ -2,7 +2,7 @@
   <aside :class="['fixed z-40 md:static md:translate-x-0 transition-transform duration-200', sidebarOpen ? 'translate-x-0' : '-translate-x-full', 'w-64 bg-white shadow-md flex flex-col h-full']">
     <div class="h-16 flex items-center justify-between border-b px-4">
       <span class="font-bold text-lg">jmUtil</span>
-      <v-btn icon class="md:hidden" @click="$emit('close')">
+      <v-btn icon class="block md:hidden" @click="$emit('close')">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </div>
