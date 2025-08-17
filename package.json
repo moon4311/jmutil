@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nuxt dev --host 0.0.0.0 --port 80",
     "build": "nuxt build",
-    "preview": "nuxt preview",
+    "preview": "nuxt preview --host 0.0.0.0 --port 80",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
