@@ -1,11 +1,15 @@
 <template>
   <div>
     <h2 class="text-xl font-bold mb-4">타이머 원본 데이터 Json 생성</h2>
-    <p class="mb-4 text-gray-600">세트 개수를 입력하면, 각 세트마다 시작(state:1), 기록(state:2), 정지(state:0) 데이터가 시간순으로 생성됩니다.</p>
+    <p class="mb-4 text-gray-600">세트 개수와 각 세트별 기록 개수를 입력하면, 각 세트마다 시작(state:1), 기록(state:2), 정지(state:0) 데이터가 시간순으로 생성됩니다.</p>
     <div class="border rounded p-4 bg-gray-50 mb-4 flex flex-col gap-3 md:flex-row md:items-end md:gap-6">
       <div>
         <label class="block mb-1 font-semibold">세트 개수</label>
         <input type="number" v-model.number="setCount" min="1" class="border px-2 py-1 rounded w-32" />
+      </div>
+      <div>
+        <label class="block mb-1 font-semibold">세트별 기록 개수</label>
+        <input type="number" v-model.number="recordCount" min="1" class="border px-2 py-1 rounded w-32" />
       </div>
       <div>
         <label class="block mb-1 font-semibold">시작일시</label>
@@ -53,8 +57,8 @@ definePageMeta({ layout: 'default' })
 import { ref } from 'vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
 
-
-const setCount = ref(5);
+const setCount = ref(10);
+const recordCount = ref(20); // 세트별 기록 개수
 const startDateTime = ref(getNowDateTimeLocal());
 const setGap = ref(10); // 세트별 시작시간 텀(분)
 const mode = ref(1); // 1: 스플릿, 2: 타이머
@@ -76,22 +80,30 @@ function generateJson() {
   }
   const arr = [];
   let unixTime = baseUnix;
+  
   for (let i = 0; i < setCount.value; i++) {
     // 세트별 시작시간 텀 적용
     if (i > 0) {
       unixTime += setGap.value * 60;
     }
+    
     // 시작
     arr.push({ unixTime: unixTime, mode: mode.value, state: 1, tapCount: 0 });
-    // 기록 (1분 뒤)
-    arr.push({ unixTime: unixTime + 60, mode: mode.value, state: 2, tapCount: 0 });
-    // 정지 (2분 뒤)
-    arr.push({ unixTime: unixTime + 120, mode: mode.value, state: 0, tapCount: 0 });
-    unixTime = unixTime + 120; // 다음 세트 시작점 기준(마지막 정지 시각)
+    
+    // 기록들 (지정된 개수만큼)
+    for (let j = 0; j < recordCount.value; j++) {
+      unixTime += 60; // 각 기록마다 1분씩 증가
+      arr.push({ unixTime: unixTime, mode: mode.value, state: 2, tapCount: 0 });
+    }
+    
+    // 정지 (마지막 기록 1분 뒤)
+    unixTime += 60;
+    arr.push({ unixTime: unixTime, mode: mode.value, state: 0, tapCount: 0 });
   }
+  
   // 각 객체를 한 줄로 출력
-  jsonResult.value = '[\n' + arr.map(obj => '  ' + JSON.stringify(obj)).join(',\n') + '\n]';
-  jsonResult2.value = '[\n' + arr.map(obj => formatUnixTime(obj.unixTime)).join(',\n') + '\n]';
+  jsonResult.value = '[\n' + arr.map(obj => (obj.state === 1 ? ' ' : '  ') + JSON.stringify(obj)).join(',\n') + '\n]';
+  jsonResult2.value = '[\n' + arr.map(obj =>(obj.state === 1 ? ' ' : '  ') + formatUnixTime(obj.unixTime)).join(',\n') + '\n]';
 }
 
 function formatUnixTime(unixTime) {
