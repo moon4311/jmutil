@@ -69,8 +69,10 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
+import { toCamelCase, toSnakeCase, lpad, rpad } from '@/utils/StringUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
+
 const input = ref('');
 const showBlue = ref(true);
 const showGreen = ref(true);
@@ -78,28 +80,16 @@ const showPurple = ref(true);
 
 const upperResult = computed(() => input.value.toUpperCase());
 const lowerResult = computed(() => input.value.toLowerCase());
-
-function toCamelCase(str) {
-  return str
-    .replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
-    .replace(/^(.)/, (m) => m.toLowerCase());
-}
-function toSnakeCase(str) {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1_$2')
-    .replace(/[-\s]+/g, '_')
-    .replace(/_+/g, '_')
-    .toLowerCase();
-}
+const trimResult = computed(() => input.value.trim());
 const camelResult = computed(() => toCamelCase(input.value));
 const snakeResult = computed(() => toSnakeCase(input.value));
 
-// lpad, rpad, trim
+// lpad, rpad 설정
 const lpadLen = ref(10);
 const lpadChar = ref('0');
 const rpadLen = ref(10);
 const rpadChar = ref(' ');
-const lpadResult = computed(() => input.value.padStart(Number(lpadLen.value)||0, lpadChar.value||' '));
-const rpadResult = computed(() => input.value.padEnd(Number(rpadLen.value)||0, rpadChar.value||' '));
-const trimResult = computed(() => input.value.trim());
+
+const lpadResult = computed(() => lpad(input.value, lpadLen.value, lpadChar.value));
+const rpadResult = computed(() => rpad(input.value, rpadLen.value, rpadChar.value));
 </script>

@@ -8,13 +8,6 @@
         <input type="number" v-model.number="setCount" min="1" class="border px-2 py-1 rounded w-32" />
       </div>
       <div>
-        <label class="block mb-1 font-semibold">모드</label>
-        <select v-model.number="mode" class="border px-2 py-1 rounded w-32">
-          <option :value="1">스플릿</option>
-          <option :value="2">타이머</option>
-        </select>
-      </div>
-      <div>
         <label class="block mb-1 font-semibold">세트별 기록 개수</label>
         <input type="number" v-model.number="recordCount" min="1" class="border px-2 py-1 rounded w-32" />
       </div>
@@ -26,18 +19,22 @@
         <label class="block mb-1 font-semibold">세트별 시작시간 텀(분)</label>
         <input type="number" v-model.number="setGap" min="10" step="10" class="border px-2 py-1 rounded w-32" />
       </div>
-      <div class="mt-2 md:mt-0 flex gap-2">
-        <button @click="generateJson" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow font-bold w-full md:w-auto">생성</button>
-        <button @click="clearJson" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow font-bold w-full md:w-auto">초기화</button>
+      <div>
+        <label class="block mb-1 font-semibold">모드</label>
+        <div class="flex gap-4 mt-1">
+          <label class="inline-flex items-center gap-1">
+            <input type="radio" v-model="mode" :value="1" />
+            <span>스플릿</span>
+          </label>
+          <label class="inline-flex items-center gap-1">
+            <input type="radio" v-model="mode" :value="2" />
+            <span>타이머</span>
+          </label>
+        </div>
       </div>
-    </div>
-    <div v-if="genHistory.length" class="border rounded p-4 bg-white mb-4">
-      <label class="block mb-2 font-semibold">생성 조건 히스토리</label>
-      <ul class="text-xs text-gray-700 list-decimal ml-4">
-        <li v-for="(h, i) in genHistory" :key="i">
-          세트: {{ h.setCount }}, 기록: {{ h.recordCount }}, 시작: {{ h.startDateTime }}, 텀: {{ h.setGap }}분, 모드: {{ h.mode === 1 ? '스플릿' : '타이머' }}
-        </li>
-      </ul>
+      <div class="mt-2 md:mt-0">
+        <button @click="generateJson" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow font-bold w-full md:w-auto">생성</button>
+      </div>
     </div>
     <div v-if="jsonResult" class="border rounded p-4 bg-white">
       <div class="flex flex-col md:flex-row gap-4">
@@ -57,79 +54,62 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
-
 import { ref } from 'vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
-import { formatDateTime } from '@/utils/DateUtil.js';
-import { getToday, toDatetimeLocal } from '@/utils/CommonUtil.js';
 
-const setCount = ref(4);
+const setCount = ref(10);
 const recordCount = ref(20); // 세트별 기록 개수
-const startDateTime = ref(toDatetimeLocal());
+const startDateTime = ref(getNowDateTimeLocal());
 const setGap = ref(10); // 세트별 시작시간 텀(분)
 const mode = ref(1); // 1: 스플릿, 2: 타이머
-const genHistory = ref([]); // 생성 조건 히스토리
 const jsonResult = ref('');
 const jsonResult2 = ref('');
 
-function formatUnixTime(unixTime) {
-  // unixTime: 초 단위
-  return formatDateTime(new Date(unixTime * 1000));
+function getNowDateTimeLocal() {
+  const now = new Date();
+  now.setSeconds(0, 0); // 초, ms 0으로
+  return now.toISOString().slice(0, 16);
 }
 
 function generateJson() {
   let baseUnix;
   if (startDateTime.value) {
-    // 입력값을 KST로 간주하고, UTC로 변환하여 unixTime 계산
-    // datetime-local은 브라우저 로컬 타임존 기준이므로, 입력값을 UTC+9로 해석
-    const [date, time] = startDateTime.value.split('T');
-    const [year, month, day] = date.split('-').map(Number);
-    const [hour, minute] = time.split(':').map(Number);
-    // Date.UTC는 UTC 기준, KST는 -9시간 해야 UTC
-    baseUnix = Math.floor(Date.UTC(year, month - 1, day, hour - 9, minute) / 1000);
+    baseUnix = Math.floor(new Date(startDateTime.value).getTime() / 1000);
   } else {
     baseUnix = Math.floor(Date.now() / 1000);
   }
-  
   const arr = [];
   let unixTime = baseUnix;
+  
   for (let i = 0; i < setCount.value; i++) {
     // 세트별 시작시간 텀 적용
     if (i > 0) {
       unixTime += setGap.value * 60;
     }
+    
     // 시작
     arr.push({ unixTime: unixTime, mode: mode.value, state: 1, tapCount: 0 });
+    
     // 기록들 (지정된 개수만큼)
     for (let j = 0; j < recordCount.value; j++) {
       unixTime += 60; // 각 기록마다 1분씩 증가
       arr.push({ unixTime: unixTime, mode: mode.value, state: 2, tapCount: 0 });
     }
+    
     // 정지 (마지막 기록 1분 뒤)
     unixTime += 60;
     arr.push({ unixTime: unixTime, mode: mode.value, state: 0, tapCount: 0 });
   }
-  // append 방식
-  if (jsonResult.value.trim()) {
-    jsonResult.value = jsonResult.value.replace(/\n]$/, ',\n') + arr.map(obj => (obj.state === 1 ? ' ' : '  ') + JSON.stringify(obj)).join(',\n') + '\n]';
-    jsonResult2.value = jsonResult2.value.replace(/\n]$/, ',\n') + arr.map(obj => (obj.state === 1 ? ' ' : '  ') + formatUnixTime(obj.unixTime)).join(',\n') + '\n]';
-  } else {
-    jsonResult.value = '[\n' + arr.map(obj => (obj.state === 1 ? ' ' : '  ') + JSON.stringify(obj)).join(',\n') + '\n]';
-    jsonResult2.value = '[\n' + arr.map(obj =>(obj.state === 1 ? ' ' : '  ') + formatUnixTime(obj.unixTime)).join(',\n') + '\n]';
-  }
-  // 생성 조건 히스토리 누적
-  genHistory.value.push({
-    setCount: setCount.value,
-    recordCount: recordCount.value,
-    startDateTime: startDateTime.value,
-    setGap: setGap.value,
-    mode: mode.value
-  });
+  
+  // 각 객체를 한 줄로 출력
+  jsonResult.value = '[\n' + arr.map(obj => (obj.state === 1 ? ' ' : '  ') + JSON.stringify(obj)).join(',\n') + '\n]';
+  jsonResult2.value = '[\n' + arr.map(obj =>(obj.state === 1 ? ' ' : '  ') + formatUnixTime(obj.unixTime)).join(',\n') + '\n]';
 }
 
-function clearJson() {
-  jsonResult.value = '';
-  jsonResult2.value = '';
-  genHistory.value = [];
+function formatUnixTime(unixTime) {
+  const d = new Date(unixTime * 1000);
+  // YYYY-MM-DD HH:mm:ss 포맷
+  const pad = n => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 </script>

@@ -46,8 +46,10 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
+import { toBinary, toHex, getRandomInts } from '@/utils/NumberUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
+
 // 아코디언 상태
 const showBlue = ref(true);
 const showGreen = ref(true);
@@ -56,11 +58,11 @@ const showGreen = ref(true);
 const input = ref('');
 const binaryResult = computed(() => {
   const n = parseInt(input.value);
-  return isNaN(n) ? '' : n.toString(2);
+  return isNaN(n) ? '' : toBinary(n);
 });
 const hexResult = computed(() => {
   const n = parseInt(input.value);
-  return isNaN(n) ? '' : n.toString(16).toUpperCase();
+  return isNaN(n) ? '' : toHex(n);
 });
 
 // 랜덤수 생성
@@ -68,18 +70,16 @@ const randMin = ref(1);
 const randMax = ref(100);
 const randCount = ref(5);
 const randomNumbers = ref([]);
+
 function generateRandomNumbers() {
   const min = Number(randMin.value);
   const max = Number(randMax.value);
   const count = Number(randCount.value);
+  
   if (isNaN(min) || isNaN(max) || isNaN(count) || min > max || count < 1) {
-    window.dispatchEvent(new CustomEvent('toast', { detail: '입력값을 확인하세요.' }));
     return;
   }
-  const arr = [];
-  for (let i = 0; i < count; i++) {
-    arr.push(Math.floor(Math.random() * (max - min + 1)) + min);
-  }
-  randomNumbers.value = arr;
+  
+  randomNumbers.value = getRandomInts(min, max, count);
 }
 </script>

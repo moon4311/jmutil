@@ -14,6 +14,9 @@ export default defineNuxtConfig({
       'process.env.DEBUG': false
     }
   },
+  nitro: {
+    minify: false,          // dev는 보통 끔
+  },
   compatibilityDate: '2024-04-03',
 
 })

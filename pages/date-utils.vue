@@ -164,7 +164,13 @@
         <div class="flex gap-4">
           <div class="flex-1">
             <label class="block mb-1 font-semibold">타임스탬프 입력</label>
-            <v-text-field v-model="timestampInput" placeholder="숫자만 입력" @input="onTimestampInput" />
+            <v-text-field 
+              v-model="timestampInput" 
+              placeholder="숫자만 입력" 
+              @input="onTimestampInput"
+              @keydown.up.prevent="incTimestamp(1)"
+              @keydown.down.prevent="incTimestamp(-1)"
+            />
           </div>
           <div class="flex items-center px-2">→</div>
           <div class="flex-1">
@@ -231,33 +237,18 @@
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
-import { ref, nextTick, computed, watchEffect, onMounted } from 'vue';
+import { ref, nextTick, watchEffect, onMounted } from 'vue';
+import {
+  isValidDate, isValidTime, isValidDatetime, formatDate, formatDateTime
+} from '@/utils/DateUtil.js';
+import { getToday, getNowTimestamp, toDatetimeLocal } from '@/utils/CommonUtil.js';
+import { formatDateInput } from '@/utils/InputFormatUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
 
 const showBlue = ref(true);
 const showGreen = ref(true);
 const showPurple = ref(true);
-
-// 오늘 날짜와 현재 시각 구하기
-function getToday() {
-  const d = new Date();
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-function getNow() {
-  const d = new Date();
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-function getNowTime() {
-  const d = new Date();
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-function getNowTimestamp() {
-  return Date.now();
-}
 
 const dateInput = ref(getToday());
 // 연/월/일 분리 입력
@@ -266,6 +257,7 @@ const dateYear = ref(today.getFullYear());
 const dateMonth = ref(today.getMonth() + 1);
 const dateDay = ref(today.getDate());
 const dateTimestamp = ref('');
+
 // 일시 입력 분리 (연/월/일/시/분/초)
 const now = new Date();
 const dtYear = ref(now.getFullYear());
@@ -274,7 +266,7 @@ const dtDay = ref(now.getDate());
 const dtHour = ref(now.getHours());
 const dtMin = ref(now.getMinutes());
 const dtSec = ref(now.getSeconds());
-const datetimeFull = ref(`${dtYear.value}-${String(dtMonth.value).padStart(2,'0')}-${String(dtDay.value).padStart(2,'0')}T${String(dtHour.value).padStart(2,'0')}:${String(dtMin.value).padStart(2,'0')}:${String(dtSec.value).padStart(2,'0')}`);
+const datetimeFull = ref(toDatetimeLocal(now));
 const datetimeTimestamp = ref('');
 const timestampInput = ref(getNowTimestamp().toString());
 const timestampDate = ref('');
@@ -288,64 +280,6 @@ const addDate = ref(getToday());
 const addDays = ref('');
 const addDateResult = ref('');
 
-// YYYY-MM-DD
-const formatDateInput = (val) => {
-  let digits = val.replace(/\D/g, '');
-  if (digits.length > 8) digits = digits.slice(0, 8);
-  if (digits.length === 8) {
-    return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
-  }
-  if (digits.length > 4 && digits.length <= 6) {
-    return `${digits.slice(0, 4)}-${digits.slice(4)}`;
-  }
-  return digits;
-};
-
-// HH:mm:ss
-const formatTimeInput = (val) => {
-  let digits = val.replace(/\D/g, '');
-  if (digits.length > 6) digits = digits.slice(0, 6);
-  if (digits.length >= 6) {
-    return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4, 6)}`;
-  }
-  if (digits.length >= 4) {
-    return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
-  }
-  if (digits.length >= 2) {
-    return `${digits.slice(0, 2)}`;
-  }
-  return digits;
-};
-
-const isValidDate = (str) => {
-  const m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return false;
-  const d = new Date(str);
-  return !isNaN(d) && d.getFullYear() == m[1] && (d.getMonth() + 1) == m[2] && d.getDate() == m[3];
-};
-
-const isValidTime = (str) => {
-  const m = str.match(/^(\d{2}):(\d{2}):(\d{2})$/);
-  if (!m) return false;
-  const h = Number(m[1]), mi = Number(m[2]), s = Number(m[3]);
-  return h >= 0 && h < 24 && mi >= 0 && mi < 60 && s >= 0 && s < 60;
-};
-
-const isValidDatetime = (date, time) => {
-  return isValidDate(date) && isValidTime(time);
-};
-
-const formatDate = (d) => {
-  if (!(d instanceof Date) || isNaN(d)) return '';
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
-
-const formatDateTime = (d) => {
-  if (!(d instanceof Date) || isNaN(d)) return '';
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-};
 
 // 날짜 입력 → 타임스탬프 변환
 const onDateInput = (e) => {
@@ -494,11 +428,32 @@ const onTimestampInput = (e) => {
   }
 };
 
+// 타임스탬프 입력 증감 (ms 단위, 1초=1000ms)
+function incTimestamp(diff) {
+  let val = Number(timestampInput.value);
+  if (isNaN(val)) val = 0;
+  val += diff * 1000;
+  timestampInput.value = val.toString();
+  // 입력값 변경시 변환도 즉시 반영
+  if (!isNaN(val)) {
+    const d = new Date(val);
+    if (!isNaN(d)) {
+      timestampDate.value = formatDateTime(d);
+    } else {
+      timestampDate.value = '잘못된 타임스탬프';
+    }
+  } else {
+    timestampDate.value = '';
+  }
+}
+
 function setTodayDate() {
-  dateInput.value = getToday();
-  dateYear.value = today.getFullYear();
-  dateMonth.value = today.getMonth() + 1;
-  dateDay.value = today.getDate();
+  const todayDate = getToday();
+  dateInput.value = todayDate;
+  const d = new Date();
+  dateYear.value = d.getFullYear();
+  dateMonth.value = d.getMonth() + 1;
+  dateDay.value = d.getDate();
   onDatePartsChange();
 }
 
