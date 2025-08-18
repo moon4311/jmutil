@@ -8,7 +8,7 @@
     </div>
     <nav class="flex-1 p-4 space-y-2">
       <NuxtLink to="/" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-view-dashboard">대시보드</v-btn>
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-home">홈</v-btn>
       </NuxtLink>
       <NuxtLink to="/string-utils" custom v-slot="{ navigate, href }">
         <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-alphabetical">문자열</v-btn>
@@ -25,9 +25,15 @@
       <NuxtLink to="/json-utils" custom v-slot="{ navigate, href }">
         <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-json">JSON/객체</v-btn>
       </NuxtLink>
-        <NuxtLink to="/timer-json" custom v-slot="{ navigate, href }">
-          <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer">타이머 Json 생성</v-btn>
-        </NuxtLink>
+      <NuxtLink to="/array-utils" custom v-slot="{ navigate, href }">
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-format-list-bulleted">배열</v-btn>
+      </NuxtLink>
+      <NuxtLink to="/color-utils" custom v-slot="{ navigate, href }">
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-palette">색상</v-btn>
+      </NuxtLink>
+      <NuxtLink to="/timer-json" custom v-slot="{ navigate, href }">
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer">타이머 Json 생성</v-btn>
+      </NuxtLink>
     </nav>
   </aside>
 </template>

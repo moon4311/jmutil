@@ -9,8 +9,8 @@ export default {
   ],
   safelist: [
     // bg, text, hover:bg 변형까지 한꺼번에
-    { pattern: /^(bg|text)-(red|blue|green|yellow|emerald|purple|sky|slate)-(50|100|500|700)$/ },
-    { pattern: /^bg-(red|blue|green|yellow|emerald|purple|sky|slate)-(50|100)$/, variants: ['hover'] },
+    { pattern: /^(bg|text)-(red|blue|green|yellow|emerald|purple|pink|indigo|slate)-(50|100|500|700)$/ },
+    { pattern: /^bg-(red|blue|green|yellow|emerald|purple|pink|indigo|slate)-(50|100)$/, variants: ['hover'] },
   ],
   theme: {
     extend: {}

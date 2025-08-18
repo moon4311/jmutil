@@ -43,18 +43,23 @@ function copyToClipboard() {
 
 <style scoped>
 .copy-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
 }
 .copy-input {
-  flex: 1;
-  padding: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 3rem 0.5rem 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 .copy-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
