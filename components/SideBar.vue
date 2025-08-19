@@ -34,6 +34,12 @@
       <NuxtLink to="/timer-json" custom v-slot="{ navigate, href }">
         <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer">타이머 Json 생성</v-btn>
       </NuxtLink>
+      <NuxtLink to="/timer" custom v-slot="{ navigate, href }">
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer-outline">타이머</v-btn>
+      </NuxtLink>
+      <NuxtLink to="/qr-generator" custom v-slot="{ navigate, href }">
+        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-qrcode">QR코드 생성</v-btn>
+      </NuxtLink>
     </nav>
   </aside>
 </template>
