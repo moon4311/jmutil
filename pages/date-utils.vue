@@ -233,6 +233,74 @@
         </div>
       </div>
     </GroupPanel>
+
+    <GroupPanel v-model="showOrange" title="날짜 일괄 변환 (엑셀/시트)" color="orange">
+      <div v-show="showOrange" class="p-4 bg-white rounded-b shadow">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 입력 영역 -->
+          <div>
+            <label class="block mb-2 font-semibold">날짜 데이터 입력 (한 줄당 하나씩)</label>
+            <textarea 
+              v-model="batchDateInput" 
+              placeholder="예:&#10;2023-01-15&#10;2023/02/20 14:30:00&#10;2023.03.25 09:15:30&#10;Jan 15, 2023 16:45:00&#10;01/20/2023 2:30:00 PM"
+              class="w-full h-48 p-3 border rounded resize-none font-mono text-sm"
+              @input="onBatchDateInputChange"
+            ></textarea>
+            <div class="mt-2 text-sm text-gray-600">
+              감지된 형식: <span class="font-semibold">{{ detectedFormat || '없음' }}</span>
+              <span v-if="validCount > 0" class="ml-2 text-green-600">{{ validCount }}개 유효</span>
+              <span v-if="invalidCount > 0" class="ml-2 text-red-600">{{ invalidCount }}개 오류</span>
+            </div>
+          </div>
+          
+          <!-- 변환 옵션 및 결과 -->
+          <div>
+            <div class="mb-4">
+              <label class="block mb-2 font-semibold">변환할 형식 선택</label>
+              <v-select
+                v-model="targetFormat"
+                :items="formatOptions"
+                item-title="name"
+                item-value="value"
+                density="compact"
+                @update:model-value="convertBatchDates"
+              />
+              
+              <div class="mt-3" v-if="targetFormat === 'custom'">
+                <label class="block mb-1 text-sm font-medium">커스텀 포맷 패턴</label>
+                <v-text-field
+                  v-model="customFormat"
+                  placeholder="예: YYYY-MM-DD HH:mm:ss"
+                  density="compact"
+                  hide-details
+                  @input="convertBatchDates"
+                />
+                <div class="mt-1 text-xs text-gray-500">
+                  YYYY: 연도, MM: 월, DD: 일, HH: 시간(24시), hh: 시간(12시), mm: 분, ss: 초
+                </div>
+              </div>
+            </div>
+            
+            <label class="block mb-2 font-semibold">변환 결과</label>
+            <div class="relative">
+              <textarea 
+                v-model="batchDateOutput" 
+                readonly
+                class="w-full h-48 p-3 border rounded resize-none font-mono text-sm bg-gray-50"
+                placeholder="변환 결과가 여기에 표시됩니다"
+              ></textarea>
+              <button 
+                v-if="batchDateOutput"
+                @click="copyBatchResult"
+                class="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+              >
+                복사
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </GroupPanel>
   </div>
 </template>
 <script setup>
@@ -249,6 +317,7 @@ import GroupPanel from '@/components/GroupPanel.vue';
 const showBlue = ref(true);
 const showGreen = ref(true);
 const showPurple = ref(true);
+const showOrange = ref(true);
 
 const dateInput = ref(getToday());
 // 연/월/일 분리 입력
@@ -279,6 +348,34 @@ const dateDiffResult = ref('');
 const addDate = ref(getToday());
 const addDays = ref('');
 const addDateResult = ref('');
+
+// 일괄 변환 관련
+const batchDateInput = ref('');
+const batchDateOutput = ref('');
+const targetFormat = ref('YYYY-MM-DD');
+const customFormat = ref('');
+const detectedFormat = ref('');
+const validCount = ref(0);
+const invalidCount = ref(0);
+
+// 날짜 포맷 옵션들
+const formatOptions = [
+  { name: 'YYYY-MM-DD (ISO 표준)', value: 'YYYY-MM-DD' },
+  { name: 'YYYY-MM-DD HH:mm:ss (날짜+시간)', value: 'YYYY-MM-DD HH:mm:ss' },
+  { name: 'MM/DD/YYYY (미국식)', value: 'MM/DD/YYYY' },
+  { name: 'MM/DD/YYYY HH:mm:ss (미국식+시간)', value: 'MM/DD/YYYY HH:mm:ss' },
+  { name: 'DD/MM/YYYY (유럽식)', value: 'DD/MM/YYYY' },
+  { name: 'DD/MM/YYYY HH:mm:ss (유럽식+시간)', value: 'DD/MM/YYYY HH:mm:ss' },
+  { name: 'YYYY년 MM월 DD일 (한국식)', value: 'YYYY년 MM월 DD일' },
+  { name: 'YYYY년 MM월 DD일 HH:mm:ss (한국식+시간)', value: 'YYYY년 MM월 DD일 HH:mm:ss' },
+  { name: 'YYYY.MM.DD (점 구분)', value: 'YYYY.MM.DD' },
+  { name: 'YYYY.MM.DD HH:mm:ss (점 구분+시간)', value: 'YYYY.MM.DD HH:mm:ss' },
+  { name: 'MMM DD, YYYY (영문)', value: 'MMM DD, YYYY' },
+  { name: 'MMM DD, YYYY HH:mm:ss (영문+시간)', value: 'MMM DD, YYYY HH:mm:ss' },
+  { name: '타임스탬프 (밀리초)', value: 'timestamp' },
+  { name: 'Unix 타임스탬프 (초)', value: 'unix' },
+  { name: '커스텀 포맷...', value: 'custom' }
+];
 
 
 // 날짜 입력 → 타임스탬프 변환
@@ -497,6 +594,356 @@ onMounted(() => {
     }
   }
 });
+
+// 일괄 변환 관련 함수들
+const detectDateFormat = (dateStr) => {
+  const trimmed = dateStr.trim();
+  if (!trimmed) return null;
+  
+  // 다양한 날짜/시간 패턴 검사
+  const patterns = [
+    // 날짜+시간 패턴들
+    { regex: /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/, format: 'YYYY-MM-DD HH:mm:ss' },
+    { regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, format: 'YYYY-MM-DDTHH:mm:ss' },
+    { regex: /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/, format: 'YYYY-MM-DD HH:mm' },
+    { regex: /^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}$/, format: 'YYYY/MM/DD HH:mm:ss' },
+    { regex: /^\d{4}\.\d{2}\.\d{2}\s+\d{2}:\d{2}:\d{2}$/, format: 'YYYY.MM.DD HH:mm:ss' },
+    { regex: /^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}$/, format: 'MM/DD/YYYY HH:mm:ss' },
+    { regex: /^\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2}:\d{2}\s+(AM|PM)$/i, format: 'MM/DD/YYYY hh:mm:ss AM/PM' },
+    { regex: /^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}:\d{2}$/, format: 'MM-DD-YYYY HH:mm:ss' },
+    { regex: /^\d{2}\.\d{2}\.\d{4}\s+\d{2}:\d{2}:\d{2}$/, format: 'MM.DD.YYYY HH:mm:ss' },
+    { regex: /^\d{4}년\s*\d{1,2}월\s*\d{1,2}일\s+\d{2}:\d{2}:\d{2}$/, format: 'YYYY년 MM월 DD일 HH:mm:ss' },
+    { regex: /^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{2}:\d{2}:\d{2}$/, format: 'MMM DD, YYYY HH:mm:ss' },
+    
+    // 날짜만 패턴들
+    { regex: /^\d{4}-\d{2}-\d{2}$/, format: 'YYYY-MM-DD' },
+    { regex: /^\d{4}\/\d{2}\/\d{2}$/, format: 'YYYY/MM/DD' },
+    { regex: /^\d{4}\.\d{2}\.\d{2}$/, format: 'YYYY.MM.DD' },
+    { regex: /^\d{2}\/\d{2}\/\d{4}$/, format: 'MM/DD/YYYY' },
+    { regex: /^\d{2}-\d{2}-\d{4}$/, format: 'MM-DD-YYYY' },
+    { regex: /^\d{2}\.\d{2}\.\d{4}$/, format: 'MM.DD.YYYY' },
+    { regex: /^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}$/, format: 'MMM DD, YYYY' },
+    { regex: /^\d{4}년\s*\d{1,2}월\s*\d{1,2}일$/, format: 'YYYY년 MM월 DD일' },
+    { regex: /^\d{10,13}$/, format: 'timestamp' }
+  ];
+  
+  for (const pattern of patterns) {
+    if (pattern.regex.test(trimmed)) {
+      return pattern.format;
+    }
+  }
+  
+  // 자연어 날짜도 시도
+  const parsed = new Date(trimmed);
+  if (!isNaN(parsed.getTime())) {
+    return 'natural';
+  }
+  
+  return null;
+};
+
+const parseDateString = (dateStr, format) => {
+  const trimmed = dateStr.trim();
+  if (!trimmed) return null;
+  
+  try {
+    if (format === 'timestamp') {
+      const num = Number(trimmed);
+      if (isNaN(num)) return null;
+      // 타임스탬프가 10자리면 초 단위, 13자리면 밀리초 단위
+      return new Date(trimmed.length === 10 ? num * 1000 : num);
+    }
+    
+    // ISO 형식들 (직접 파싱 가능)
+    if (format === 'YYYY-MM-DD' || format === 'YYYY/MM/DD' || format === 'YYYY.MM.DD' ||
+        format === 'YYYY-MM-DD HH:mm:ss' || format === 'YYYY-MM-DDTHH:mm:ss' ||
+        format === 'YYYY/MM/DD HH:mm:ss' || format === 'YYYY.MM.DD HH:mm:ss' ||
+        format === 'YYYY-MM-DD HH:mm') {
+      const normalizedStr = trimmed.replace(/[/.]/g, '-').replace('T', ' ');
+      const parsed = new Date(normalizedStr);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    
+    // MM/DD/YYYY 형식들
+    if (format.startsWith('MM/DD/YYYY') || format.startsWith('MM-DD-YYYY') || format.startsWith('MM.DD.YYYY')) {
+      const separator = format.includes('/') ? '/' : format.includes('-') ? '-' : '.';
+      const parts = trimmed.split(' ');
+      const datePart = parts[0];
+      const timePart = parts[1] || '';
+      
+      const dateComponents = datePart.split(separator);
+      if (dateComponents.length === 3) {
+        const [mm, dd, yyyy] = dateComponents;
+        const dateStr = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+        const fullStr = timePart ? `${dateStr} ${timePart}` : dateStr;
+        const parsed = new Date(fullStr);
+        return isNaN(parsed.getTime()) ? null : parsed;
+      }
+    }
+    
+    // AM/PM 형식
+    if (format.includes('AM/PM')) {
+      const parts = trimmed.split(' ');
+      if (parts.length >= 3) {
+        const datePart = parts[0];
+        const timePart = parts[1];
+        const ampm = parts[2];
+        
+        const dateComponents = datePart.split('/');
+        if (dateComponents.length === 3) {
+          const [mm, dd, yyyy] = dateComponents;
+          const timeComponents = timePart.split(':');
+          if (timeComponents.length === 3) {
+            let [hh, min, ss] = timeComponents.map(Number);
+            if (ampm.toUpperCase() === 'PM' && hh !== 12) hh += 12;
+            if (ampm.toUpperCase() === 'AM' && hh === 12) hh = 0;
+            
+            const dateStr = `${yyyy}-${mm.toString().padStart(2, '0')}-${dd.toString().padStart(2, '0')}`;
+            const timeStr = `${hh.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}`;
+            const parsed = new Date(`${dateStr} ${timeStr}`);
+            return isNaN(parsed.getTime()) ? null : parsed;
+          }
+        }
+      }
+    }
+    
+    // 한국식 형식
+    if (format.includes('년') && format.includes('월') && format.includes('일')) {
+      let match;
+      if (format.includes('HH:mm:ss')) {
+        match = trimmed.match(/^(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\s+(\d{2}):(\d{2}):(\d{2})$/);
+        if (match) {
+          const [, yyyy, mm, dd, hh, min, ss] = match;
+          const dateStr = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')} ${hh}:${min}:${ss}`;
+          const parsed = new Date(dateStr);
+          return isNaN(parsed.getTime()) ? null : parsed;
+        }
+      } else {
+        match = trimmed.match(/^(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일$/);
+        if (match) {
+          const [, yyyy, mm, dd] = match;
+          const parsed = new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`);
+          return isNaN(parsed.getTime()) ? null : parsed;
+        }
+      }
+    }
+    
+    // 자연어 형식 (MMM DD, YYYY 등)
+    const parsed = new Date(trimmed);
+    return isNaN(parsed.getTime()) ? null : parsed;
+    
+  } catch (e) {
+    return null;
+  }
+};
+
+const formatDateToTarget = (date, targetFormat) => {
+  if (!date || isNaN(date.getTime())) return '';
+  
+  // 커스텀 포맷 처리
+  if (targetFormat === 'custom') {
+    return formatDateCustom(date, customFormat.value);
+  }
+  
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  
+  const mm = month.toString().padStart(2, '0');
+  const dd = day.toString().padStart(2, '0');
+  const HH = hours.toString().padStart(2, '0');
+  const min = minutes.toString().padStart(2, '0');
+  const ss = seconds.toString().padStart(2, '0');
+  
+  switch (targetFormat) {
+    case 'YYYY-MM-DD':
+      return `${year}-${mm}-${dd}`;
+    case 'YYYY-MM-DD HH:mm:ss':
+      return `${year}-${mm}-${dd} ${HH}:${min}:${ss}`;
+    case 'MM/DD/YYYY':
+      return `${mm}/${dd}/${year}`;
+    case 'MM/DD/YYYY HH:mm:ss':
+      return `${mm}/${dd}/${year} ${HH}:${min}:${ss}`;
+    case 'DD/MM/YYYY':
+      return `${dd}/${mm}/${year}`;
+    case 'DD/MM/YYYY HH:mm:ss':
+      return `${dd}/${mm}/${year} ${HH}:${min}:${ss}`;
+    case 'YYYY년 MM월 DD일':
+      return `${year}년 ${month}월 ${day}일`;
+    case 'YYYY년 MM월 DD일 HH:mm:ss':
+      return `${year}년 ${month}월 ${day}일 ${HH}:${min}:${ss}`;
+    case 'YYYY.MM.DD':
+      return `${year}.${mm}.${dd}`;
+    case 'YYYY.MM.DD HH:mm:ss':
+      return `${year}.${mm}.${dd} ${HH}:${min}:${ss}`;
+    case 'MMM DD, YYYY':
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    case 'MMM DD, YYYY HH:mm:ss':
+      const dateStr = date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      return `${dateStr} ${HH}:${min}:${ss}`;
+    case 'timestamp':
+      return date.getTime().toString();
+    case 'unix':
+      return Math.floor(date.getTime() / 1000).toString();
+    default:
+      return `${year}-${mm}-${dd}`;
+  }
+};
+
+// 커스텀 포맷 처리 함수
+const formatDateCustom = (date, pattern) => {
+  if (!pattern) return '';
+  
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  
+  // 12시간제 시간
+  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+  let result = pattern;
+  
+  // 연도
+  result = result.replace(/YYYY/g, year.toString());
+  result = result.replace(/YY/g, year.toString().slice(-2));
+  
+  // 월
+  result = result.replace(/MM/g, month.toString().padStart(2, '0'));
+  result = result.replace(/M/g, month.toString());
+  
+  // 일
+  result = result.replace(/DD/g, day.toString().padStart(2, '0'));
+  result = result.replace(/D/g, day.toString());
+  
+  // 24시간제 시간
+  result = result.replace(/HH/g, hours.toString().padStart(2, '0'));
+  result = result.replace(/H/g, hours.toString());
+  
+  // 12시간제 시간
+  result = result.replace(/hh/g, hours12.toString().padStart(2, '0'));
+  result = result.replace(/h/g, hours12.toString());
+  
+  // 분
+  result = result.replace(/mm/g, minutes.toString().padStart(2, '0'));
+  result = result.replace(/m/g, minutes.toString());
+  
+  // 초
+  result = result.replace(/ss/g, seconds.toString().padStart(2, '0'));
+  result = result.replace(/s/g, seconds.toString());
+  
+  // AM/PM
+  result = result.replace(/A/g, ampm);
+  result = result.replace(/a/g, ampm.toLowerCase());
+  
+  return result;
+};
+
+const onBatchDateInputChange = () => {
+  if (!batchDateInput.value.trim()) {
+    detectedFormat.value = '';
+    validCount.value = 0;
+    invalidCount.value = 0;
+    batchDateOutput.value = '';
+    return;
+  }
+  
+  const lines = batchDateInput.value.split('\n').filter(line => line.trim());
+  if (lines.length === 0) return;
+  
+  // 첫 번째 유효한 라인으로 포맷 감지
+  let detected = '';
+  for (const line of lines) {
+    detected = detectDateFormat(line);
+    if (detected) break;
+  }
+  
+  detectedFormat.value = detected || '알 수 없음';
+  
+  // 유효성 검사
+  let valid = 0;
+  let invalid = 0;
+  
+  for (const line of lines) {
+    const format = detectDateFormat(line);
+    const parsed = format ? parseDateString(line, format) : null;
+    if (parsed) {
+      valid++;
+    } else {
+      invalid++;
+    }
+  }
+  
+  validCount.value = valid;
+  invalidCount.value = invalid;
+  
+  // 자동 변환
+  convertBatchDates();
+};
+
+const convertBatchDates = () => {
+  if (!batchDateInput.value.trim()) {
+    batchDateOutput.value = '';
+    return;
+  }
+  
+  const lines = batchDateInput.value.split('\n');
+  const results = [];
+  
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      results.push('');
+      continue;
+    }
+    
+    const format = detectDateFormat(trimmed);
+    const parsed = format ? parseDateString(trimmed, format) : null;
+    
+    if (parsed) {
+      results.push(formatDateToTarget(parsed, targetFormat.value));
+    } else {
+      results.push('오류: ' + trimmed);
+    }
+  }
+  
+  batchDateOutput.value = results.join('\n');
+};
+
+const copyBatchResult = async () => {
+  try {
+    await navigator.clipboard.writeText(batchDateOutput.value);
+    // 간단한 피드백 (토스트 알림 대신)
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = '복사됨!';
+    button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+    button.classList.add('bg-green-500');
+    
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove('bg-green-500');
+      button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+    }, 1000);
+  } catch (err) {
+    console.error('복사 실패:', err);
+    alert('복사에 실패했습니다. 수동으로 선택해서 복사해주세요.');
+  }
+};
 
 // 날짜 입력, 일시 입력, 타임스탬프 입력의 기본값을 현재로 설정
 // 아래 watchEffect는 페이지 진입시 타임스탬프 변환을 자동으로 실행
