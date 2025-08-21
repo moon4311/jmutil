@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <h2 class="text-xl font-bold mb-2">문자열 저장</h2>
-        <p class="text-red-600 text-xs mb-4 font-medium">서버에 저장되지 않고, 컴퓨터에 암호화 되어 저장 됩니다.</p>
+        <p class="text-red-600 text-xs mb-4 font-medium">서버에 저장되지 않고, 사용자 기기에 암호화 되어 저장 됩니다.</p>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- 일반 텍스트 영역 -->
             <div>
@@ -248,8 +248,20 @@ function copyDecryptedPwValue(key, encVal) {
     showNotification(DECRYPT_FAIL_MESSAGE);
     return;
   }
-  navigator.clipboard.writeText(decrypted);
-  showNotification(COPY_SUCCESS_MESSAGE);
+  
+  // 모바일 브라우저 호환성을 위한 클립보드 복사
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    // 현대적인 Clipboard API 사용
+    navigator.clipboard.writeText(decrypted).then(() => {
+      showNotification(COPY_SUCCESS_MESSAGE);
+    }).catch(() => {
+      // Clipboard API 실패 시 대체 방법 사용
+      fallbackCopyTextToClipboard(decrypted);
+    });
+  } else {
+    // Clipboard API를 지원하지 않는 경우 대체 방법 사용
+    fallbackCopyTextToClipboard(decrypted);
+  }
 }
 function removePwItem(k) {
   localStorage.removeItem(k);
@@ -257,8 +269,59 @@ function removePwItem(k) {
 }
 
 function copyValue(val) {
-  navigator.clipboard.writeText(val);
-  showNotification(COPY_SUCCESS_MESSAGE);
+  // 모바일 브라우저 호환성을 위한 클립보드 복사 함수
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    // 현대적인 Clipboard API 사용
+    navigator.clipboard.writeText(val).then(() => {
+      showNotification(COPY_SUCCESS_MESSAGE);
+    }).catch(() => {
+      // Clipboard API 실패 시 대체 방법 사용
+      fallbackCopyTextToClipboard(val);
+    });
+  } else {
+    // Clipboard API를 지원하지 않는 경우 대체 방법 사용
+    fallbackCopyTextToClipboard(val);
+  }
+}
+
+function fallbackCopyTextToClipboard(text) {
+  // 임시 textarea 요소 생성
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  
+  // 화면에 보이지 않게 설정
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  textArea.style.top = '-999999px';
+  textArea.style.opacity = '0';
+  textArea.style.pointerEvents = 'none';
+  
+  document.body.appendChild(textArea);
+  
+  // iOS 호환성을 위한 설정
+  textArea.focus();
+  textArea.select();
+  
+  // 텍스트 범위 선택 (모바일 브라우저 호환성)
+  if (textArea.setSelectionRange) {
+    textArea.setSelectionRange(0, 99999);
+  }
+  
+  try {
+    // execCommand를 사용하여 복사 실행
+    const successful = document.execCommand('copy');
+    if (successful) {
+      showNotification(COPY_SUCCESS_MESSAGE);
+    } else {
+      showNotification('복사에 실패했습니다.');
+    }
+  } catch (err) {
+    console.error('복사 실패:', err);
+    showNotification('복사에 실패했습니다.');
+  } finally {
+    // 임시 요소 제거
+    document.body.removeChild(textArea);
+  }
 }
 
 onMounted(() => {
