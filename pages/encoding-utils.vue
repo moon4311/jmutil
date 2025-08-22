@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="text-xl font-bold mb-4">인코딩/디코딩 유틸리티</h2>
+    <h2 class="text-xl font-bold mb-4">인코딩/디코딩</h2>
     <v-select
       v-model="encodeType"
       :items="encodeTypes"
