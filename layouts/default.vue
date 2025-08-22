@@ -20,9 +20,9 @@
                     <span class="font-bold text-xl text-gray-800">JmUtil</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    <span class="text-gray-600">관리자</span>
+                    <span class="text-gray-600">해방</span>
                     <v-avatar size="32">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" />
+                    <img src="/assets/img/jm.png" alt="User" />
                     </v-avatar>
                 </div>
                 </header>
