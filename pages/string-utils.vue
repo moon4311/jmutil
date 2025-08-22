@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="text-xl font-bold mb-4">문자열 유틸리티</h2>
+    <h2 class="text-xl font-bold mb-4">문자열 변환</h2>
     <div class="mb-4">
       <v-text-field
         v-model="input"
