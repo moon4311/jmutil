@@ -23,7 +23,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 좌측 컬럼 -->
       <div class="space-y-6">
-        <GroupPanel v-model="showFormatting" title="JSON 포맷팅 & 압축" color="blue">
+        <GroupPanel v-model="accordionStates.showFormatting" title="JSON 포맷팅 & 압축" color="blue">
           <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <v-btn 
@@ -59,7 +59,7 @@
 
       <!-- 우측 컬럼 -->
       <div class="space-y-6">
-        <GroupPanel v-model="showCsvConversion" title="CSV 변환 & 다운로드" color="green">
+        <GroupPanel v-model="accordionStates.showCsvConversion" title="CSV 변환 & 다운로드" color="green">
           <div class="space-y-4">
             <div class="flex flex-col gap-3">
               <v-btn 
@@ -98,26 +98,39 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
-import { formatJson, minifyJson, jsonToCsv, generateCsvFileName, isValidJson } from '@/utils/JsonUtil.js';
+import { formatJson, minifyJson, jsonToCsv, generateCsvFileName } from '@/utils/JsonUtil.js';
 import GroupPanel from '@/components/GroupPanel.vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
+import { useAccordion } from '@/composables/useAccordion.js';
+import { useValidation } from '@/composables/useValidation.js';
 
 const input = ref('');
 const formattedResult = ref('');
 const csvPreview = ref('');
-const showFormatting = ref(true);
-const showCsvConversion = ref(true);
+
+// 아코디언 상태 관리
+const { accordionStates } = useAccordion({
+  showFormatting: true,
+  showCsvConversion: true
+});
+
+// 유효성 검사
+const { validateJson } = useValidation();
 
 // JSON 유효성 검사
-const isValid = computed(() => {
-  if (!input.value.trim()) return false;
-  return isValidJson(input.value);
+const validationResult = computed(() => {
+  if (!input.value.trim()) {
+    return { isValid: false, error: '', parsed: null };
+  }
+  return validateJson(input.value);
 });
+
+const isValid = computed(() => validationResult.value.isValid);
 
 const validationMessage = computed(() => {
   if (!input.value.trim()) return '';
-  if (isValid.value) return '✓ 유효한 JSON 형식입니다.';
-  return '✗ JSON 형식이 올바르지 않습니다.';
+  if (validationResult.value.isValid) return '✓ 유효한 JSON 형식입니다.';
+  return `✗ ${validationResult.value.error}`;
 });
 
 const onInputChange = () => {

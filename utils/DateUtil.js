@@ -1,7 +1,10 @@
 // DateUtil.js - 날짜/타임스탬프 변환 공통 유틸리티
+import { pad2 } from './CommonUtil.js';
 
 /**
  * YYYY-MM-DD 포맷 문자열이 유효한지 검사
+ * @param {string} str - 검증할 날짜 문자열
+ * @returns {boolean} 유효성 여부
  */
 export function isValidDate(str) {
   const m = str.match(/^\d{4}-\d{2}-\d{2}$/);
@@ -12,6 +15,8 @@ export function isValidDate(str) {
 
 /**
  * HH:mm:ss 포맷 문자열이 유효한지 검사
+ * @param {string} str - 검증할 시간 문자열
+ * @returns {boolean} 유효성 여부
  */
 export function isValidTime(str) {
   const m = str.match(/^(\d{2}):(\d{2}):(\d{2})$/);
@@ -22,6 +27,9 @@ export function isValidTime(str) {
 
 /**
  * 날짜+시간이 유효한지 검사
+ * @param {string} date - 날짜 문자열
+ * @param {string} time - 시간 문자열
+ * @returns {boolean} 유효성 여부
  */
 export function isValidDatetime(date, time) {
   return isValidDate(date) && isValidTime(time);
@@ -29,20 +37,32 @@ export function isValidDatetime(date, time) {
 
 /**
  * Date 객체를 YYYY-MM-DD 문자열로 변환
+ * @param {Date} d - 변환할 Date 객체
+ * @returns {string} YYYY-MM-DD 형식 문자열
  */
 export function formatDate(d) {
   if (!(d instanceof Date) || isNaN(d)) return '';
-  const pad = n => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
 /**
  * Date 객체를 YYYY-MM-DD HH:mm:ss 문자열로 변환
+ * @param {Date} d - 변환할 Date 객체
+ * @returns {string} YYYY-MM-DD HH:mm:ss 형식 문자열
  */
 export function formatDateTime(d) {
   if (!(d instanceof Date) || isNaN(d)) return '';
-  const pad = n => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
+/**
+ * Date 객체를 HH:mm:ss 문자열로 변환
+ * @param {Date} d - 변환할 Date 객체
+ * @returns {string} HH:mm:ss 형식 문자열
+ */
+export function formatTime(d) {
+  if (!(d instanceof Date) || isNaN(d)) return '';
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
 }
 
 /**

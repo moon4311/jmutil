@@ -1,7 +1,11 @@
 // JsonUtil.js - JSON 관련 유틸리티 함수들
+import { pad2 } from './CommonUtil.js';
 
 /**
  * JSON 문자열을 포맷팅 (들여쓰기 적용)
+ * @param {string} jsonStr - 포맷팅할 JSON 문자열
+ * @returns {string} 포맷팅된 JSON 문자열
+ * @throws {Error} JSON 파싱 오류 시 예외 발생
  */
 export function formatJson(jsonStr) {
   try {
@@ -124,15 +128,16 @@ export function jsonToCsv(jsonStr) {
 
 /**
  * 현재 날짜/시간 기반 파일명 생성 (YYYYMMDDHHMMSS.csv)
+ * @returns {string} YYYYMMDDHHMMSS.csv 형식의 파일명
  */
 export function generateCsvFileName() {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const month = pad2(now.getMonth() + 1);
+  const day = pad2(now.getDate());
+  const hours = pad2(now.getHours());
+  const minutes = pad2(now.getMinutes());
+  const seconds = pad2(now.getSeconds());
   
   return `${year}${month}${day}${hours}${minutes}${seconds}.csv`;
 }

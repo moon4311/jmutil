@@ -5,38 +5,91 @@
       :value="modelValue"
       readonly
       class="copy-input"
+      :placeholder="placeholder"
       @focus="$event.target.select()"
     />
-    <button class="copy-btn" @click="copyToClipboard">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M16 1a1 1 0 0 1 1 1v2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V2a1 1 0 0 1 1-1h6Zm3 5h-2v2a1 1 0 0 1-2 0V6H7v14h12V6Zm-4-2h-4v2h4V4Z"/></svg>
+    <button 
+      class="copy-btn" 
+      :disabled="!modelValue"
+      :title="copyTooltip"
+      @click="copyToClipboard"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M16 1a1 1 0 0 1 1 1v2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V2a1 1 0 0 1 1-1h6Zm3 5h-2v2a1 1 0 0 1-2 0V6H7v14h12V6Zm-4-2h-4v2h4V4Z"/>
+      </svg>
     </button>
-  <!-- Notification handled by Notification API -->
   </div>
 </template>
 
 <script setup>
-import { ref, getCurrentInstance } from 'vue';
+/**
+ * 복사 가능한 읽기 전용 입력 컴포넌트
+ * @component CopyInput
+ */
+
+import { ref, computed } from 'vue';
+
+/**
+ * 컴포넌트 Props
+ * @typedef {Object} Props
+ * @property {string|number} modelValue - 표시할 값 (필수)
+ * @property {string} [placeholder=''] - 플레이스홀더 텍스트
+ * @property {string} [copyMessage='복사되었습니다'] - 복사 완료 메시지
+ */
 const props = defineProps({
   modelValue: {
     type: [String, Number],
     required: true
+  },
+  placeholder: {
+    type: String,
+    default: ''
+  },
+  copyMessage: {
+    type: String,
+    default: '복사되었습니다'
   }
 });
-const emit = defineEmits(['update:modelValue']);
+
 const inputRef = ref(null);
-const instance = getCurrentInstance();
 
+/**
+ * 복사 버튼 툴팁 텍스트
+ */
+const copyTooltip = computed(() => {
+  return props.modelValue ? '클립보드에 복사' : '복사할 내용이 없습니다';
+});
 
+/**
+ * 토스트 알림 표시 함수
+ * @param {string} message - 표시할 메시지
+ */
 function showNotification(message) {
-  // Emit a global event for toast notification
   window.dispatchEvent(new CustomEvent('toast', { detail: message }));
 }
 
-function copyToClipboard() {
-  if (inputRef.value) {
-    inputRef.value.select();
-    document.execCommand('copy');
-    showNotification('복사되었습니다');
+/**
+ * 클립보드 복사 함수 (현대적인 API 사용)
+ * @async
+ */
+async function copyToClipboard() {
+  if (!props.modelValue) return;
+
+  try {
+    // 현대적인 Clipboard API 사용
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(String(props.modelValue));
+    } else {
+      // 폴백: 레거시 방식
+      if (inputRef.value) {
+        inputRef.value.select();
+        document.execCommand('copy');
+      }
+    }
+    showNotification(props.copyMessage);
+  } catch (error) {
+    console.error('복사 실패:', error);
+    showNotification('복사에 실패했습니다');
   }
 }
 </script>

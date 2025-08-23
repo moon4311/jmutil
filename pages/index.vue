@@ -80,7 +80,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">일반텍스트, 암호 등</p>
-          <NuxtLink to="/encoding-utils" class="inline-block w-full bg-indigo-500 text-white text-center py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
+          <NuxtLink to="/localstorage-utils" class="inline-block w-full bg-indigo-500 text-white text-center py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>

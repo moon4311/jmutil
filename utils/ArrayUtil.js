@@ -2,6 +2,8 @@
 
 /**
  * 배열에서 중복 요소 제거
+ * @param {Array} arr - 처리할 배열
+ * @returns {Array} 중복이 제거된 새 배열
  */
 export function unique(arr) {
   return [...new Set(arr)];
@@ -9,6 +11,9 @@ export function unique(arr) {
 
 /**
  * 중첩 배열을 평탄화
+ * @param {Array} arr - 평탄화할 중첩 배열
+ * @param {number} [depth=Infinity] - 평탄화할 깊이 (기본값: 무한대)
+ * @returns {Array} 평탄화된 새 배열
  */
 export function flatten(arr, depth = Infinity) {
   if (depth === 1) {
@@ -19,6 +24,8 @@ export function flatten(arr, depth = Infinity) {
 
 /**
  * 배열을 무작위로 섞기 (Fisher-Yates 알고리즘)
+ * @param {Array} arr - 섞을 배열
+ * @returns {Array} 섞인 새 배열
  */
 export function shuffle(arr) {
   const shuffled = [...arr];
