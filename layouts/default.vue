@@ -17,7 +17,7 @@
                     <v-btn icon class="md:hidden" @click="sidebarOpen = true">
                     <v-icon>mdi-menu</v-icon>
                     </v-btn>
-                    <span class="font-bold text-xl text-gray-800">JmUtil</span>
+                    <span class="font-bold text-xl text-gray-800">web-util</span>
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="text-gray-600">해방</span>

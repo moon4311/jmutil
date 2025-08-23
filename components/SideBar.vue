@@ -1,7 +1,7 @@
 <template>
   <aside :class="['fixed z-40 md:static md:translate-x-0 transition-transform duration-200', sidebarOpen ? 'translate-x-0' : '-translate-x-full', 'w-64 bg-white shadow-md flex flex-col h-full']">
     <div class="h-16 flex items-center justify-between border-b px-4">
-      <span class="font-bold text-lg">jmUtil</span>
+      <span class="font-bold text-lg">web-util</span>
       <v-btn icon class="block md:hidden" @click="$emit('close')">
         <v-icon>mdi-close</v-icon>
       </v-btn>
@@ -12,38 +12,33 @@
         <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-home">홈</v-btn>
       </NuxtLink>
       <hr />
-      <!-- 기본 유틸 그룹 (아코디언) -->
       <div>
         <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="strOpen = !strOpen">
           <v-icon size="18">{{ strOpen ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon>
-          <span class="ml-1">문자열 유틸</span>
+          <span class="ml-1">문자열</span>
         </div>
         <div class="space-y-2 pl-5" v-show="strOpen">
           <NuxtLink to="/string-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-alphabetical">변환</v-btn>
-          </NuxtLink>
-          <NuxtLink to="/encoding-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-tags">인코딩/디코딩</v-btn>
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-alphabetical">문자열 변환</v-btn>
           </NuxtLink>
           <NuxtLink to="/localstorage-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-database">저장</v-btn>
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-database">문자열 저장</v-btn>
           </NuxtLink>
-        </div>
-      </div>
-      <hr />
-      <!-- 기본 유틸 그룹 (아코디언) -->
-      <div>
-        <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="basicOpen = !basicOpen">
-          <v-icon size="18">{{ basicOpen ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon>
-          <span class="ml-1">기본 유틸</span>
-        </div>
-        <div class="space-y-2 pl-5" v-show="basicOpen">
           <NuxtLink to="/number-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-numeric">숫자</v-btn>
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-numeric">숫자 변환</v-btn>
           </NuxtLink>
           <NuxtLink to="/date-utils" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-calendar">날짜/시간</v-btn>
           </NuxtLink>
+        </div>
+      </div>
+      <hr />
+      <div>
+        <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="basicOpen = !basicOpen">
+          <v-icon size="18">{{ basicOpen ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon>
+          <span class="ml-1">객체</span>
+        </div>
+        <div class="space-y-2 pl-5" v-show="basicOpen">
           <NuxtLink to="/json-utils" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-json">JSON/객체</v-btn>
           </NuxtLink>

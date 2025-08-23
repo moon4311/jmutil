@@ -8,7 +8,7 @@
       <v-textarea
         v-model="input"
         placeholder="JSON 문자열을 입력하세요"
-        rows="8"
+        rows="6"
         variant="solo-filled"
         density="comfortable"
         hide-details

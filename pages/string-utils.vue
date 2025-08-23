@@ -2,15 +2,13 @@
   <div>
     <h2 class="text-xl font-bold mb-4">문자열 변환</h2>
     <div class="mb-4">
-      <v-text-field
+      <v-textarea
         v-model="input"
-        label="문자열 입력"
+        placeholder="문자열을 입력하세요"
+        rows="5"
         variant="solo-filled"
         density="comfortable"
         hide-details
-        class="w-full"
-        placeholder="문자열을 입력하세요"
-        floating-label
       />
     </div>
 
@@ -41,12 +39,15 @@
               <label class="block mb-1 font-semibold">LPad 결과</label>
               <div class="flex gap-2 mb-1">
                 <v-text-field 
-                  v-model="lpadLen" 
+                  v-model.number="lpadLen" 
                   variant="solo-filled"
                   density="comfortable"
                   hide-details
                   type="number" 
+                  min="0"
+                  max="100"
                   label="길이" 
+                  placeholder="10"
                   style="max-width:80px" 
                 />
                 <v-text-field 
@@ -55,6 +56,8 @@
                   density="comfortable"
                   hide-details
                   label="채울문자" 
+                  placeholder="0"
+                  maxlength="1"
                   style="max-width:80px" 
                 />
               </div>
@@ -64,12 +67,15 @@
               <label class="block mb-1 font-semibold">RPad 결과</label>
               <div class="flex gap-2 mb-1">
                 <v-text-field 
-                  v-model="rpadLen" 
+                  v-model.number="rpadLen" 
                   variant="solo-filled"
                   density="comfortable"
                   hide-details
                   type="number" 
+                  min="0"
+                  max="100"
                   label="길이" 
+                  placeholder="10"
                   style="max-width:80px" 
                 />
                 <v-text-field 
@@ -78,6 +84,8 @@
                   density="comfortable"
                   hide-details
                   label="채울문자" 
+                  placeholder=" "
+                  maxlength="1"
                   style="max-width:80px" 
                 />
               </div>
@@ -101,6 +109,30 @@
             </div>
           </div>
         </GroupPanel>
+
+        <GroupPanel v-model="showOrange" title="인코딩/디코딩" color="orange">
+          <div class="space-y-4">
+            <div class="mb-4">
+              <label class="block mb-1 font-semibold">인코딩 방식</label>
+              <v-select
+                v-model="encodeType"
+                :items="encodeTypes"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">인코딩 결과</label>
+              <CopyTextArea :model-value="encodedResult" rows="3" />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">디코딩 결과</label>
+              <CopyTextArea :model-value="decodedResult" rows="3" />
+            </div>
+          </div>
+        </GroupPanel>
       </div>
     </div>
   </div>
@@ -108,14 +140,29 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
-import { toCamelCase, toSnakeCase, lpad, rpad } from '@/utils/StringUtil.js';
+import { 
+  toCamelCase, 
+  toSnakeCase, 
+  lpad, 
+  rpad,
+  encodeBase64,
+  decodeBase64,
+  encodeURL,
+  decodeURL,
+  encodeHex,
+  decodeHex,
+  encodeUnicode,
+  decodeUnicode
+} from '@/utils/StringUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
+import CopyTextArea from '@/components/CopyTextArea.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
 
 const input = ref('');
 const showBlue = ref(true);
 const showGreen = ref(true);
 const showPurple = ref(true);
+const showOrange = ref(true);
 
 const upperResult = computed(() => input.value.toUpperCase());
 const lowerResult = computed(() => input.value.toLowerCase());
@@ -127,8 +174,61 @@ const snakeResult = computed(() => toSnakeCase(input.value));
 const lpadLen = ref(10);
 const lpadChar = ref('0');
 const rpadLen = ref(10);
-const rpadChar = ref(' ');
+const rpadChar = ref('0');
 
-const lpadResult = computed(() => lpad(input.value, lpadLen.value, lpadChar.value));
-const rpadResult = computed(() => rpad(input.value, rpadLen.value, rpadChar.value));
+const lpadResult = computed(() => {
+  const len = parseInt(lpadLen.value, 10);
+  const char = lpadChar.value || '0';
+  if (isNaN(len) || len <= 0) return input.value;
+  return lpad(input.value, len, char);
+});
+
+const rpadResult = computed(() => {
+  const len = parseInt(rpadLen.value, 10);
+  const char = rpadChar.value || ' ';
+  if (isNaN(len) || len <= 0) return input.value;
+  return rpad(input.value, len, char);
+});
+
+// 인코딩/디코딩 설정
+const encodeTypes = [
+  { title: 'Base64', value: 'base64' },
+  { title: 'URL', value: 'url' },
+  { title: 'HEX', value: 'hex' },
+  { title: 'Unicode', value: 'unicode' },
+];
+
+const encodeType = ref('base64');
+
+const encodedResult = computed(() => {
+  if (!input.value) return '';
+  
+  try {
+    switch (encodeType.value) {
+      case 'base64': return encodeBase64(input.value);
+      case 'url': return encodeURL(input.value);
+      case 'hex': return encodeHex(input.value);
+      case 'unicode': return encodeUnicode(input.value);
+      default: return '';
+    }
+  } catch (error) {
+    return error.message || '인코딩 오류';
+  }
+});
+
+const decodedResult = computed(() => {
+  if (!input.value) return '';
+  
+  try {
+    switch (encodeType.value) {
+      case 'base64': return decodeBase64(input.value);
+      case 'url': return decodeURL(input.value);
+      case 'hex': return decodeHex(input.value);
+      case 'unicode': return decodeUnicode(input.value);
+      default: return '';
+    }
+  } catch (error) {
+    return error.message || '디코딩 오류';
+  }
+});
 </script>

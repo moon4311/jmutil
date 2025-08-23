@@ -74,10 +74,9 @@
               </div>
               <div class="flex items-end">
                 <v-btn 
-                  color="success" 
+                  color="green" 
                   variant="elevated"
                   size="large"
-                  prepend-icon="mdi-dice-6"
                   @click="generateRandomNumbers"
                 >
                   생성

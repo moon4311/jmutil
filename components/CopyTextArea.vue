@@ -3,8 +3,8 @@
     <textarea
       ref="textareaRef"
       :value="modelValue"
+      :rows="rows"
       readonly
-      rows="10"
       class="copy-textarea"
       @focus="$event.target.select()"
     ></textarea>
@@ -20,6 +20,10 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: true
+  },
+  rows: {
+    type: [String, Number],
+    default: 10
   }
 });
 const textareaRef = ref(null);
