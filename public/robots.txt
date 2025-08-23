@@ -15,3 +15,7 @@ Allow: /
 # 빙봇을 위한 설정
 User-agent: Bingbot
 Allow: /
+
+# 애드센스
+User-agent: Mediapartners-Google
+Allow: /
