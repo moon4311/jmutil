@@ -35,7 +35,8 @@ export default defineNuxtConfig({
         { property: 'og:url', content: 'http://www.web-util.com' },
         { name: 'robots', content: 'index, follow' },
         { name: 'naver-site-verification', content: '3322ede285ccfd87c679389722eac0eb8b41e0e9' },
-        { name: 'google-site-verification', content: 'RK1XMQK_sHYw4ITO1qX8JvYERZqe_RTUL9ylIjivbMw' }
+        { name: 'google-site-verification', content: 'RK1XMQK_sHYw4ITO1qX8JvYERZqe_RTUL9ylIjivbMw' },
+        { name: 'google-adsense-account', content: 'ca-pub-8305610158424209' }
       ],
       link: [
         { rel: 'canonical', href: 'http://www.web-util.com' }
