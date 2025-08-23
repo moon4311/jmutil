@@ -34,7 +34,7 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: 'http://www.web-util.com' },
         { name: 'robots', content: 'index, follow' },
-        { name: 'naver-site-verification', content: 'your-naver-verification-code' },
+        { name: 'naver-site-verification', content: '3322ede285ccfd87c679389722eac0eb8b41e0e9' },
         { name: 'google-site-verification', content: 'RK1XMQK_sHYw4ITO1qX8JvYERZqe_RTUL9ylIjivbMw' }
       ],
       link: [
