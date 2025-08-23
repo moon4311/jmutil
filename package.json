@@ -7,11 +7,13 @@
     "dev": "nuxt dev --host 0.0.0.0 --port 80",
     "build": "nuxt build",
     "preview": "nuxt preview --host 0.0.0.0 --port 80",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate:sitemap": "nuxt generate"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@nuxtjs/gtm": "^2.4.0",
+    "@nuxtjs/sitemap": "^7.4.3",
     "crypto-js": "^4.2.0",
     "nuxt": "^3.13.0",
     "qrcode": "^1.5.4",
