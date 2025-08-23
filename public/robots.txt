@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # 구글, 네이버 등 검색 엔진을 위한 sitemap 경로
-Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: http://www.web-util/sitemap.xml
 
 # 네이버 웹마스터도구를 위한 설정
 User-agent: Yeti
