@@ -14,56 +14,95 @@
       />
     </div>
 
-    <GroupPanel v-model="showBlue" title="대/소문자/Trim 변환" color="blue">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block mb-1 font-semibold">대문자 결과</label>
-          <CopyInput :model-value="upperResult" />
-        </div>
-        <div>
-          <label class="block mb-1 font-semibold">소문자 결과</label>
-          <CopyInput :model-value="lowerResult" />
-        </div>
-        <div>
-          <label class="block mb-1 font-semibold">Trim 결과</label>
-          <CopyInput :model-value="trimResult" />
-        </div>
-      </div>
-    </GroupPanel>
-
-    <GroupPanel v-model="showGreen" title="표기법 변환" color="green">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block mb-1 font-semibold">카멜표기 결과</label>
-          <CopyInput :model-value="camelResult" />
-        </div>
-        <div>
-          <label class="block mb-1 font-semibold">스네이크표기 결과</label>
-          <CopyInput :model-value="snakeResult" />
-        </div>
-      </div>
-    </GroupPanel>
-
-    <GroupPanel v-model="showPurple" title="패딩(LPad/RPad)" color="purple">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block mb-1 font-semibold">LPad 결과</label>
-          <div class="flex gap-2 mb-1">
-            <v-text-field v-model="lpadLen" type="number" label="길이" style="max-width:80px" density="compact" hide-details />
-            <v-text-field v-model="lpadChar" label="채울문자" style="max-width:80px" density="compact" hide-details />
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- 좌측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showBlue" title="대/소문자/Trim 변환" color="blue">
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">대문자 결과</label>
+              <CopyInput :model-value="upperResult" />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">소문자 결과</label>
+              <CopyInput :model-value="lowerResult" />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">Trim 결과</label>
+              <CopyInput :model-value="trimResult" />
+            </div>
           </div>
-          <CopyInput :model-value="lpadResult" />
-        </div>
-        <div>
-          <label class="block mb-1 font-semibold">RPad 결과</label>
-          <div class="flex gap-2 mb-1">
-            <v-text-field v-model="rpadLen" type="number" label="길이" style="max-width:80px" density="compact" hide-details />
-            <v-text-field v-model="rpadChar" label="채울문자" style="max-width:80px" density="compact" hide-details />
+        </GroupPanel>
+
+        <GroupPanel v-model="showPurple" title="패딩(LPad/RPad)" color="purple">
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">LPad 결과</label>
+              <div class="flex gap-2 mb-1">
+                <v-text-field 
+                  v-model="lpadLen" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number" 
+                  label="길이" 
+                  style="max-width:80px" 
+                />
+                <v-text-field 
+                  v-model="lpadChar" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  label="채울문자" 
+                  style="max-width:80px" 
+                />
+              </div>
+              <CopyInput :model-value="lpadResult" />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">RPad 결과</label>
+              <div class="flex gap-2 mb-1">
+                <v-text-field 
+                  v-model="rpadLen" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number" 
+                  label="길이" 
+                  style="max-width:80px" 
+                />
+                <v-text-field 
+                  v-model="rpadChar" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  label="채울문자" 
+                  style="max-width:80px" 
+                />
+              </div>
+              <CopyInput :model-value="rpadResult" />
+            </div>
           </div>
-          <CopyInput :model-value="rpadResult" />
-        </div>
+        </GroupPanel>
       </div>
-    </GroupPanel>
+
+      <!-- 우측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showGreen" title="표기법 변환" color="green">
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">카멜표기 결과</label>
+              <CopyInput :model-value="camelResult" />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">스네이크표기 결과</label>
+              <CopyInput :model-value="snakeResult" />
+            </div>
+          </div>
+        </GroupPanel>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>

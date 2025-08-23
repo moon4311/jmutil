@@ -4,241 +4,286 @@
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
-      <!-- 중복 제거 -->
-      <GroupPanel v-model="showUnique" title="중복 요소 제거" color="blue">
-        <div v-show="showUnique" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">입력 배열 (쉼표로 구분)</label>
-            <textarea
-              v-model="uniqueInput"
-              @input="processUnique"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-20"
-              placeholder="1,2,3,2,4,3,5,1"
-            ></textarea>
-          </div>
-          <CopyTextArea
-            v-model="uniqueResult"
-            label="중복 제거 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
-
-      <!-- 배열 섞기 -->
-      <GroupPanel v-model="showShuffle" title="배열 섞기" color="green">
-        <div v-show="showShuffle" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">입력 배열 (쉼표로 구분)</label>
-            <textarea
-              v-model="shuffleInput"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-20"
-              placeholder="사과,바나나,체리,포도,오렌지"
-            ></textarea>
-          </div>
-          <button
-            @click="processShuffle"
-            class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600"
-          >
-            배열 섞기
-          </button>
-          <CopyTextArea
-            v-model="shuffleResult"
-            label="섞기 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
-
-      <!-- 배열 분할 -->
-      <GroupPanel v-model="showChunk" title="배열 분할" color="purple">
-        <div v-show="showChunk" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">입력 배열 (쉼표로 구분)</label>
-            <textarea
-              v-model="chunkInput"
-              @input="processChunk"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-20"
-              placeholder="1,2,3,4,5,6,7,8,9,10"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">분할 크기</label>
-            <input
-              v-model.number="chunkSize"
-              @input="processChunk"
-              type="number"
-              min="1"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="3"
+      <!-- 좌측 컬럼 -->
+      <div class="space-y-6">
+        <!-- 중복 제거 -->
+        <GroupPanel v-model="showUnique" title="중복 요소 제거" color="blue">
+          <div v-show="showUnique" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">입력 배열 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="uniqueInput"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="3"
+                @input="processUnique"
+                placeholder="1,2,3,2,4,3,5,1"
+              />
+            </div>
+            <CopyTextArea
+              :model-value="uniqueResult"
+              label="중복 제거 결과"
+              placeholder="결과가 여기에 표시됩니다"
             />
           </div>
-          <CopyTextArea
-            v-model="chunkResult"
-            label="분할 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
+        </GroupPanel>
 
-      <!-- 배열 평탄화 -->
-      <GroupPanel v-model="showFlatten" title="배열 평탄화" color="yellow">
-        <div v-show="showFlatten" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">중첩 배열 (JSON 형태로 입력)</label>
-            <textarea
-              v-model="flattenInput"
-              @input="processFlatten"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-20"
-              placeholder="[1, [2, 3], [4, [5, 6]], 7]"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">평탄화 깊이</label>
-            <input
-              v-model.number="flattenDepth"
-              @input="processFlatten"
-              type="number"
-              min="1"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="깊이 (비워두면 무제한)"
+        <!-- 배열 분할 -->
+        <GroupPanel v-model="showChunk" title="배열 분할" color="purple">
+          <div v-show="showChunk" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">입력 배열 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="chunkInput"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="3"
+                @input="processChunk"
+                placeholder="1,2,3,4,5,6,7,8,9,10"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">분할 크기</label>
+              <v-text-field
+                v-model.number="chunkSize"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                type="number"
+                min="1"
+                @input="processChunk"
+                placeholder="3"
+              />
+            </div>
+            <CopyTextArea
+              :model-value="chunkResult"
+              label="분할 결과"
+              placeholder="결과가 여기에 표시됩니다"
             />
           </div>
-          <CopyTextArea
-            v-model="flattenResult"
-            label="평탄화 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
+        </GroupPanel>
 
-      <!-- 교집합 -->
-      <GroupPanel v-model="showIntersection" title="교집합" color="indigo">
-        <div v-show="showIntersection" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">배열 1 (쉼표로 구분)</label>
-            <textarea
-              v-model="intersectionInput1"
-              @input="processIntersection"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-16"
-              placeholder="1,2,3,4,5"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">배열 2 (쉼표로 구분)</label>
-            <textarea
-              v-model="intersectionInput2"
-              @input="processIntersection"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-16"
-              placeholder="3,4,5,6,7"
-            ></textarea>
-          </div>
-          <CopyTextArea
-            v-model="intersectionResult"
-            label="교집합 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
-
-      <!-- 차집합 -->
-      <GroupPanel v-model="showDifference" title="차집합" color="red">
-        <div v-show="showDifference" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">배열 1 (쉼표로 구분)</label>
-            <textarea
-              v-model="differenceInput1"
-              @input="processDifference"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-16"
-              placeholder="1,2,3,4,5"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">배열 2 (쉼표로 구분)</label>
-            <textarea
-              v-model="differenceInput2"
-              @input="processDifference"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-16"
-              placeholder="3,4,5,6,7"
-            ></textarea>
-          </div>
-          <CopyTextArea
-            v-model="differenceResult"
-            label="차집합 결과 (배열1 - 배열2)"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
-
-      <!-- 객체 배열 그룹핑 -->
-      <GroupPanel v-model="showGroupBy" title="객체 배열 그룹핑" color="pink">
-        <div v-show="showGroupBy" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">객체 배열 (JSON 형태로 입력)</label>
-            <textarea
-              v-model="groupByInput"
-              @input="processGroupBy"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-24"
-              placeholder='[{"name":"John","age":25},{"name":"Jane","age":25},{"name":"Bob","age":30}]'
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">그룹핑 키</label>
-            <input
-              v-model="groupByKey"
-              @input="processGroupBy"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="age"
+        <!-- 교집합 -->
+        <GroupPanel v-model="showIntersection" title="교집합" color="indigo">
+          <div v-show="showIntersection" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">배열 1 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="intersectionInput1"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="2"
+                @input="processIntersection"
+                placeholder="1,2,3,4,5"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">배열 2 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="intersectionInput2"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="2"
+                @input="processIntersection"
+                placeholder="3,4,5,6,7"
+              />
+            </div>
+            <CopyTextArea
+              :model-value="intersectionResult"
+              label="교집합 결과"
+              placeholder="결과가 여기에 표시됩니다"
             />
           </div>
-          <CopyTextArea
-            v-model="groupByResult"
-            label="그룹핑 결과"
-            placeholder="결과가 여기에 표시됩니다"
-            :rows="8"
-          />
-        </div>
-      </GroupPanel>
+        </GroupPanel>
 
-      <!-- 배열 상태 체크 -->
-      <GroupPanel v-model="showCheck" title="배열 상태 체크" color="gray">
-        <div v-show="showCheck" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">체크할 배열 (JSON 형태로 입력)</label>
-            <textarea
-              v-model="checkInput"
-              @input="processCheck"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md h-20"
-              placeholder="[]"
-            ></textarea>
+        <!-- 객체 배열 그룹핑 -->
+        <GroupPanel v-model="showGroupBy" title="객체 배열 그룹핑" color="pink">
+          <div v-show="showGroupBy" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">객체 배열 (JSON 형태로 입력)</label>
+              <v-textarea
+                v-model="groupByInput"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="4"
+                @input="processGroupBy"
+                placeholder='[{"name":"John","age":25},{"name":"Jane","age":25},{"name":"Bob","age":30}]'
+              />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">그룹핑 키</label>
+              <v-text-field
+                v-model="groupByKey"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                @input="processGroupBy"
+                placeholder="age"
+              />
+            </div>
+            <CopyTextArea
+              :model-value="groupByResult"
+              label="그룹핑 결과"
+              placeholder="결과가 여기에 표시됩니다"
+              :rows="8"
+            />
           </div>
-          <div class="grid grid-cols-1 gap-2">
-            <div class="p-3 bg-gray-50 rounded-md">
-              <span class="text-sm font-medium">빈 배열 여부:</span>
-              <span class="ml-2" :class="checkResults.isEmpty ? 'text-red-600' : 'text-green-600'">
-                {{ checkResults.isEmpty ? '예' : '아니오' }}
-              </span>
+        </GroupPanel>
+      </div>
+
+      <!-- 우측 컬럼 -->
+      <div class="space-y-6">
+        <!-- 배열 섞기 -->
+        <GroupPanel v-model="showShuffle" title="배열 섞기" color="green">
+          <div v-show="showShuffle" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">입력 배열 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="shuffleInput"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="3"
+                placeholder="사과,바나나,체리,포도,오렌지"
+              />
             </div>
-            <div class="p-3 bg-gray-50 rounded-md">
-              <span class="text-sm font-medium">배열 길이:</span>
-              <span class="ml-2 text-blue-600">{{ checkResults.length }}</span>
+            <v-btn
+              @click="processShuffle"
+              color="success"
+              variant="elevated"
+              size="large"
+              class="w-full"
+              prepend-icon="mdi-shuffle"
+            >
+              배열 섞기
+            </v-btn>
+            <CopyTextArea
+              :model-value="shuffleResult"
+              label="섞기 결과"
+              placeholder="결과가 여기에 표시됩니다"
+            />
+          </div>
+        </GroupPanel>
+
+        <!-- 배열 평탄화 -->
+        <GroupPanel v-model="showFlatten" title="배열 평탄화" color="yellow">
+          <div v-show="showFlatten" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">중첩 배열 (JSON 형태로 입력)</label>
+              <v-textarea
+                v-model="flattenInput"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="3"
+                @input="processFlatten"
+                placeholder="[1, [2, 3], [4, [5, 6]], 7]"
+              />
             </div>
-            <div class="p-3 bg-gray-50 rounded-md">
-              <span class="text-sm font-medium">유효한 배열:</span>
-              <span class="ml-2" :class="checkResults.isValidArray ? 'text-green-600' : 'text-red-600'">
-                {{ checkResults.isValidArray ? '예' : '아니오' }}
-              </span>
+            <div>
+              <label class="block mb-1 font-semibold">평탄화 깊이</label>
+              <v-text-field
+                v-model.number="flattenDepth"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                type="number"
+                min="1"
+                @input="processFlatten"
+                placeholder="깊이 (비워두면 무제한)"
+              />
+            </div>
+            <CopyTextArea
+              :model-value="flattenResult"
+              label="평탄화 결과"
+              placeholder="결과가 여기에 표시됩니다"
+            />
+          </div>
+        </GroupPanel>
+
+        <!-- 차집합 -->
+        <GroupPanel v-model="showDifference" title="차집합" color="red">
+          <div v-show="showDifference" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">배열 1 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="differenceInput1"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="2"
+                @input="processDifference"
+                placeholder="1,2,3,4,5"
+              />
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">배열 2 (쉼표로 구분)</label>
+              <v-textarea
+                v-model="differenceInput2"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="2"
+                @input="processDifference"
+                placeholder="3,4,5,6,7"
+              />
+            </div>
+            <CopyTextArea
+              :model-value="differenceResult"
+              label="차집합 결과 (배열1 - 배열2)"
+              placeholder="결과가 여기에 표시됩니다"
+            />
+          </div>
+        </GroupPanel>
+
+        <!-- 배열 상태 체크 -->
+        <GroupPanel v-model="showCheck" title="배열 상태 체크" color="gray">
+          <div v-show="showCheck" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">체크할 배열 (JSON 형태로 입력)</label>
+              <v-textarea
+                v-model="checkInput"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                rows="3"
+                @input="processCheck"
+                placeholder="[]"
+              />
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+              <div class="p-3 bg-gray-50 rounded-md">
+                <span class="block mb-1 font-semibold">빈 배열 여부:</span>
+                <span :class="checkResults.isEmpty ? 'text-red-600' : 'text-green-600'">
+                  {{ checkResults.isEmpty ? '예' : '아니오' }}
+                </span>
+              </div>
+              <div class="p-3 bg-gray-50 rounded-md">
+                <span class="block mb-1 font-semibold">배열 길이:</span>
+                <span class="text-blue-600">{{ checkResults.length }}</span>
+              </div>
+              <div class="p-3 bg-gray-50 rounded-md">
+                <span class="block mb-1 font-semibold">유효한 배열:</span>
+                <span :class="checkResults.isValidArray ? 'text-green-600' : 'text-red-600'">
+                  {{ checkResults.isValidArray ? '예' : '아니오' }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </GroupPanel>
+        </GroupPanel>
+      </div>
 
     </div>
 
     <!-- 오류 메시지 -->
-    <div v-if="errorMessage" class="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+    <v-alert v-if="errorMessage" type="error" class="mt-6">
       {{ errorMessage }}
-    </div>
+    </v-alert>
   </div>
 </template>
 

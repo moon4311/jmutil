@@ -1,89 +1,256 @@
 <template>
-    <div class="p-4">
-        <h2 class="text-xl font-bold mb-2">문자열 저장</h2>
-        <p class="text-red-600 text-xs mb-4 font-medium">서버에 저장되지 않고, 사용자 기기에 암호화 되어 저장 됩니다.</p>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- 일반 텍스트 영역 -->
-            <div>
-                <h2 class="font-semibold mb-3">일반 텍스트</h2>
-                <form @submit.prevent="saveTextItem" class="mb-4">
-                    <div class="flex flex-col sm:flex-row gap-2 mb-2">
-                        <input v-model="textKey" placeholder="키" class="border rounded px-3 py-2 flex-1 min-w-0" required />
-                        <input v-model="textValue" placeholder="값" class="border rounded px-3 py-2 flex-1 min-w-0" required />
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 sm:flex-initial">저장</button>
-                        <button type="button" @click="clearAllTextItems" class="bg-red-500 text-white px-4 py-2 rounded flex-1 sm:flex-initial">전체삭제</button>
-                    </div>
-                </form>
-                <div v-if="sortedTextItems.length" class="space-y-3">
-                    <div v-for="item in sortedTextItems" :key="item.key" class="border rounded-lg p-3 bg-gray-50">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="font-mono text-sm font-semibold truncate pr-2" @click="copyValue(item.key)">
-                            {{ item.key.replace(TEXT_PREFIX, '') }}
-                        </span>
-                        <button @click="copyValue(item.key)" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded whitespace-nowrap">키복사</button>
-                    </div>
-                    <template v-if="editTextKey === item.key">
-                        <textarea v-model="editTextValue" class="w-full font-mono text-sm border rounded px-2 py-2 mb-2 resize-none" rows="2" @keyup.enter.ctrl="saveEditText(item.key)"></textarea>
-                        <div class="flex gap-2">
-                            <button @click="saveEditText(item.key)" class="text-xs bg-blue-500 text-white px-3 py-1 rounded flex-1">저장</button>
-                            <button @click="cancelEditText" class="text-xs bg-gray-400 text-white px-3 py-1 rounded flex-1">취소</button>
-                        </div>
-                    </template>
-                    <template v-else>
-                        <div class="font-mono text-sm break-all mb-2 p-2 bg-white rounded border cursor-pointer" @click="copyValue(item.value)">
-                            {{ item.value }}
-                        </div>
-                        <div class="flex gap-2">
-                            <button @click="copyValue(item.value)" class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded flex-1">값복사</button>
-                            <button @click="startEditText(item.key, item.value)" class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded flex-1">수정</button>
-                            <button @click="removeTextItem(item.key)" class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded flex-1">삭제</button>
-                        </div>
-                    </template>
-                    </div>
+  <div>
+    <h2 class="text-xl font-bold mb-4">로컬 저장소 유틸리티</h2>
+    <p class="text-red-600 text-sm mb-6 font-medium">서버에 저장되지 않고, 사용자 기기에 암호화 되어 저장 됩니다.</p>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 좌측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showBlue" title="일반 텍스트 저장" color="blue">
+          <div class="space-y-4">
+            <form @submit.prevent="saveTextItem" class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <v-text-field 
+                  v-model="textKey" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  placeholder="키" 
+                  required 
+                />
+                <v-text-field 
+                  v-model="textValue" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  placeholder="값" 
+                  required 
+                />
+              </div>
+              <div class="flex gap-2">
+                <v-btn 
+                  type="submit" 
+                  color="blue" 
+                  variant="elevated"
+                  size="large"
+                  class="flex-1"
+                >
+                  저장
+                </v-btn>
+                <v-btn 
+                  type="button" 
+                  @click="clearAllTextItems" 
+                  color="red" 
+                  variant="outlined"
+                  size="large"
+                  class="flex-1"
+                >
+                  전체삭제
+                </v-btn>
+              </div>
+            </form>
+            
+            <div v-if="sortedTextItems.length" class="space-y-3 max-h-96 overflow-y-auto">
+              <div v-for="item in sortedTextItems" :key="item.key" class="border rounded-lg p-3 bg-gray-50">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-sm font-semibold truncate pr-2 cursor-pointer" @click="copyValue(item.key)">
+                    {{ item.key.replace(TEXT_PREFIX, '') }}
+                  </span>
+                  <v-btn
+                    @click="copyValue(item.key)" 
+                    size="x-small"
+                    variant="tonal"
+                    color="blue"
+                  >
+                    키복사
+                  </v-btn>
                 </div>
-                <div v-else class="text-gray-400 text-sm">저장된 항목이 없습니다.</div>
+                
+                <template v-if="editTextKey === item.key">
+                  <v-textarea
+                    v-model="editTextValue" 
+                    variant="solo-filled"
+                    density="comfortable"
+                    hide-details
+                    rows="2" 
+                    class="mb-2 font-mono text-sm"
+                    @keyup.enter.ctrl="saveEditText(item.key)"
+                  />
+                  <div class="flex gap-2">
+                    <v-btn
+                      @click="saveEditText(item.key)" 
+                      color="blue"
+                      variant="elevated"
+                      size="small"
+                      class="flex-1"
+                    >
+                      저장
+                    </v-btn>
+                    <v-btn
+                      @click="cancelEditText" 
+                      color="grey-lighten-1"
+                      variant="outlined"
+                      size="small"
+                      class="flex-1"
+                    >
+                      취소
+                    </v-btn>
+                  </div>
+                </template>
+                
+                <template v-else>
+                  <div class="font-mono text-sm break-all mb-2 p-2 bg-white rounded border cursor-pointer" @click="copyValue(item.value)">
+                    {{ item.value }}
+                  </div>
+                  <div class="flex gap-2">
+                    <v-btn
+                      @click="copyValue(item.value)" 
+                      color="green"
+                      variant="tonal"
+                      size="small"
+                      class="flex-1"
+                    >
+                      값복사
+                    </v-btn>
+                    <v-btn
+                      @click="startEditText(item.key, item.value)" 
+                      color="amber"
+                      variant="tonal"
+                      size="small"
+                      class="flex-1"
+                    >
+                      수정
+                    </v-btn>
+                    <v-btn
+                      @click="removeTextItem(item.key)" 
+                      color="red"
+                      variant="outlined"
+                      size="small"
+                      class="flex-1"
+                    >
+                      삭제
+                    </v-btn>
+                  </div>
+                </template>
+              </div>
             </div>
-            <!-- 패스워드 영역 -->
-            <div>
-                <h2 class="font-semibold mb-3">패스워드(암호화)</h2>
-                <form @submit.prevent="savePwItem" class="mb-4">
-                    <div class="flex flex-col sm:flex-row gap-2 mb-2">
-                        <input v-model="pwKey" placeholder="키" class="border rounded px-3 py-2 flex-1 min-w-0" required />
-                        <input v-model="pwValue" type="password" placeholder="값(암호화 저장)" class="border rounded px-3 py-2 flex-1 min-w-0" required />
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 sm:flex-initial">저장</button>
-                        <button type="button" @click="clearAllPwItems" class="bg-red-500 text-white px-4 py-2 rounded flex-1 sm:flex-initial">전체삭제</button>
-                    </div>
-                </form>
-                <div v-if="sortedPwItems.length" class="space-y-3">
-                    <div v-for="item in sortedPwItems" :key="item.key" class="border rounded-lg p-3 bg-gray-50">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-mono text-sm font-semibold truncate pr-2" @click="copyValue(item.key)">
-                                {{ item.key.replace(PW_PREFIX, '') }}
-                            </span>
-                            <!-- <button @click="copyValue(item.key)" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded whitespace-nowrap">키복사</button> -->
-                        </div>
-                        <div class="mb-2 p-2 bg-white rounded border">
-                            <input type="password" value="••••••••••••" readonly class="w-full font-mono text-sm bg-transparent cursor-not-allowed" style="outline: none;" />
-                        </div>
-                        <div class="flex gap-2">
-                            <button @click="() => copyDecryptedPwValue(item.key, item.value)" class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded flex-1">값복사</button>
-                            <button @click="removePwItem(item.key)" class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded flex-1">삭제</button>
-                        </div>
-                    </div>
+            
+            <div v-else class="text-gray-500 text-center py-8">
+              저장된 항목이 없습니다.
+            </div>
+          </div>
+        </GroupPanel>
+      </div>
+
+      <!-- 우측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showGreen" title="패스워드 저장 (암호화)" color="green">
+          <div class="space-y-4">
+            <form @submit.prevent="savePwItem" class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <v-text-field 
+                  v-model="pwKey" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  placeholder="키" 
+                  required 
+                />
+                <v-text-field 
+                  v-model="pwValue" 
+                  type="password" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  placeholder="값(암호화 저장)" 
+                  required 
+                />
+              </div>
+              <div class="flex gap-2">
+                <v-btn 
+                  type="submit" 
+                  color="green" 
+                  variant="elevated"
+                  size="large"
+                  class="flex-1"
+                >
+                  저장
+                </v-btn>
+                <v-btn 
+                  type="button" 
+                  @click="clearAllPwItems" 
+                  color="red" 
+                  variant="outlined"
+                  size="large"
+                  class="flex-1"
+                >
+                  전체삭제
+                </v-btn>
+              </div>
+            </form>
+            
+            <div v-if="sortedPwItems.length" class="space-y-3 max-h-96 overflow-y-auto">
+              <div v-for="item in sortedPwItems" :key="item.key" class="border rounded-lg p-3 bg-gray-50">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-mono text-sm font-semibold truncate pr-2">
+                    {{ item.key.replace(PW_PREFIX, '') }}
+                  </span>
                 </div>
-            <div v-else class="text-gray-400 text-sm">저장된 항목이 없습니다.</div>
+                
+                <div class="mb-2 p-2 bg-white rounded border">
+                  <v-text-field
+                    value="••••••••••••" 
+                    readonly 
+                    variant="solo-filled"
+                    density="comfortable"
+                    hide-details
+                    class="font-mono text-sm cursor-not-allowed" 
+                    disabled
+                  />
+                </div>
+                
+                <div class="flex gap-2">
+                  <v-btn
+                    @click="() => copyDecryptedPwValue(item.key, item.value)" 
+                    color="green"
+                    variant="tonal"
+                    size="small"
+                    class="flex-1"
+                  >
+                    값복사
+                  </v-btn>
+                  <v-btn
+                    @click="removePwItem(item.key)" 
+                    color="red"
+                    variant="outlined"
+                    size="small"
+                    class="flex-1"
+                  >
+                    삭제
+                  </v-btn>
+                </div>
+              </div>
             </div>
-        </div>
+            
+            <div v-else class="text-gray-500 text-center py-8">
+              저장된 항목이 없습니다.
+            </div>
+          </div>
+        </GroupPanel>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'default' })
 import { ref, computed, onMounted } from 'vue';
 import CryptoJS from 'crypto-js';
+import GroupPanel from '@/components/GroupPanel.vue';
+
+// 아코디언 상태
+const showBlue = ref(true);
+const showGreen = ref(true);
 
 // 상수 정의 (스크립트에서만 사용)
 const COPY_SUCCESS_MESSAGE = '복사되었습니다';

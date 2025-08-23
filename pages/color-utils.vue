@@ -4,219 +4,237 @@
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
-      <!-- HEX to RGB -->
-      <GroupPanel v-model="showHexToRgb" title="HEX → RGB 변환" color="blue">
-        <div v-show="showHexToRgb" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">HEX 색상</label>
-            <div class="flex space-x-2">
-              <input
-                v-model="hexToRgbInput"
-                @input="processHexToRgb"
-                type="text"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="#FF5733 또는 #F53"
-                maxlength="7"
-              />
-              <div 
-                class="w-12 h-10 border border-gray-300 rounded-md"
-                :style="{ backgroundColor: hexToRgbInput }"
-              ></div>
-            </div>
-          </div>
-          <CopyInput
-            v-model="hexToRgbResult"
-            label="RGB 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
-
-      <!-- RGB to HEX -->
-      <GroupPanel v-model="showRgbToHex" title="RGB → HEX 변환" color="green">
-        <div v-show="showRgbToHex" class="space-y-4">
-          <div class="grid grid-cols-3 gap-2">
+      <!-- 좌측 컬럼 -->
+      <div class="space-y-6">
+        <!-- HEX to RGB -->
+        <GroupPanel v-model="showHexToRgb" title="HEX → RGB 변환" color="blue">
+          <div v-show="showHexToRgb" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-1">R</label>
-              <input
-                v-model.number="rgbR"
-                @input="processRgbToHex"
-                type="number"
-                min="0"
-                max="255"
-                class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm"
-              />
+              <label class="block mb-1 font-semibold">HEX 색상</label>
+              <div class="flex gap-2">
+                <v-text-field
+                  v-model="hexToRgbInput"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  class="flex-1"
+                  placeholder="#FF5733"
+                  maxlength="7"
+                  @input="processHexToRgb"
+                />
+                <div 
+                  class="w-16 h-12 border rounded-md"
+                  :style="{ backgroundColor: hexToRgbInput }"
+                ></div>
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">G</label>
-              <input
-                v-model.number="rgbG"
-                @input="processRgbToHex"
-                type="number"
-                min="0"
-                max="255"
-                class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">B</label>
-              <input
-                v-model.number="rgbB"
-                @input="processRgbToHex"
-                type="number"
-                min="0"
-                max="255"
-                class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm"
-              />
-            </div>
-          </div>
-          <div 
-            class="w-full h-8 border border-gray-300 rounded-md"
-            :style="{ backgroundColor: `rgb(${rgbR}, ${rgbG}, ${rgbB})` }"
-          ></div>
-          <CopyInput
-            v-model="rgbToHexResult"
-            label="HEX 결과"
-            placeholder="결과가 여기에 표시됩니다"
-          />
-        </div>
-      </GroupPanel>
-
-      <!-- 색상 밝게/어둡게 -->
-      <GroupPanel v-model="showBrightness" title="색상 밝기 조절" color="purple">
-        <div v-show="showBrightness" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">기준 색상</label>
-            <div class="flex space-x-2">
-              <input
-                v-model="brightnessColor"
-                @input="updateBrightnessResults"
-                type="text"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="#3498db"
-              />
-              <div 
-                class="w-12 h-10 border border-gray-300 rounded-md"
-                :style="{ backgroundColor: brightnessColor }"
-              ></div>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">조절 비율 (%)</label>
-            <input
-              v-model.number="brightnessPercent"
-              @input="updateBrightnessResults"
-              type="number"
-              min="0"
-              max="100"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md"
-              placeholder="20"
+            <CopyInput
+              :model-value="hexToRgbResult"
+              placeholder="결과가 여기에 표시됩니다"
             />
           </div>
-          <div class="grid grid-cols-2 gap-2">
+        </GroupPanel>
+
+        <!-- 색상 밝게/어둡게 -->
+        <GroupPanel v-model="showBrightness" title="색상 밝기 조절" color="purple">
+          <div v-show="showBrightness" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-1">밝게 한 결과</label>
-              <div class="flex space-x-2">
-                <CopyInput
-                  :model-value="lightenResult"
+              <label class="block mb-1 font-semibold">기준 색상</label>
+              <div class="flex gap-2">
+                <v-text-field
+                  v-model="brightnessColor"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
                   class="flex-1"
+                  placeholder="#3498db"
+                  @input="updateBrightnessResults"
                 />
                 <div 
-                  class="w-8 h-8 border border-gray-300 rounded"
-                  :style="{ backgroundColor: lightenResult }"
+                  class="w-16 h-12 border rounded-md"
+                  :style="{ backgroundColor: brightnessColor }"
                 ></div>
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">어둡게 한 결과</label>
-              <div class="flex space-x-2">
-                <CopyInput
-                  :model-value="darkenResult"
-                  class="flex-1"
-                />
-                <div 
-                  class="w-8 h-8 border border-gray-300 rounded"
-                  :style="{ backgroundColor: darkenResult }"
-                ></div>
+              <label class="block mb-1 font-semibold">조절 비율 (%)</label>
+              <v-text-field
+                v-model.number="brightnessPercent"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                type="number"
+                min="0"
+                max="100"
+                placeholder="20"
+                @input="updateBrightnessResults"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block mb-1 font-semibold">밝게 한 결과</label>
+                <div class="flex gap-2">
+                  <CopyInput
+                    :model-value="lightenResult"
+                    class="flex-1"
+                  />
+                  <div 
+                    class="w-12 h-12 border rounded"
+                    :style="{ backgroundColor: lightenResult }"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">어둡게 한 결과</label>
+                <div class="flex gap-2">
+                  <CopyInput
+                    :model-value="darkenResult"
+                    class="flex-1"
+                  />
+                  <div 
+                    class="w-12 h-12 border rounded"
+                    :style="{ backgroundColor: darkenResult }"
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </GroupPanel>
+        </GroupPanel>
 
-      <!-- 랜덤 색상 생성 -->
-      <GroupPanel v-model="showRandom" title="랜덤 색상 생성" color="yellow">
-        <div v-show="showRandom" class="space-y-4">
-          <button
-            @click="generateRandomColors"
-            class="w-full bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600"
-          >
-            랜덤 색상 5개 생성
-          </button>
-          <div class="grid grid-cols-1 gap-2">
-            <div v-for="(color, index) in randomColors" :key="index" class="flex space-x-2">
-              <div 
-                class="w-12 h-10 border border-gray-300 rounded-md"
-                :style="{ backgroundColor: color }"
-              ></div>
-              <CopyInput
-                :model-value="color"
-                class="flex-1"
-              />
+        <!-- 색상 정보 -->
+        <GroupPanel v-model="showAnalyze" title="색상 정보 분석" color="indigo">
+          <div v-show="showAnalyze" class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">분석할 색상</label>
+              <div class="flex gap-2">
+                <v-text-field
+                  v-model="analyzeColor"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  class="flex-1"
+                  placeholder="#FF5733"
+                  @input="analyzeColorInfo"
+                />
+                <div 
+                  class="w-16 h-12 border rounded-md"
+                  :style="{ backgroundColor: analyzeColor }"
+                ></div>
+              </div>
+            </div>
+            <div v-if="colorInfo" class="space-y-2">
+              <div class="p-3 bg-gray-50 rounded-md">
+                <span class="block mb-1 font-semibold">RGB 값:</span>
+                <span>R: {{ colorInfo.rgb.r }}, G: {{ colorInfo.rgb.g }}, B: {{ colorInfo.rgb.b }}</span>
+              </div>
+              <div class="p-3 bg-gray-50 rounded-md">
+                <span class="block mb-1 font-semibold">밝기:</span>
+                <span>{{ colorInfo.brightness.toFixed(2) }} ({{ colorInfo.lightType }})</span>
+              </div>
+              <div class="p-3 bg-gray-50 rounded-md">
+                <span class="block mb-1 font-semibold">대비 색상:</span>
+                <div class="flex items-center gap-2">
+                  <span>{{ colorInfo.contrastColor }}</span>
+                  <div 
+                    class="w-8 h-8 border rounded"
+                    :style="{ backgroundColor: colorInfo.contrastColor }"
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </GroupPanel>
+        </GroupPanel>
+      </div>
 
-      <!-- 색상 정보 -->
-      <GroupPanel v-model="showAnalyze" title="색상 정보 분석" color="indigo">
-        <div v-show="showAnalyze" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-2">분석할 색상</label>
-            <div class="flex space-x-2">
-              <input
-                v-model="analyzeColor"
-                @input="analyzeColorInfo"
-                type="text"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="#FF5733"
-              />
-              <div 
-                class="w-12 h-10 border border-gray-300 rounded-md"
-                :style="{ backgroundColor: analyzeColor }"
-              ></div>
-            </div>
-          </div>
-          <div v-if="colorInfo" class="space-y-2">
-            <div class="text-sm">
-              <strong>RGB:</strong> {{ colorInfo.rgb }}
-            </div>
-            <div class="text-sm">
-              <strong>밝기:</strong> {{ colorInfo.brightness }}/255
-            </div>
-            <div class="text-sm">
-              <strong>색상 타입:</strong> {{ colorInfo.lightType }}
-            </div>
-            <div class="text-sm">
-              <strong>추천 텍스트 색상:</strong> 
-              <span :style="{ color: colorInfo.contrastColor }">{{ colorInfo.contrastColor }}</span>
+      <!-- 우측 컬럼 -->
+      <div class="space-y-6">
+        <!-- RGB to HEX -->
+        <GroupPanel v-model="showRgbToHex" title="RGB → HEX 변환" color="green">
+          <div v-show="showRgbToHex" class="space-y-4">
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block mb-1 font-semibold">R</label>
+                <v-text-field
+                  v-model.number="rgbR"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number"
+                  min="0"
+                  max="255"
+                  @input="processRgbToHex"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">G</label>
+                <v-text-field
+                  v-model.number="rgbG"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number"
+                  min="0"
+                  max="255"
+                  @input="processRgbToHex"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">B</label>
+                <v-text-field
+                  v-model.number="rgbB"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number"
+                  min="0"
+                  max="255"
+                  @input="processRgbToHex"
+                />
+              </div>
             </div>
             <div 
-              class="w-full h-12 border border-gray-300 rounded-md flex items-center justify-center text-sm font-medium"
-              :style="{ backgroundColor: analyzeColor, color: colorInfo.contrastColor }"
+              class="w-full h-16 border rounded-md"
+              :style="{ backgroundColor: `rgb(${rgbR}, ${rgbG}, ${rgbB})` }"
+            ></div>
+            <CopyInput
+              :model-value="rgbToHexResult"
+              placeholder="결과가 여기에 표시됩니다"
+            />
+          </div>
+        </GroupPanel>
+
+        <!-- 랜덤 색상 생성 -->
+        <GroupPanel v-model="showRandom" title="랜덤 색상 생성" color="yellow">
+          <div v-show="showRandom" class="space-y-4">
+            <v-btn
+              @click="generateRandomColors"
+              color="warning"
+              variant="elevated"
+              size="large"
+              class="w-full"
+              prepend-icon="mdi-palette"
             >
-              샘플 텍스트
+              랜덤 색상 5개 생성
+            </v-btn>
+            <div v-if="randomColors.length" class="grid grid-cols-1 gap-2">
+              <div v-for="(color, index) in randomColors" :key="index" class="flex items-center gap-2">
+                <div 
+                  class="w-12 h-12 border rounded"
+                  :style="{ backgroundColor: color }"
+                ></div>
+                <CopyInput :model-value="color" class="flex-1" />
+              </div>
             </div>
           </div>
-        </div>
-      </GroupPanel>
+        </GroupPanel>
+      </div>
 
     </div>
 
     <!-- 오류 메시지 -->
-    <div v-if="errorMessage" class="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+    <v-alert v-if="errorMessage" type="error" class="mt-6">
       {{ errorMessage }}
-    </div>
+    </v-alert>
   </div>
 </template>
 
@@ -285,7 +303,8 @@ export default {
       try {
         this.errorMessage = ''
         if (!isValidHex(this.hexToRgbInput)) {
-          throw new Error('유효하지 않은 HEX 색상입니다')
+          this.hexToRgbResult = '올바른 HEX 색상을 입력하세요'
+          return
         }
         const rgb = hexToRgb(this.hexToRgbInput)
         this.hexToRgbResult = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
@@ -313,7 +332,8 @@ export default {
       try {
         this.errorMessage = ''
         if (!isValidHex(this.brightnessColor)) {
-          throw new Error('유효하지 않은 HEX 색상입니다')
+          this.lightenResult = '올바른 HEX 색상을 입력하세요'
+          return
         }
         this.lightenResult = lighten(this.brightnessColor, this.brightnessPercent)
       } catch (error) {
@@ -325,7 +345,8 @@ export default {
       try {
         this.errorMessage = ''
         if (!isValidHex(this.brightnessColor)) {
-          throw new Error('유효하지 않은 HEX 색상입니다')
+          this.darkenResult = '올바른 HEX 색상을 입력하세요'
+          return
         }
         this.darkenResult = darken(this.brightnessColor, this.brightnessPercent)
       } catch (error) {
@@ -341,7 +362,8 @@ export default {
       try {
         this.errorMessage = ''
         if (!isValidHex(this.analyzeColor)) {
-          throw new Error('유효하지 않은 HEX 색상입니다')
+          this.colorInfo = null
+          return
         }
         
         const rgb = hexToRgb(this.analyzeColor)
@@ -350,7 +372,7 @@ export default {
         const contrastColor = getContrastColor(this.analyzeColor)
         
         this.colorInfo = {
-          rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+          rgb,
           brightness,
           lightType,
           contrastColor

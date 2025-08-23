@@ -1,43 +1,65 @@
 <template>
   <div>
-    <h2 class="text-xl font-bold mb-4">인코딩/디코딩</h2>
-    <v-select
-      v-model="encodeType"
-      :items="encodeTypes"
-      class="mb-2"
-      label="인코딩/디코딩 방식"
+    <h2 class="text-xl font-bold mb-4">인코딩/디코딩 유틸리티</h2>
+    
+    <div class="mb-4">
+      <label class="block mb-1 font-semibold">인코딩/디코딩 방식</label>
+      <v-select
+        v-model="encodeType"
+        :items="encodeTypes"
+        variant="solo-filled"
+        density="comfortable"
+        hide-details
+        class="w-full"
       />
-    <GroupPanel v-model="showBlue" title="인코딩" color="blue">
-      <div class="mb-4">
-        <label class="block mb-1 font-semibold">인코딩할 텍스트</label>
-        <v-textarea
-          v-model="encodeInput"
-          placeholder="인코딩할 텍스트를 입력하세요"
-          rows="6"
-          @input="onEncodeInput"
-        />
-      </div>
-      <div>
-        <label class="block mb-1 font-semibold">인코딩 결과</label>
-        <CopyTextArea :model-value="encoded" rows="4" />
-      </div>
-    </GroupPanel>
+    </div>
 
-    <GroupPanel v-model="showGreen" title="디코딩" color="green">
-      <div class="mb-4">
-        <label class="block mb-1 font-semibold">디코딩할 텍스트</label>
-        <v-textarea
-          v-model="decodeInput"
-          placeholder="디코딩할 텍스트를 입력하세요"
-          rows="6"
-          @input="onDecodeInput"
-        />
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- 좌측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showBlue" title="인코딩" color="blue">
+          <div class="mb-4">
+            <label class="block mb-1 font-semibold">인코딩할 텍스트</label>
+            <v-textarea
+              v-model="encodeInput"
+              variant="solo-filled"
+              density="comfortable"
+              hide-details
+              placeholder="인코딩할 텍스트를 입력하세요"
+              rows="6"
+              @input="onEncodeInput"
+            />
+          </div>
+          <div>
+            <label class="block mb-1 font-semibold">인코딩 결과</label>
+            <CopyTextArea :model-value="encoded" rows="4" />
+          </div>
+        </GroupPanel>
       </div>
-      <div>
-        <label class="block mb-1 font-semibold">디코딩 결과</label>
-        <CopyTextArea :model-value="decoded" rows="4" />
+
+      <!-- 우측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showGreen" title="디코딩" color="green">
+          <div class="mb-4">
+            <label class="block mb-1 font-semibold">디코딩할 텍스트</label>
+            <v-textarea
+              v-model="decodeInput"
+              variant="solo-filled"
+              density="comfortable"
+              hide-details
+              placeholder="디코딩할 텍스트를 입력하세요"
+              rows="6"
+              @input="onDecodeInput"
+            />
+          </div>
+          <div>
+            <label class="block mb-1 font-semibold">디코딩 결과</label>
+            <CopyTextArea :model-value="decoded" rows="4" />
+          </div>
+        </GroupPanel>
       </div>
-    </GroupPanel>
+    </div>
   </div>
 </template>
 <script setup>

@@ -1,115 +1,116 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-3xl font-bold mb-6">QR코드 생성</h1>
+  <div>
+    <h2 class="text-xl font-bold mb-4">QR코드 생성</h2>
     
-    <div class="max-w-4xl mx-auto">
-      <div class="grid md:grid-cols-2 gap-6">
-        <!-- 입력 영역 -->
-        <div>
-          <v-card class="p-6">
-            <h2 class="text-xl font-semibold mb-4">QR코드 설정</h2>
-            
-            <!-- 텍스트/URL 입력 -->
-            <div class="mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 좌측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showBlue" title="QR코드 설정" color="blue">
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1 font-semibold">텍스트 또는 URL</label>
               <v-textarea
                 v-model="inputText"
-                label="텍스트 또는 URL"
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
                 placeholder="QR코드로 변환할 텍스트나 URL을 입력하세요"
-                variant="outlined"
                 rows="4"
                 counter
                 maxlength="2000"
               />
             </div>
             
-            <!-- QR코드 옵션 -->
-            <div class="space-y-4">
+            <div>
+              <label class="block mb-2 font-semibold">크기</label>
+              <v-slider
+                v-model="qrSize"
+                min="128"
+                max="512"
+                step="32"
+                show-ticks
+                tick-size="4"
+                :tick-labels="['128', '256', '384', '512']"
+                hide-details
+              />
+              <div class="text-sm text-gray-600 mt-1">{{ qrSize }}px</div>
+            </div>
+            
+            <div>
+              <label class="block mb-2 font-semibold">오류 정정 레벨</label>
+              <v-radio-group v-model="errorCorrectionLevel" inline hide-details>
+                <v-radio label="Low (7%)" value="L" />
+                <v-radio label="Medium (15%)" value="M" />
+                <v-radio label="Quartile (25%)" value="Q" />
+                <v-radio label="High (30%)" value="H" />
+              </v-radio-group>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium mb-2">크기</label>
-                <v-slider
-                  v-model="qrSize"
-                  min="128"
-                  max="512"
-                  step="32"
-                  show-ticks
-                  tick-size="4"
-                  :tick-labels="['128', '256', '384', '512']"
+                <label class="block mb-1 font-semibold">전경색</label>
+                <input
+                  v-model="foregroundColor"
+                  type="color"
+                  class="w-full h-10 rounded border"
                 />
-                <div class="text-sm text-gray-600">{{ qrSize }}px</div>
               </div>
-              
               <div>
-                <label class="block text-sm font-medium mb-2">오류 정정 레벨</label>
-                <v-radio-group v-model="errorCorrectionLevel" inline>
-                  <v-radio label="Low (7%)" value="L" />
-                  <v-radio label="Medium (15%)" value="M" />
-                  <v-radio label="Quartile (25%)" value="Q" />
-                  <v-radio label="High (30%)" value="H" />
-                </v-radio-group>
-              </div>
-              
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium mb-2">전경색</label>
-                  <input
-                    v-model="foregroundColor"
-                    type="color"
-                    class="w-full h-10 rounded border"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-2">배경색</label>
-                  <input
-                    v-model="backgroundColor"
-                    type="color"
-                    class="w-full h-10 rounded border"
-                  />
-                </div>
+                <label class="block mb-1 font-semibold">배경색</label>
+                <input
+                  v-model="backgroundColor"
+                  type="color"
+                  class="w-full h-10 rounded border"
+                />
               </div>
             </div>
-            
-            <!-- 빠른 설정 -->
-            <div class="mt-6">
-              <h3 class="text-lg font-semibold mb-3">빠른 설정</h3>
-              <div class="grid grid-cols-2 gap-2">
-                <v-btn
-                  @click="setQuickText('WiFi')"
-                  variant="outlined"
-                  size="small"
-                >
-                  WiFi 정보
-                </v-btn>
-                <v-btn
-                  @click="setQuickText('Contact')"
-                  variant="outlined"
-                  size="small"
-                >
-                  연락처
-                </v-btn>
-                <v-btn
-                  @click="setQuickText('Email')"
-                  variant="outlined"
-                  size="small"
-                >
-                  이메일
-                </v-btn>
-                <v-btn
-                  @click="setQuickText('SMS')"
-                  variant="outlined"
-                  size="small"
-                >
-                  SMS
-                </v-btn>
-              </div>
+          </div>
+        </GroupPanel>
+
+        <GroupPanel v-model="showGreen" title="빠른 설정" color="green">
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <v-btn
+                @click="setQuickText('WiFi')"
+                variant="elevated"
+                size="large"
+                color="success"
+              >
+                WiFi 정보
+              </v-btn>
+              <v-btn
+                @click="setQuickText('Contact')"
+                variant="elevated"
+                size="large"
+                color="success"
+              >
+                연락처
+              </v-btn>
+              <v-btn
+                @click="setQuickText('Email')"
+                variant="elevated"
+                size="large"
+                color="success"
+              >
+                이메일
+              </v-btn>
+              <v-btn
+                @click="setQuickText('SMS')"
+                variant="elevated"
+                size="large"
+                color="success"
+              >
+                SMS
+              </v-btn>
             </div>
-          </v-card>
-        </div>
-        
-        <!-- QR코드 미리보기 및 다운로드 -->
-        <div>
-          <v-card class="p-6">
-            <h2 class="text-xl font-semibold mb-4">미리보기</h2>
-            
+          </div>
+        </GroupPanel>
+      </div>
+
+      <!-- 우측 컬럼 -->
+      <div class="space-y-6">
+        <GroupPanel v-model="showPurple" title="QR코드 미리보기" color="purple">
+          <div class="space-y-4">
             <ClientOnly>
               <div class="text-center">
                 <div
@@ -120,7 +121,7 @@
                     ref="qrCanvas"
                     :width="qrSize"
                     :height="qrSize"
-                    class="border"
+                    class="border max-w-full h-auto"
                   />
                 </div>
                 
@@ -132,17 +133,20 @@
                   <v-btn
                     @click="downloadQR"
                     color="primary"
-                    block
+                    variant="elevated"
+                    size="large"
                     prepend-icon="mdi-download"
+                    block
                   >
                     PNG로 다운로드
                   </v-btn>
                   
                   <v-btn
                     @click="copyToClipboard"
-                    variant="outlined"
-                    block
+                    variant="elevated"
+                    size="large"
                     prepend-icon="mdi-content-copy"
+                    block
                   >
                     클립보드에 복사
                   </v-btn>
@@ -154,28 +158,39 @@
                 </div>
               </template>
             </ClientOnly>
-          </v-card>
-          
-          <!-- 생성된 QR코드 정보 -->
-          <ClientOnly>
-            <v-card v-if="qrInfo" class="p-4 mt-4">
-              <h3 class="font-semibold mb-2">QR코드 정보</h3>
-              <div class="text-sm space-y-1">
+          </div>
+        </GroupPanel>
+
+        <GroupPanel v-model="showOrange" title="QR코드 정보" color="orange">
+          <div class="space-y-2">
+            <ClientOnly>
+              <div v-if="qrInfo" class="text-sm space-y-1">
                 <div><strong>데이터 길이:</strong> {{ qrInfo.dataLength }}자</div>
                 <div><strong>버전:</strong> {{ qrInfo.version }}</div>
                 <div><strong>오류 정정:</strong> {{ qrInfo.errorCorrection }}</div>
               </div>
-            </v-card>
-          </ClientOnly>
-        </div>
+              <div v-else class="text-gray-500 text-sm">
+                QR코드를 생성하면 정보가 여기에 표시됩니다
+              </div>
+            </ClientOnly>
+          </div>
+        </GroupPanel>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'default' })
 import { ref, watch, nextTick, onMounted } from 'vue'
 import QRCode from 'qrcode'
+import GroupPanel from '@/components/GroupPanel.vue'
+
+// 아코디언 상태
+const showBlue = ref(true)
+const showGreen = ref(true)
+const showPurple = ref(true)
+const showOrange = ref(true)
 
 // 반응형 데이터
 const inputText = ref('')
@@ -289,11 +304,6 @@ onMounted(async () => {
     await nextTick()
     generateQR()
   }
-})
-
-// 페이지 메타
-definePageMeta({
-  title: 'QR코드 생성'
 })
 </script>
 
