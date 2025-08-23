@@ -18,4 +18,4 @@ Allow: /
 
 # 애드센스
 User-agent: Mediapartners-Google
-Allow: /
+Disallow:
