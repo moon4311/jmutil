@@ -7,8 +7,8 @@
       <!-- 좌측 컬럼 -->
       <div class="space-y-6">
         <!-- 중복 제거 -->
-        <GroupPanel v-model="showUnique" title="중복 요소 제거" color="blue">
-          <div v-show="showUnique" class="space-y-4">
+        <GroupPanel v-model="panelStates[0]" title="중복 요소 제거" color="blue">
+          <div v-show="panelStates[0]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">입력 배열 (쉼표로 구분)</label>
               <v-textarea
@@ -30,8 +30,8 @@
         </GroupPanel>
 
         <!-- 배열 분할 -->
-        <GroupPanel v-model="showChunk" title="배열 분할" color="purple">
-          <div v-show="showChunk" class="space-y-4">
+        <GroupPanel v-model="panelStates[1]" title="배열 분할" color="purple">
+          <div v-show="panelStates[1]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">입력 배열 (쉼표로 구분)</label>
               <v-textarea
@@ -66,8 +66,8 @@
         </GroupPanel>
 
         <!-- 교집합 -->
-        <GroupPanel v-model="showIntersection" title="교집합" color="indigo">
-          <div v-show="showIntersection" class="space-y-4">
+        <GroupPanel v-model="panelStates[2]" title="교집합" color="indigo">
+          <div v-show="panelStates[2]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">배열 1 (쉼표로 구분)</label>
               <v-textarea
@@ -101,8 +101,8 @@
         </GroupPanel>
 
         <!-- 객체 배열 그룹핑 -->
-        <GroupPanel v-model="showGroupBy" title="객체 배열 그룹핑" color="pink">
-          <div v-show="showGroupBy" class="space-y-4">
+        <GroupPanel v-model="panelStates[3]" title="객체 배열 그룹핑" color="pink">
+          <div v-show="panelStates[3]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">객체 배열 (JSON 형태로 입력)</label>
               <v-textarea
@@ -139,8 +139,8 @@
       <!-- 우측 컬럼 -->
       <div class="space-y-6">
         <!-- 배열 섞기 -->
-        <GroupPanel v-model="showShuffle" title="배열 섞기" color="green">
-          <div v-show="showShuffle" class="space-y-4">
+        <GroupPanel v-model="panelStates[4]" title="배열 섞기" color="green">
+          <div v-show="panelStates[4]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">입력 배열 (쉼표로 구분)</label>
               <v-textarea
@@ -171,8 +171,8 @@
         </GroupPanel>
 
         <!-- 배열 평탄화 -->
-        <GroupPanel v-model="showFlatten" title="배열 평탄화" color="yellow">
-          <div v-show="showFlatten" class="space-y-4">
+        <GroupPanel v-model="panelStates[5]" title="배열 평탄화" color="yellow">
+          <div v-show="panelStates[5]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">중첩 배열 (JSON 형태로 입력)</label>
               <v-textarea
@@ -207,8 +207,8 @@
         </GroupPanel>
 
         <!-- 차집합 -->
-        <GroupPanel v-model="showDifference" title="차집합" color="red">
-          <div v-show="showDifference" class="space-y-4">
+        <GroupPanel v-model="panelStates[6]" title="차집합" color="red">
+          <div v-show="panelStates[6]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">배열 1 (쉼표로 구분)</label>
               <v-textarea
@@ -242,8 +242,8 @@
         </GroupPanel>
 
         <!-- 배열 상태 체크 -->
-        <GroupPanel v-model="showCheck" title="배열 상태 체크" color="gray">
-          <div v-show="showCheck" class="space-y-4">
+        <GroupPanel v-model="panelStates[7]" title="배열 상태 체크" color="gray">
+          <div v-show="panelStates[7]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">체크할 배열 (JSON 형태로 입력)</label>
               <v-textarea
@@ -315,15 +315,8 @@ export default {
   },
   data() {
     return {
-      // GroupPanel 상태
-      showUnique: true,
-      showShuffle: true,
-      showChunk: true,
-      showFlatten: true,
-      showIntersection: true,
-      showDifference: true,
-      showGroupBy: true,
-      showCheck: true,
+      // GroupPanel 상태 (중복제거, 분할, 교집합, 그룹핑, 섞기, 평탄화, 차집합, 상태체크)
+      panelStates: [false, false, false, false, false, false, false, false],
       
       // 중복 제거
       uniqueInput: '1,2,3,2,4,3,5,1',

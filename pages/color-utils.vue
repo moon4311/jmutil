@@ -7,8 +7,8 @@
       <!-- 좌측 컬럼 -->
       <div class="space-y-6">
         <!-- HEX to RGB -->
-        <GroupPanel v-model="showHexToRgb" title="HEX → RGB 변환" color="blue">
-          <div v-show="showHexToRgb" class="space-y-4">
+        <GroupPanel v-model="panelStates[0]" title="HEX → RGB 변환" color="blue">
+          <div v-show="panelStates[0]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">HEX 색상</label>
               <div class="flex gap-2">
@@ -36,8 +36,8 @@
         </GroupPanel>
 
         <!-- 색상 밝게/어둡게 -->
-        <GroupPanel v-model="showBrightness" title="색상 밝기 조절" color="purple">
-          <div v-show="showBrightness" class="space-y-4">
+        <GroupPanel v-model="panelStates[1]" title="색상 밝기 조절" color="purple">
+          <div v-show="panelStates[1]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">기준 색상</label>
               <div class="flex gap-2">
@@ -102,8 +102,8 @@
         </GroupPanel>
 
         <!-- 색상 정보 -->
-        <GroupPanel v-model="showAnalyze" title="색상 정보 분석" color="indigo">
-          <div v-show="showAnalyze" class="space-y-4">
+        <GroupPanel v-model="panelStates[2]" title="색상 정보 분석" color="indigo">
+          <div v-show="panelStates[2]" class="space-y-4">
             <div>
               <label class="block mb-1 font-semibold">분석할 색상</label>
               <div class="flex gap-2">
@@ -149,8 +149,8 @@
       <!-- 우측 컬럼 -->
       <div class="space-y-6">
         <!-- RGB to HEX -->
-        <GroupPanel v-model="showRgbToHex" title="RGB → HEX 변환" color="green">
-          <div v-show="showRgbToHex" class="space-y-4">
+        <GroupPanel v-model="panelStates[3]" title="RGB → HEX 변환" color="green">
+          <div v-show="panelStates[3]" class="space-y-4">
             <div class="grid grid-cols-3 gap-2">
               <div>
                 <label class="block mb-1 font-semibold">R</label>
@@ -204,8 +204,8 @@
         </GroupPanel>
 
         <!-- 랜덤 색상 생성 -->
-        <GroupPanel v-model="showRandom" title="랜덤 색상 생성" color="yellow">
-          <div v-show="showRandom" class="space-y-4">
+        <GroupPanel v-model="panelStates[4]" title="랜덤 색상 생성" color="yellow">
+          <div v-show="panelStates[4]" class="space-y-4">
             <v-btn
               @click="generateRandomColors"
               color="warning"
@@ -265,12 +265,8 @@ export default {
   },
   data() {
     return {
-      // GroupPanel 상태
-      showHexToRgb: true,
-      showRgbToHex: true,
-      showBrightness: true,
-      showRandom: true,
-      showAnalyze: true,
+      // GroupPanel 상태 (HEX→RGB, 밝기조절, 색상분석, RGB→HEX, 랜덤색상)
+      panelStates: [false, false, false, false, false],
       
       // HEX to RGB
       hexToRgbInput: '#FF5733',
