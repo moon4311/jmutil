@@ -94,7 +94,7 @@
                                 <!-- 카카오 애드핏 광고 -->
                                 <div class="flex justify-center">
                                     <ins class="kakao_ad_area" style="display:none;"
-                                        data-ad-unit="DAN-ghMYLS3i7cYFRNUw"
+                                        data-ad-unit="DAN-W1I8djLN57Nf4yPR"
                                         data-ad-width="160"
                                         data-ad-height="600">
                                     </ins>
