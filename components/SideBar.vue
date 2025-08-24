@@ -1,10 +1,13 @@
 <template>
   <aside :class="['fixed z-40 md:static md:translate-x-0 transition-transform duration-200', sidebarOpen ? 'translate-x-0' : '-translate-x-full', 'w-64 bg-white shadow-md flex flex-col h-full']">
+    <!-- 헤더 -->
     <div class="h-16 flex items-center justify-between border-b px-4">
       <span class="font-bold text-lg">web-util</span>
-      <v-btn icon class="block md:hidden" @click="$emit('close')">
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
+      <div class="block md:hidden">
+        <v-btn icon @click="$emit('close')">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
     </div>
     <nav class="flex-1 p-4 space-y-4">
       <!-- 홈 메뉴 -->
@@ -75,6 +78,7 @@
 
 <script setup>
 import { ref } from 'vue';
+
 const props = defineProps({
   sidebarOpen: Boolean
 });
