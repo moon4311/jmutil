@@ -10,28 +10,21 @@ export default defineNuxtConfig({
     transpile: ['vuetify']
   },
   vite: {
-    define: {'process.env.DEBUG': false},
-    build: { cssMinify: true },
+    define: {
+      'process.env.DEBUG': false
+    }
   },
   nitro: {
     minify: process.env.NODE_ENV === 'production',          // dev는 보통 끔
     compressPublicAssets: true,                    // 정적 에셋 gzip/br
-    preset: 'node',                                // (서버 환경에 맞게) node/deno 등
     storage: { cache: { driver: 'memory' } }       // SSR 캐시 스토리지
   },
-
-  routeRules: {
-    '/': { prerender: true, isr: 300 },            // 홈은 프리렌더 + 5분마다 갱신
-    '/(array-utils|color-utils|date-utils|json-utils|number-utils|string-utils)': {
-      swr: 300, cache: { ttl: 300 }                // 유틸 페이지 SSR 캐시
-    }
-  },
-  compatibilityDate: '2024-04-03',
   experimental: {
     payloadExtraction: true,   // 초기 페이로드 분리
     inlineSSRStyles: true      // 크리티컬 CSS 인라인
   },
-
+  compatibilityDate: '2024-04-03',
+  
   // SEO 설정
   app: {
     head: {
