@@ -133,6 +133,102 @@
             </div>
           </div>
         </GroupPanel>
+
+        <GroupPanel v-model="showRed" title="공백/특수문자 처리" color="red">
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block mb-1 font-semibold">모든 공백 제거</label>
+                <CopyInput :model-value="removeAllSpacesResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">공백 정규화</label>
+                <CopyInput :model-value="normalizeSpacesResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">특수문자 제거</label>
+                <CopyInput :model-value="removeSpecialCharsResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">숫자만 추출</label>
+                <CopyInput :model-value="extractNumbersResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">영문자만 추출</label>
+                <CopyInput :model-value="extractAlphabetsResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">한글만 추출</label>
+                <CopyInput :model-value="extractKoreanResult" />
+              </div>
+            </div>
+          </div>
+        </GroupPanel>
+
+        <GroupPanel v-model="showTeal" title="정규식 테스트" color="teal">
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block mb-1 font-semibold">정규식 패턴</label>
+                <v-text-field 
+                  v-model="regexPattern" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  placeholder="예: \d+, [a-zA-Z]+, ^.*@.*\.com$"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">플래그</label>
+                <v-text-field 
+                  v-model="regexFlags" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  placeholder="g, i, m, s"
+                />
+              </div>
+            </div>
+            <div v-if="regexTestResult.success !== undefined">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block mb-1 font-semibold">매칭 여부</label>
+                  <v-chip :color="regexTestResult.isMatch ? 'green' : 'red'" variant="elevated">
+                    {{ regexTestResult.isMatch ? '매칭됨' : '매칭되지 않음' }}
+                  </v-chip>
+                </div>
+                <div>
+                  <label class="block mb-1 font-semibold">매칭 개수</label>
+                  <span class="text-lg font-mono">{{ regexTestResult.matchCount }}</span>
+                </div>
+              </div>
+              <div v-if="regexTestResult.matches && regexTestResult.matches.length > 0">
+                <label class="block mb-1 font-semibold">매칭 결과</label>
+                <CopyTextArea :model-value="regexTestResult.matches.join('\n')" rows="3" />
+              </div>
+            </div>
+            <div v-if="regexTestResult.error" class="text-red-500">
+              {{ regexTestResult.error }}
+            </div>
+            <div>
+              <label class="block mb-1 font-semibold">치환 문자열</label>
+              <v-text-field 
+                v-model="regexReplacement" 
+                variant="solo-filled"
+                density="comfortable"
+                hide-details
+                placeholder="치환할 문자열 입력"
+              />
+            </div>
+            <div v-if="regexReplaceResult.success">
+              <label class="block mb-1 font-semibold">치환 결과</label>
+              <CopyTextArea :model-value="regexReplaceResult.result" rows="3" />
+            </div>
+            <div v-if="regexReplaceResult.error" class="text-red-500">
+              {{ regexReplaceResult.error }}
+            </div>
+          </div>
+        </GroupPanel>
       </div>
     </div>
   </div>
@@ -152,7 +248,15 @@ import {
   encodeHex,
   decodeHex,
   encodeUnicode,
-  decodeUnicode
+  decodeUnicode,
+  removeAllSpaces,
+  normalizeSpaces,
+  removeSpecialChars,
+  extractNumbers,
+  extractAlphabets,
+  extractKorean,
+  regexTest,
+  regexReplace
 } from '@/utils/StringUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
@@ -163,6 +267,8 @@ const showBlue = ref(true);
 const showGreen = ref(true);
 const showPurple = ref(true);
 const showOrange = ref(true);
+const showRed = ref(true);
+const showTeal = ref(true);
 
 const upperResult = computed(() => input.value.toUpperCase());
 const lowerResult = computed(() => input.value.toLowerCase());
@@ -230,5 +336,32 @@ const decodedResult = computed(() => {
   } catch (error) {
     return error.message || '디코딩 오류';
   }
+});
+
+// 공백/특수문자 처리 결과
+const removeAllSpacesResult = computed(() => removeAllSpaces(input.value));
+const normalizeSpacesResult = computed(() => normalizeSpaces(input.value));
+const removeSpecialCharsResult = computed(() => removeSpecialChars(input.value));
+const extractNumbersResult = computed(() => extractNumbers(input.value));
+const extractAlphabetsResult = computed(() => extractAlphabets(input.value));
+const extractKoreanResult = computed(() => extractKorean(input.value));
+
+// 정규식 테스트 설정
+const regexPattern = ref('');
+const regexFlags = ref('g');
+const regexReplacement = ref('');
+
+const regexTestResult = computed(() => {
+  if (!input.value || !regexPattern.value) {
+    return { success: undefined };
+  }
+  return regexTest(input.value, regexPattern.value, regexFlags.value);
+});
+
+const regexReplaceResult = computed(() => {
+  if (!input.value || !regexPattern.value) {
+    return { success: undefined };
+  }
+  return regexReplace(input.value, regexPattern.value, regexReplacement.value, regexFlags.value);
 });
 </script>

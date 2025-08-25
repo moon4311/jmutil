@@ -127,3 +127,102 @@ export function decodeUnicode(str) {
     return 'Unicode 디코딩 오류';
   }
 }
+
+// =============== 공백/특수문자 처리 함수들 ===============
+
+/**
+ * 모든 공백 제거 (스페이스, 탭, 줄바꿈 등)
+ */
+export function removeAllSpaces(str) {
+  if (!str) return '';
+  return str.replace(/\s+/g, '');
+}
+
+/**
+ * 여러 공백을 하나로 변환
+ */
+export function normalizeSpaces(str) {
+  if (!str) return '';
+  return str.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * 특수문자 제거 (알파벳, 숫자, 한글, 공백만 남김)
+ */
+export function removeSpecialChars(str) {
+  if (!str) return '';
+  return str.replace(/[^a-zA-Z0-9가-힣\s]/g, '');
+}
+
+/**
+ * 숫자만 추출
+ */
+export function extractNumbers(str) {
+  if (!str) return '';
+  return str.replace(/[^0-9]/g, '');
+}
+
+/**
+ * 영문자만 추출
+ */
+export function extractAlphabets(str) {
+  if (!str) return '';
+  return str.replace(/[^a-zA-Z]/g, '');
+}
+
+/**
+ * 한글만 추출
+ */
+export function extractKorean(str) {
+  if (!str) return '';
+  return str.replace(/[^가-힣]/g, '');
+}
+
+// =============== 정규식 테스트 함수들 ===============
+
+/**
+ * 정규식 매칭 테스트
+ */
+export function regexTest(str, pattern, flags = 'g') {
+  try {
+    if (!str || !pattern) return { success: false, error: '문자열과 패턴을 입력해주세요.' };
+    
+    const regex = new RegExp(pattern, flags);
+    const matches = str.match(regex);
+    const isMatch = regex.test(str);
+    
+    return {
+      success: true,
+      isMatch,
+      matches: matches || [],
+      matchCount: matches ? matches.length : 0
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `정규식 오류: ${error.message}`
+    };
+  }
+}
+
+/**
+ * 정규식으로 문자열 치환
+ */
+export function regexReplace(str, pattern, replacement, flags = 'g') {
+  try {
+    if (!str || !pattern) return { success: false, error: '문자열과 패턴을 입력해주세요.' };
+    
+    const regex = new RegExp(pattern, flags);
+    const result = str.replace(regex, replacement || '');
+    
+    return {
+      success: true,
+      result
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `정규식 오류: ${error.message}`
+    };
+  }
+}

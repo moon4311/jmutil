@@ -89,6 +89,56 @@
             </div>
           </div>
         </GroupPanel>
+
+        <GroupPanel v-model="showPurple" title="반올림/올림/내림" color="purple">
+          <div class="space-y-4">
+            <div class="flex flex-col md:flex-row gap-4">
+              <div class="flex-1">
+                <label class="block mb-1 font-semibold">숫자 입력</label>
+                <v-text-field 
+                  v-model.number="roundInput" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number" 
+                  step="any"
+                  placeholder="예: 123.456789"
+                />
+              </div>
+              <div style="min-width:120px">
+                <label class="block mb-1 font-semibold">소수점 자리</label>
+                <v-text-field 
+                  v-model.number="decimals" 
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details
+                  type="number" 
+                  min="0" 
+                  max="10" 
+                  placeholder="2" 
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block mb-1 font-semibold">반올림 결과</label>
+                <CopyInput :model-value="roundResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">올림 결과</label>
+                <CopyInput :model-value="ceilResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">내림 결과</label>
+                <CopyInput :model-value="floorResult" />
+              </div>
+              <div>
+                <label class="block mb-1 font-semibold">버림 결과</label>
+                <CopyInput :model-value="truncResult" />
+              </div>
+            </div>
+          </div>
+        </GroupPanel>
       </div>
     </div>
   </div>
@@ -96,13 +146,14 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
-import { toBinary, toHex, getRandomInts } from '@/utils/NumberUtil.js';
+import { toBinary, toHex, getRandomInts, roundNumber, ceilNumber, floorNumber, truncNumber } from '@/utils/NumberUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
 
 // 아코디언 상태
 const showBlue = ref(true);
 const showGreen = ref(true);
+const showPurple = ref(true);
 
 // 진수 변환
 const input = ref('');
@@ -132,4 +183,32 @@ function generateRandomNumbers() {
   
   randomNumbers.value = getRandomInts(min, max, count);
 }
+
+// 반올림/올림/내림
+const roundInput = ref(123.456789);
+const decimals = ref(2);
+
+const roundResult = computed(() => {
+  const num = Number(roundInput.value);
+  const dec = Number(decimals.value) || 0;
+  return isNaN(num) ? '' : roundNumber(num, dec).toString();
+});
+
+const ceilResult = computed(() => {
+  const num = Number(roundInput.value);
+  const dec = Number(decimals.value) || 0;
+  return isNaN(num) ? '' : ceilNumber(num, dec).toString();
+});
+
+const floorResult = computed(() => {
+  const num = Number(roundInput.value);
+  const dec = Number(decimals.value) || 0;
+  return isNaN(num) ? '' : floorNumber(num, dec).toString();
+});
+
+const truncResult = computed(() => {
+  const num = Number(roundInput.value);
+  const dec = Number(decimals.value) || 0;
+  return isNaN(num) ? '' : truncNumber(num, dec).toString();
+});
 </script>

@@ -48,6 +48,9 @@
           <NuxtLink to="/array-utils" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-format-list-bulleted">배열</v-btn>
           </NuxtLink>
+          <NuxtLink to="/csv-utils" custom v-slot="{ navigate, href }">
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-file-delimited">CSV 변환</v-btn>
+          </NuxtLink>
           <NuxtLink to="/color-utils" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-palette">색상</v-btn>
           </NuxtLink>

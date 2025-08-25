@@ -42,3 +42,53 @@ export function getRandomInts(min, max, count) {
   }
   return result;
 }
+
+// =============== 반올림/올림/내림 함수들 ===============
+
+/**
+ * 반올림 (소수점 지정 자리수)
+ * @param {number} num - 반올림할 숫자
+ * @param {number} decimals - 소수점 자리수 (기본값: 0)
+ * @returns {number} 반올림된 숫자
+ */
+export function roundNumber(num, decimals = 0) {
+  if (isNaN(num)) return NaN;
+  const multiplier = Math.pow(10, decimals);
+  return Math.round(num * multiplier) / multiplier;
+}
+
+/**
+ * 올림 (소수점 지정 자리수)
+ * @param {number} num - 올림할 숫자
+ * @param {number} decimals - 소수점 자리수 (기본값: 0)
+ * @returns {number} 올림된 숫자
+ */
+export function ceilNumber(num, decimals = 0) {
+  if (isNaN(num)) return NaN;
+  const multiplier = Math.pow(10, decimals);
+  return Math.ceil(num * multiplier) / multiplier;
+}
+
+/**
+ * 내림 (소수점 지정 자리수)
+ * @param {number} num - 내림할 숫자
+ * @param {number} decimals - 소수점 자리수 (기본값: 0)
+ * @returns {number} 내림된 숫자
+ */
+export function floorNumber(num, decimals = 0) {
+  if (isNaN(num)) return NaN;
+  const multiplier = Math.pow(10, decimals);
+  return Math.floor(num * multiplier) / multiplier;
+}
+
+/**
+ * 버림 (소수점 지정 자리수) - trunc와 동일
+ * @param {number} num - 버림할 숫자
+ * @param {number} decimals - 소수점 자리수 (기본값: 0)
+ * @returns {number} 버림된 숫자
+ */
+export function truncNumber(num, decimals = 0) {
+  if (isNaN(num)) return NaN;
+  const multiplier = Math.pow(10, decimals);
+  return Math.trunc(num * multiplier) / multiplier;
+}
