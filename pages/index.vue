@@ -32,19 +32,19 @@
         </div>
       </div>
 
-      <!-- 숫자 -->
+      <!-- JSON 가공 (위치 변경됨) -->
       <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
         <div class="bg-purple-500 text-white p-4">
           <h2 class="text-xl font-semibold flex items-center">
             <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" />
+              <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
-            숫자 변환/생성
+            JSON 가공
           </h2>
         </div>
         <div class="p-4">
-          <p class="text-gray-600 mb-4">진법 변환, 랜덤 수 생성, 수학 계산 등</p>
-          <NuxtLink to="/number-utils" class="inline-block w-full bg-purple-500 text-white text-center py-2 px-4 rounded hover:bg-purple-600 transition-colors">
+          <p class="text-gray-600 mb-4">유효성 검사, 포맷팅, 필터링, 검색, 정렬 등</p>
+          <NuxtLink to="/json-utils" class="inline-block w-full bg-purple-500 text-white text-center py-2 px-4 rounded hover:bg-purple-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -61,7 +61,7 @@
           </h2>
         </div>
         <div class="p-4">
-          <p class="text-gray-600 mb-4">날짜 형식 변환, 타임스탬프 처리, 날짜 계산 등</p>
+          <p class="text-gray-600 mb-4">형식 변환, 타임스탬프 처리, 날짜 계산 등</p>
           <NuxtLink to="/date-utils" class="inline-block w-full bg-blue-500 text-white text-center py-2 px-4 rounded hover:bg-blue-600 transition-colors">
             이용하기
           </NuxtLink>
@@ -124,25 +124,25 @@
 
      
 
-      <!-- JSON 유틸리티 -->
+      
+
+      <!-- JSON 유틸리티 (위치 변경됨 - 이제는 숫자가 이 위치에) -->
       <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
         <div class="bg-orange-500 text-white p-4">
           <h2 class="text-xl font-semibold flex items-center">
             <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" />
             </svg>
-            JSON 유틸리티
+            숫자 변환/생성
           </h2>
         </div>
         <div class="p-4">
-          <p class="text-gray-600 mb-4">JSON 포맷팅, 압축, 유효성 검사 등</p>
-          <NuxtLink to="/json-utils" class="inline-block w-full bg-orange-500 text-white text-center py-2 px-4 rounded hover:bg-orange-600 transition-colors">
+          <p class="text-gray-600 mb-4">진법 변환, 랜덤 수 생성, 수학 계산 등</p>
+          <NuxtLink to="/number-utils" class="inline-block w-full bg-orange-500 text-white text-center py-2 px-4 rounded hover:bg-orange-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
-      </div>
-
-      <!-- QR코드 생성 -->
+      </div>      <!-- QR코드 생성 -->
       <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
         <div class="bg-gray-700 text-white p-4">
           <h2 class="text-xl font-semibold flex items-center">
@@ -171,7 +171,7 @@
           </h2>
         </div>
         <div class="p-4">
-          <p class="text-gray-600 mb-4">타이머와 JSON 데이터 관리 도구</p>
+          <p class="text-gray-600 mb-4">타이머앱 JSON 데이터 생성</p>
           <NuxtLink to="/timer-json" class="inline-block w-full bg-teal-500 text-white text-center py-2 px-4 rounded hover:bg-teal-600 transition-colors">
             이용하기
           </NuxtLink>

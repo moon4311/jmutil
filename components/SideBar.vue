@@ -43,29 +43,28 @@
         </div>
         <div class="space-y-2 pl-5" v-show="basicOpen">
           <NuxtLink to="/json-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-json">JSON/객체</v-btn>
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-json">JSON 가공</v-btn>
+          </NuxtLink>
+          <NuxtLink to="/csv-utils" custom v-slot="{ navigate, href }">
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-file-delimited">CSV/JSON 변환</v-btn>
           </NuxtLink>
           <NuxtLink to="/array-utils" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-format-list-bulleted">배열</v-btn>
           </NuxtLink>
-          <NuxtLink to="/csv-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-file-delimited">CSV 변환</v-btn>
-          </NuxtLink>
-          <NuxtLink to="/color-utils" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-palette">색상</v-btn>
-          </NuxtLink>
         </div>
       </div>
       <hr />
-      <!-- 타이머/QR 그룹 (아코디언) -->
       <div>
         <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="timerOpen = !timerOpen">
           <v-icon size="18">{{ timerOpen ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon>
-          <span class="ml-1">타이머/QR</span>
+          <span class="ml-1">테스트</span>
         </div>
         <div class="space-y-2 pl-5" v-show="timerOpen">
           <NuxtLink to="/timer-json" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer">타이머 Json 생성</v-btn>
+          </NuxtLink>
+          <NuxtLink to="/color-utils" custom v-slot="{ navigate, href }">
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-palette">색상</v-btn>
           </NuxtLink>
           <NuxtLink to="/timer" custom v-slot="{ navigate, href }">
             <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-timer-outline">타이머</v-btn>

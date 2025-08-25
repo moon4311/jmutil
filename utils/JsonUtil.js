@@ -141,3 +141,343 @@ export function generateCsvFileName() {
   
   return `${year}${month}${day}${hours}${minutes}${seconds}.csv`;
 }
+
+// =============== JSON 고급 기능들 ===============
+
+/**
+ * JSON 데이터에서 사용 가능한 키 목록 추출
+ * @param {string} jsonStr - JSON 문자열
+ * @returns {string[]} 키 목록 배열
+ */
+export function extractKeys(jsonStr) {
+  try {
+    if (!jsonStr) return [];
+
+    const jsonData = JSON.parse(jsonStr);
+    const keys = new Set();
+    
+    if (Array.isArray(jsonData)) {
+      // 배열인 경우 모든 객체의 키를 수집
+      jsonData.forEach(item => {
+        if (typeof item === 'object' && item !== null) {
+          Object.keys(item).forEach(key => keys.add(key));
+        }
+      });
+    } else if (typeof jsonData === 'object' && jsonData !== null) {
+      // 단일 객체인 경우
+      Object.keys(jsonData).forEach(key => keys.add(key));
+    }
+    
+    return Array.from(keys).sort();
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * JSON 배열에서 특정 키들만 선택해서 추출
+ * @param {string} jsonStr - JSON 문자열
+ * @param {string[]} keys - 추출할 키 배열
+ * @returns {string} 필터링된 JSON 문자열
+ */
+export function selectKeys(jsonStr, keys) {
+  try {
+    if (!jsonStr || !keys || keys.length === 0) {
+      throw new Error('JSON 데이터와 키를 입력해주세요.');
+    }
+
+    const jsonData = JSON.parse(jsonStr);
+    
+    if (Array.isArray(jsonData)) {
+      const filteredData = jsonData.map(item => {
+        const filteredItem = {};
+        keys.forEach(key => {
+          if (item.hasOwnProperty(key)) {
+            filteredItem[key] = item[key];
+          }
+        });
+        return filteredItem;
+      });
+      return JSON.stringify(filteredData, null, 2);
+    } else if (typeof jsonData === 'object' && jsonData !== null) {
+      const filteredData = {};
+      keys.forEach(key => {
+        if (jsonData.hasOwnProperty(key)) {
+          filteredData[key] = jsonData[key];
+        }
+      });
+      return JSON.stringify(filteredData, null, 2);
+    } else {
+      throw new Error('JSON 데이터는 객체 또는 객체 배열이어야 합니다.');
+    }
+  } catch (error) {
+    throw new Error(`키 선택 오류: ${error.message}`);
+  }
+}
+
+/**
+ * JSON 배열에서 다중 조건을 만족하는 객체 찾기
+ * @param {string} jsonStr - JSON 문자열
+ * @param {array} conditions - 조건 배열 [{ key, operator, value }, ...]
+ * @param {string} logicalOperator - 논리 연산자 ('AND' 또는 'OR')
+ * @returns {string} 조건에 맞는 객체들의 JSON 문자열
+ */
+export function filterObjectsMultiple(jsonStr, conditions, logicalOperator = 'AND') {
+  try {
+    if (!jsonStr || !conditions || conditions.length === 0) {
+      throw new Error('JSON 데이터와 조건을 입력해주세요.');
+    }
+
+    const jsonData = JSON.parse(jsonStr);
+    
+    if (!Array.isArray(jsonData)) {
+      throw new Error('JSON 데이터는 배열이어야 합니다.');
+    }
+
+    // 유효한 조건만 필터링
+    const validConditions = conditions.filter(condition => 
+      condition.key && condition.value !== undefined && condition.value !== ''
+    );
+
+    if (validConditions.length === 0) {
+      throw new Error('유효한 조건이 없습니다.');
+    }
+
+    const filteredData = jsonData.filter(item => {
+      const conditionResults = validConditions.map(condition => {
+        if (!item.hasOwnProperty(condition.key)) {
+          return false;
+        }
+
+        const itemValue = item[condition.key];
+        const compareValue = condition.value;
+
+        // 숫자 비교를 위한 변환
+        const numItemValue = Number(itemValue);
+        const numCompareValue = Number(compareValue);
+        const isNumericComparison = !isNaN(numItemValue) && !isNaN(numCompareValue);
+
+        switch (condition.operator) {
+          case '=':
+          case '==':
+            return itemValue == compareValue;
+          case '!=':
+            return itemValue != compareValue;
+          case '>':
+            return isNumericComparison ? numItemValue > numCompareValue : String(itemValue) > String(compareValue);
+          case '<':
+            return isNumericComparison ? numItemValue < numCompareValue : String(itemValue) < String(compareValue);
+          case '>=':
+            return isNumericComparison ? numItemValue >= numCompareValue : String(itemValue) >= String(compareValue);
+          case '<=':
+            return isNumericComparison ? numItemValue <= numCompareValue : String(itemValue) <= String(compareValue);
+          case 'contains':
+            return String(itemValue).toLowerCase().includes(String(compareValue).toLowerCase());
+          case 'startsWith':
+            return String(itemValue).toLowerCase().startsWith(String(compareValue).toLowerCase());
+          case 'endsWith':
+            return String(itemValue).toLowerCase().endsWith(String(compareValue).toLowerCase());
+          default:
+            throw new Error(`지원하지 않는 연산자: ${condition.operator}`);
+        }
+      });
+
+      // 논리 연산자에 따라 결과 결합
+      if (logicalOperator === 'OR') {
+        return conditionResults.some(result => result);
+      } else { // AND
+        return conditionResults.every(result => result);
+      }
+    });
+
+    return JSON.stringify(filteredData, null, 2);
+  } catch (error) {
+    throw new Error(`필터링 오류: ${error.message}`);
+  }
+}
+
+/**
+ * JSON 배열에서 특정 조건을 만족하는 객체 찾기 (기존 단일 조건)
+ * @param {string} jsonStr - JSON 문자열
+ * @param {string} key - 검색할 키
+ * @param {string} operator - 비교 연산자 (=, !=, >, <, >=, <=, contains, startsWith, endsWith)
+ * @param {string} value - 비교할 값
+ * @returns {string} 조건에 맞는 객체들의 JSON 문자열
+ */
+export function filterObjects(jsonStr, key, operator, value) {
+  try {
+    if (!jsonStr || !key || !operator || value === undefined) {
+      throw new Error('모든 필드를 입력해주세요.');
+    }
+
+    const jsonData = JSON.parse(jsonStr);
+    
+    if (!Array.isArray(jsonData)) {
+      throw new Error('JSON 데이터는 배열이어야 합니다.');
+    }
+
+    const filteredData = jsonData.filter(item => {
+      if (!item.hasOwnProperty(key)) {
+        return false;
+      }
+
+      const itemValue = item[key];
+      const compareValue = value;
+
+      // 숫자 비교를 위한 변환
+      const numItemValue = Number(itemValue);
+      const numCompareValue = Number(compareValue);
+      const isNumericComparison = !isNaN(numItemValue) && !isNaN(numCompareValue);
+
+      switch (operator) {
+        case '=':
+        case '==':
+          return itemValue == compareValue;
+        case '!=':
+          return itemValue != compareValue;
+        case '>':
+          return isNumericComparison ? numItemValue > numCompareValue : String(itemValue) > String(compareValue);
+        case '<':
+          return isNumericComparison ? numItemValue < numCompareValue : String(itemValue) < String(compareValue);
+        case '>=':
+          return isNumericComparison ? numItemValue >= numCompareValue : String(itemValue) >= String(compareValue);
+        case '<=':
+          return isNumericComparison ? numItemValue <= numCompareValue : String(itemValue) <= String(compareValue);
+        case 'contains':
+          return String(itemValue).toLowerCase().includes(String(compareValue).toLowerCase());
+        case 'startsWith':
+          return String(itemValue).toLowerCase().startsWith(String(compareValue).toLowerCase());
+        case 'endsWith':
+          return String(itemValue).toLowerCase().endsWith(String(compareValue).toLowerCase());
+        default:
+          throw new Error(`지원하지 않는 연산자: ${operator}`);
+      }
+    });
+
+    return JSON.stringify(filteredData, null, 2);
+  } catch (error) {
+    throw new Error(`필터링 오류: ${error.message}`);
+  }
+}
+
+/**
+ * JSON 배열을 특정 키로 정렬
+ * @param {string} jsonStr - JSON 문자열
+ * @param {string} key - 정렬할 키
+ * @param {string} order - 정렬 순서 ('asc' 또는 'desc')
+ * @param {string} type - 데이터 타입 ('string', 'number', 'date')
+ * @returns {string} 정렬된 JSON 문자열
+ */
+export function sortObjects(jsonStr, key, order = 'asc', type = 'string') {
+  try {
+    if (!jsonStr || !key) {
+      throw new Error('JSON 데이터와 정렬 키를 입력해주세요.');
+    }
+
+    const jsonData = JSON.parse(jsonStr);
+    
+    if (!Array.isArray(jsonData)) {
+      throw new Error('JSON 데이터는 배열이어야 합니다.');
+    }
+
+    const sortedData = [...jsonData].sort((a, b) => {
+      if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+        return 0;
+      }
+
+      let valueA = a[key];
+      let valueB = b[key];
+
+      // 데이터 타입에 따른 변환
+      switch (type) {
+        case 'number':
+          valueA = Number(valueA);
+          valueB = Number(valueB);
+          if (isNaN(valueA)) valueA = 0;
+          if (isNaN(valueB)) valueB = 0;
+          break;
+        case 'date':
+          valueA = new Date(valueA);
+          valueB = new Date(valueB);
+          if (isNaN(valueA.getTime())) valueA = new Date(0);
+          if (isNaN(valueB.getTime())) valueB = new Date(0);
+          break;
+        default: // 'string'
+          valueA = String(valueA).toLowerCase();
+          valueB = String(valueB).toLowerCase();
+          break;
+      }
+
+      let result = 0;
+      if (valueA < valueB) {
+        result = -1;
+      } else if (valueA > valueB) {
+        result = 1;
+      }
+
+      return order === 'desc' ? -result : result;
+    });
+
+    return JSON.stringify(sortedData, null, 2);
+  } catch (error) {
+    throw new Error(`정렬 오류: ${error.message}`);
+  }
+}
+
+/**
+ * JSON 배열의 통계 정보 계산
+ * @param {string} jsonStr - JSON 문자열
+ * @param {string} key - 계산할 키 (숫자형 데이터)
+ * @returns {object} 통계 정보 (count, sum, avg, min, max)
+ */
+export function calculateStats(jsonStr, key) {
+  try {
+    if (!jsonStr || !key) {
+      throw new Error('JSON 데이터와 키를 입력해주세요.');
+    }
+
+    const jsonData = JSON.parse(jsonStr);
+    
+    if (!Array.isArray(jsonData)) {
+      throw new Error('JSON 데이터는 배열이어야 합니다.');
+    }
+
+    const values = jsonData
+      .filter(item => item.hasOwnProperty(key))
+      .map(item => Number(item[key]))
+      .filter(value => !isNaN(value));
+
+    if (values.length === 0) {
+      return {
+        count: 0,
+        sum: 0,
+        avg: 0,
+        min: 0,
+        max: 0,
+        error: '유효한 숫자 데이터가 없습니다.'
+      };
+    }
+
+    const sum = values.reduce((acc, value) => acc + value, 0);
+    const avg = sum / values.length;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+
+    return {
+      count: values.length,
+      sum: sum,
+      avg: Number(avg.toFixed(2)),
+      min: min,
+      max: max
+    };
+  } catch (error) {
+    return {
+      count: 0,
+      sum: 0,
+      avg: 0,
+      min: 0,
+      max: 0,
+      error: `통계 계산 오류: ${error.message}`
+    };
+  }
+}
