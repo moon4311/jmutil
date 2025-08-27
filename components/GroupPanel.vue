@@ -6,16 +6,18 @@
       class="group-panel__header"
       :class="[
         modelValue
-          ? `bg-${color}-100 text-${color}-700`
-          : `bg-${color}-50 text-${color}-500 hover:bg-${color}-100`,
-        `group-panel__header--${color}`
+          ? `bg-${color}-100`
+          : `bg-${color}-50 hover:bg-${color}-100`,
+        `group-panel__header--${color}`,
+        'group-panel__header--colors',
+        { 'group-panel__header--expanded': modelValue }
       ]"
       :aria-expanded="modelValue"
       :aria-controls="`panel-${panelId}`"
     >
       <span class="group-panel__title">{{ title }}</span>
       <v-icon 
-        :color="modelValue ? color : color + '-lighten-2'"
+        :color="modelValue ? color : color"
         class="group-panel__icon"
         :class="{ 'group-panel__icon--expanded': modelValue }"
       >
@@ -71,7 +73,7 @@ const props = defineProps({
     type: String, 
     default: 'blue',
     validator: (value) => {
-      return ['blue', 'green', 'red', 'orange', 'purple', 'indigo', 'pink'].includes(value);
+      return ['blue', 'green', 'red', 'orange', 'purple', 'indigo', 'pink', 'teal', 'yellow', 'gray'].includes(value);
     }
   },
   modelValue: { 
@@ -210,6 +212,87 @@ function onAfterLeave(el) {
 .group-panel__header:focus {
   outline: 2px solid rgba(59, 130, 246, 0.5);
   outline-offset: 2px;
+}
+
+/* 색상별 텍스트 색상 지정 - 매우 높은 우선순위로 강제 적용 */
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--blue.group-panel__header--expanded {
+  color: rgb(29 78 216) !important; /* text-blue-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--blue:not(.group-panel__header--expanded) {
+  color: rgb(59 130 246) !important; /* text-blue-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--green.group-panel__header--expanded {
+  color: rgb(21 128 61) !important; /* text-green-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--green:not(.group-panel__header--expanded) {
+  color: rgb(34 197 94) !important; /* text-green-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--red.group-panel__header--expanded {
+  color: rgb(185 28 28) !important; /* text-red-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--red:not(.group-panel__header--expanded) {
+  color: rgb(239 68 68) !important; /* text-red-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--orange.group-panel__header--expanded {
+  color: rgb(194 65 12) !important; /* text-orange-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--orange:not(.group-panel__header--expanded) {
+  color: rgb(249 115 22) !important; /* text-orange-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--purple.group-panel__header--expanded {
+  color: rgb(126 34 206) !important; /* text-purple-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--purple:not(.group-panel__header--expanded) {
+  color: rgb(168 85 247) !important; /* text-purple-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--indigo.group-panel__header--expanded {
+  color: rgb(67 56 202) !important; /* text-indigo-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--indigo:not(.group-panel__header--expanded) {
+  color: rgb(99 102 241) !important; /* text-indigo-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--pink.group-panel__header--expanded {
+  color: rgb(190 24 93) !important; /* text-pink-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--pink:not(.group-panel__header--expanded) {
+  color: rgb(236 72 153) !important; /* text-pink-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--teal.group-panel__header--expanded {
+  color: rgb(15 118 110) !important; /* text-teal-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--teal:not(.group-panel__header--expanded) {
+  color: rgb(20 184 166) !important; /* text-teal-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--yellow.group-panel__header--expanded {
+  color: rgb(161 98 7) !important; /* text-yellow-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--yellow:not(.group-panel__header--expanded) {
+  color: rgb(234 179 8) !important; /* text-yellow-500 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--gray.group-panel__header--expanded {
+  color: rgb(55 65 81) !important; /* text-gray-700 */
+}
+
+.group-panel .group-panel__header.group-panel__header--colors.group-panel__header--gray:not(.group-panel__header--expanded) {
+  color: rgb(107 114 128) !important; /* text-gray-500 */
 }
 
 .group-panel__title {
