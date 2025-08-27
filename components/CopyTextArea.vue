@@ -47,15 +47,25 @@ function copyToClipboard() {
   align-items: flex-start;
   gap: 0.5rem;
 }
+
 .copy-textarea {
   flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 1rem;
-  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-family: 'Courier New', Consolas, Monaco, 'Lucida Console', monospace;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
   resize: none;
 }
+
+.copy-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .copy-btn {
   background: none;
   border: none;
@@ -63,12 +73,21 @@ function copyToClipboard() {
   padding: 0.25rem;
   display: flex;
   align-items: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
   height: 2.5rem;
 }
-.copy-btn svg {
-  color: #666;
+
+.copy-btn:hover {
+  background-color: #f3f4f6;
 }
+
+.copy-btn svg {
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
 .copy-btn:hover svg {
-  color: #007bff;
+  color: #3b82f6;
 }
 </style>

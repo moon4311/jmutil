@@ -1,17 +1,18 @@
 <template>
-  <div class="copy-input-wrapper" role="group" :aria-label="`복사 가능한 입력 필드: ${placeholder}`">
+  <div class="input-wrapper" role="group" :aria-label="`복사 가능한 입력 필드: ${placeholder}`">
     <input
       ref="inputRef"
       :value="modelValue"
       readonly
-      class="copy-input"
+      class="input-field"
+      style="padding-right: 3rem;"
       :placeholder="placeholder"
       :aria-label="placeholder || '복사할 텍스트'"
       :aria-describedby="copyTooltip ? 'copy-tooltip' : undefined"
       @focus="$event.target.select()"
     />
     <button 
-      class="copy-btn" 
+      class="copy-button" 
       type="button"
       :disabled="!modelValue"
       :title="copyTooltip"
@@ -150,59 +151,21 @@ async function fallbackCopyToClipboard(text) {
 </script>
 
 <style scoped>
-.copy-input-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-.copy-input {
-  width: 100%;
-  padding: 0.5rem 3rem 0.5rem 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-.copy-btn {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-}
-.copy-btn svg {
-  color: #666;
-}
-.copy-btn:hover svg {
-  color: #007bff;
-}
-</style>
-
-<style scoped>
 .copy-alert {
   position: absolute;
   top: -2.2rem;
   left: 50%;
   transform: translateX(-50%);
-  background: #222;
-  color: #fff;
-  padding: 0.3rem 1rem;
-  border-radius: 4px;
-  font-size: 0.95rem;
+  background: #10b981;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
   white-space: nowrap;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 1000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
   opacity: 0.95;
-}
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
 }
 </style>

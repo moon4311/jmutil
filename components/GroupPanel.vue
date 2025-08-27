@@ -154,7 +154,7 @@ function onAfterLeave(el) {
   padding: 1rem;
 }
 
-/* 애니메이션 */
+/* 애니메이션 - 공통 트랜지션 사용 */
 .panel-expand-enter-active,
 .panel-expand-leave-active {
   transition: height 0.3s ease;

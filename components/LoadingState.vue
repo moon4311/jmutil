@@ -13,8 +13,7 @@
     <div class="loading-content" :class="sizeClass">
       <!-- 로딩 스피너 -->
       <div class="spinner-container">
-        <div v-if="type === 'spinner'" class="custom-spinner" :class="colorClass">
-          <div class="spinner-circle"></div>
+        <div v-if="type === 'spinner'" class="loading-spinner" :class="[sizeClass, colorClass]">
         </div>
         
         <v-progress-circular
@@ -196,7 +195,7 @@ const onBackdropClick = () => {
 </script>
 
 <style scoped>
-/* 로딩 컨테이너 */
+/* 로딩 컨테이너 - 공통 클래스 확장 */
 .loading-container {
   display: flex;
   align-items: center;
@@ -279,20 +278,6 @@ const onBackdropClick = () => {
   height: 48px;
 }
 
-.spinner-circle {
-  width: 100%;
-  height: 100%;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* 점 스피너 */
 .dots-spinner {
   display: flex;
@@ -359,22 +344,6 @@ const onBackdropClick = () => {
   max-width: 200px;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 6px;
-  background-color: #e5e7eb;
-  border-radius: 3px;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: #3498db;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
 .progress-text {
   text-align: center;
   font-size: 0.875rem;
@@ -382,43 +351,23 @@ const onBackdropClick = () => {
 }
 
 /* 색상 테마 */
-.color-primary .spinner-circle {
-  border-top-color: #3498db;
-}
-
 .color-primary .dot,
-.color-primary .pulse-circle,
-.color-primary .progress-fill {
+.color-primary .pulse-circle {
   background-color: #3498db;
 }
 
-.color-success .spinner-circle {
-  border-top-color: #22c55e;
-}
-
 .color-success .dot,
-.color-success .pulse-circle,
-.color-success .progress-fill {
+.color-success .pulse-circle {
   background-color: #22c55e;
 }
 
-.color-warning .spinner-circle {
-  border-top-color: #f59e0b;
-}
-
 .color-warning .dot,
-.color-warning .pulse-circle,
-.color-warning .progress-fill {
+.color-warning .pulse-circle {
   background-color: #f59e0b;
 }
 
-.color-error .spinner-circle {
-  border-top-color: #ef4444;
-}
-
 .color-error .dot,
-.color-error .pulse-circle,
-.color-error .progress-fill {
+.color-error .pulse-circle {
   background-color: #ef4444;
 }
 
@@ -439,10 +388,6 @@ const onBackdropClick = () => {
   
   .loading-text {
     color: #f9fafb;
-  }
-  
-  .progress-bar {
-    background-color: #374151;
   }
   
   .progress-text {

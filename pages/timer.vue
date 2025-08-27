@@ -489,8 +489,7 @@ definePageMeta({
 })
 </script>
 
+<!-- timer.vue의 스타일은 이제 공통 CSS를 사용 -->
 <style scoped>
-.font-mono {
-  font-family: 'Courier New', monospace;
-}
+/* 타이머 전용 스타일만 유지 */
 </style>
