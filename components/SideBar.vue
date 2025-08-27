@@ -1,19 +1,11 @@
 <template>
   <aside :class="['fixed z-40 md:static md:translate-x-0 transition-transform duration-200', sidebarOpen ? 'translate-x-0' : '-translate-x-full', 'w-64 bg-white shadow-md flex flex-col h-full']">
     <!-- 헤더 -->
-    <div class="h-16 flex items-center justify-between border-b px-4">
-      <span class="font-bold text-lg">web-util</span>
-      <div class="block md:hidden">
-        <v-btn icon @click="$emit('close')">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </div>
-    </div>
     <nav class="flex-1 p-4 space-y-4">
       <!-- 홈 메뉴 -->
-      <NuxtLink to="/" custom v-slot="{ navigate, href }">
-        <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-home">홈</v-btn>
-      </NuxtLink>
+      <v-btn @click="$emit('close')" block variant="text" class="block md:hidden h-24">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
       <hr />
       <div>
         <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="strOpen = !strOpen">
@@ -55,24 +47,6 @@
       </div>
       <hr />
       <div>
-        <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="sqlOpen = !sqlOpen">
-          <v-icon size="18">{{ sqlOpen ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon>
-          <span class="ml-1">SQL</span>
-        </div>
-        <div class="space-y-2 pl-5" v-show="sqlOpen">
-          <NuxtLink to="/sql-utils?tab=query-generator" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-database-edit">쿼리 생성</v-btn>
-          </NuxtLink>
-          <NuxtLink to="/sql-utils?tab=mapper-generator" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-braces">Mapper 생성</v-btn>
-          </NuxtLink>
-          <NuxtLink to="/sql-utils?tab=query-analyzer" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-magnify">쿼리 분석</v-btn>
-          </NuxtLink>
-        </div>
-      </div>
-      <hr />
-      <div>
         <div class="flex items-center cursor-pointer select-none text-xs font-semibold text-gray-500 mb-2" @click="timerOpen = !timerOpen">
           <v-icon size="18">{{ timerOpen ? 'mdi-chevron-down' : 'mdi-chevron-right' }}</v-icon>
           <span class="ml-1">테스트</span>
@@ -92,18 +66,6 @@
           </NuxtLink>
         </div>
       </div>
-      
-      <!-- 광고영역 -->
-      <div class="mt-6 pt-4 border-t border-gray-200">
-        <div class="text-xs text-gray-400 text-center mb-2">광고</div>
-        <div class="flex justify-center">
-          <ins class="kakao_ad_area" style="display:none;"
-               data-ad-unit = "DAN-03qvHyP7MQAvCIUk"
-               data-ad-width = "250"
-               data-ad-height = "250">
-          </ins>
-        </div>
-      </div>
     </nav>
   </aside>
 </template>
@@ -119,6 +81,5 @@ const emit = defineEmits(['close']);
 // 아코디언 상태
 const strOpen = ref(true);
 const basicOpen = ref(true);
-const sqlOpen = ref(true);
 const timerOpen = ref(true);
 </script>
