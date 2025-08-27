@@ -1,10 +1,13 @@
 
 <template>
   <div class="container mx-auto p-6">
+    <!-- SEO 및 접근성 개선된 제목 -->
     <div class="mb-12 text-center">
       <div class="bg-gray-100 rounded-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">유용한 도구들</h3>
-        <p class="text-gray-600">
+        <h1 class="text-xl font-semibold text-gray-800 mb-2" id="main-heading">
+          유용한 도구들
+        </h1>
+        <p class="text-gray-600" role="doc-subtitle">
           일상적인 개발 작업에서 자주 사용되는 JavaScript 유틸리티 함수들을 웹 인터페이스로 제공합니다.
           <br>
           모든 도구는 클라이언트 사이드에서 실행되며, 데이터가 서버로 전송되지 않습니다.
@@ -81,6 +84,24 @@
         <div class="p-4">
           <p class="text-gray-600 mb-4">일반텍스트, 암호 등</p>
           <NuxtLink to="/localstorage-utils" class="inline-block w-full bg-indigo-500 text-white text-center py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
+            이용하기
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- SQL 유틸리티 -->
+      <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+        <div class="bg-blue-600 text-white p-4">
+          <h2 class="text-xl font-semibold flex items-center">
+            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zM4 14a2 2 0 002-2h8a2 2 0 002 2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4zM6 4a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2h-2.343a1 1 0 01-.707-.293l-2.414-2.414a1 1 0 00-.707-.293H8a2 2 0 01-2-2V4z" />
+            </svg>
+            SQL 유틸리티
+          </h2>
+        </div>
+        <div class="p-4">
+          <p class="text-gray-600 mb-4">쿼리 생성, Mapper 생성, 쿼리 분석 등</p>
+          <NuxtLink to="/sql-utils" class="inline-block w-full bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition-colors">
             이용하기
           </NuxtLink>
         </div>

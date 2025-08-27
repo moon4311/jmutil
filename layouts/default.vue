@@ -11,12 +11,21 @@
                 <!-- Main Content -->
                 <div class="flex-1 flex flex-col min-w-0">
                     <!-- Header -->
-                    <header class="h-16 bg-white shadow flex items-center justify-between px-4 md:px-6 sticky top-0 z-20">
+                    <header class="h-24 bg-white shadow flex items-center justify-between px-4 md:px-6 sticky top-0 z-20">
                     <div class="flex items-center gap-2">
                         <v-btn icon class="md:hidden" @click="sidebarOpen = true">
                         <v-icon>mdi-menu</v-icon>
                         </v-btn>
                         <span class="font-bold text-xl text-gray-800">web-util</span>
+                    </div>
+
+                    <!-- 광고 위치 -->
+                    <div class="hidden lg:flex items-center px-2">
+                        <ins class="kakao_ad_area" style="display:none;"
+                            data-ad-unit="DAN-q3apLfzK9uRxRmyA"
+                            data-ad-width="728"
+                            data-ad-height="90">
+                        </ins>
                     </div>
                     
                     <div class="flex items-center gap-4">
@@ -90,8 +99,8 @@
                         
                         <!-- Ad Banner Area -->
                         <aside class="hidden lg:block p-4 bg-white shadow-sm border-l border-gray-200" style="flex: 1; min-width: 200px;">
-                            <div class="sticky top-20">
-                                <!-- 카카오 애드핏 광고 -->
+                            <div class="sticky top-28">
+                                <div class="text-xs text-gray-400 text-center mb-2">광고</div>
                                 <div class="flex justify-center">
                                     <ins class="kakao_ad_area" style="display:none;"
                                         data-ad-unit="DAN-W1I8djLN57Nf4yPR"
@@ -112,6 +121,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import SideBar from '~/components/SideBar.vue';
+import { useKakaoAds } from '~/composables/useKakaoAds';
 
 // 카카오 애드핏 스크립트 추가
 useHead({
@@ -123,8 +133,10 @@ useHead({
   ]
 });
 
-const sidebarOpen = ref(false);
+// 광고 관리
+const { initAds, cleanupAds } = useKakaoAds();
 
+const sidebarOpen = ref(false);
 const toast = ref({ show: false, message: '' });
 let toastTimeout = null;
 
@@ -143,9 +155,14 @@ function onToastEvent(e) {
 
 onMounted(() => {
     window.addEventListener('toast', onToastEvent);
+    
+    // 광고 초기화
+    initAds();
 });
+
 onUnmounted(() => {
     window.removeEventListener('toast', onToastEvent);
+    cleanupAds();
 });
 </script>
 <style scoped>
@@ -154,5 +171,24 @@ onUnmounted(() => {
 }
 .fade-enter-from, .fade-leave-to {
     opacity: 0;
+}
+
+/* 광고 영역 스타일 */
+.kakao_ad_area {
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 광고 로딩 애니메이션 */
+.kakao_ad_area[style*="display: none"] {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: -100% 50%; }
 }
 </style>

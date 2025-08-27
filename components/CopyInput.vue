@@ -1,20 +1,33 @@
 <template>
-  <div class="copy-input-wrapper">
+  <div class="copy-input-wrapper" role="group" :aria-label="`복사 가능한 입력 필드: ${placeholder}`">
     <input
       ref="inputRef"
       :value="modelValue"
       readonly
       class="copy-input"
       :placeholder="placeholder"
+      :aria-label="placeholder || '복사할 텍스트'"
+      :aria-describedby="copyTooltip ? 'copy-tooltip' : undefined"
       @focus="$event.target.select()"
     />
     <button 
       class="copy-btn" 
+      type="button"
       :disabled="!modelValue"
       :title="copyTooltip"
+      :aria-label="copyTooltip"
+      :id="copyTooltip ? 'copy-tooltip' : undefined"
       @click="copyToClipboard"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="20" 
+        height="20" 
+        fill="none" 
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        role="img"
+      >
         <path fill="currentColor" d="M16 1a1 1 0 0 1 1 1v2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V2a1 1 0 0 1 1-1h6Zm3 5h-2v2a1 1 0 0 1-2 0V6H7v14h12V6Zm-4-2h-4v2h4V4Z"/>
       </svg>
     </button>
@@ -69,28 +82,70 @@ function showNotification(message) {
 }
 
 /**
- * 클립보드 복사 함수 (현대적인 API 사용)
+ * 클립보드 복사 함수 (현대적인 API 사용, 에러 처리 강화)
  * @async
  */
 async function copyToClipboard() {
   if (!props.modelValue) return;
 
+  const textToCopy = String(props.modelValue);
+
   try {
-    // 현대적인 Clipboard API 사용
+    // 현대적인 Clipboard API 사용 (HTTPS 환경에서)
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(String(props.modelValue));
+      await navigator.clipboard.writeText(textToCopy);
     } else {
-      // 폴백: 레거시 방식
-      if (inputRef.value) {
-        inputRef.value.select();
-        document.execCommand('copy');
-      }
+      // 폴백: 레거시 방식 (HTTP 환경에서)
+      await fallbackCopyToClipboard(textToCopy);
     }
+    
     showNotification(props.copyMessage);
   } catch (error) {
     console.error('복사 실패:', error);
-    showNotification('복사에 실패했습니다');
+    
+    // 폴백 시도
+    try {
+      await fallbackCopyToClipboard(textToCopy);
+      showNotification(props.copyMessage);
+    } catch (fallbackError) {
+      console.error('폴백 복사도 실패:', fallbackError);
+      showNotification('복사에 실패했습니다. 수동으로 선택 후 복사해주세요.');
+    }
   }
+}
+
+/**
+ * 레거시 복사 방식 (폴백)
+ * @param {string} text 
+ */
+async function fallbackCopyToClipboard(text) {
+  return new Promise((resolve, reject) => {
+    if (!inputRef.value) {
+      reject(new Error('입력 요소를 찾을 수 없습니다'));
+      return;
+    }
+
+    // 임시로 값 설정하고 선택
+    const originalReadonly = inputRef.value.readOnly;
+    inputRef.value.readOnly = false;
+    inputRef.value.value = text;
+    inputRef.value.select();
+    inputRef.value.setSelectionRange(0, text.length);
+
+    try {
+      const successful = document.execCommand('copy');
+      inputRef.value.readOnly = originalReadonly;
+      
+      if (successful) {
+        resolve();
+      } else {
+        reject(new Error('execCommand 실패'));
+      }
+    } catch (error) {
+      inputRef.value.readOnly = originalReadonly;
+      reject(error);
+    }
+  });
 }
 </script>
 

@@ -1,7 +1,7 @@
 // Nuxt 3 + Vuetify + Tailwind (JavaScript, no TypeScript)
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
-  ssr: false,
+  ssr: true,
   css: [
     '@/assets/css/tailwind.css', 
     'vuetify/styles', 
@@ -16,15 +16,25 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
-    minify: process.env.NODE_ENV === 'production',          // dev는 보통 끔
+    minify: process.env.NODE_ENV === 'production',          // 프로덕션에서만 minify
     compressPublicAssets: true,                    // 정적 에셋 gzip/br
-    storage: { cache: { driver: 'memory' } }       // SSR 캐시 스토리지
+    storage: { cache: { driver: 'memory' } },      // SSR 캐시 스토리지
+    prerender: {
+      crawlLinks: true,  // 링크 자동 크롤링으로 정적 생성
+      routes: ['/']      // 미리 렌더링할 라우트
+    }
   },
   experimental: {
-    payloadExtraction: true,   // 초기 페이로드 분리
-    inlineSSRStyles: true      // 크리티컬 CSS 인라인
+    payloadExtraction: false,  // SSR에서는 payload 추출 비활성화
+    inlineSSRStyles: true,     // 크리티컬 CSS 인라인
+    renderJsonPayloads: true   // JSON payload 렌더링 최적화
   },
   compatibilityDate: '2024-04-03',
+  
+  // Site 설정
+  site: {
+    url: 'http://www.web-util.com'
+  },
   
   // SEO 설정
   app: {

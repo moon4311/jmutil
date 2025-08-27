@@ -1,6 +1,38 @@
 // JsonUtil.js - JSON 관련 유틸리티 함수들
 import { pad2 } from './CommonUtil.js';
 
+// 성능 최적화를 위한 캐시
+const parseCache = new Map();
+const MAX_CACHE_SIZE = 100;
+
+/**
+ * 캐시된 JSON 파싱
+ * @param {string} jsonStr - 파싱할 JSON 문자열
+ * @returns {any} 파싱된 객체
+ */
+function cachedJsonParse(jsonStr) {
+  if (!jsonStr || typeof jsonStr !== 'string') {
+    throw new Error('유효하지 않은 JSON 문자열입니다.');
+  }
+
+  // 캐시 확인
+  if (parseCache.has(jsonStr)) {
+    return parseCache.get(jsonStr);
+  }
+
+  // 파싱
+  const parsed = JSON.parse(jsonStr);
+  
+  // 캐시 크기 제한
+  if (parseCache.size >= MAX_CACHE_SIZE) {
+    const firstKey = parseCache.keys().next().value;
+    parseCache.delete(firstKey);
+  }
+  
+  parseCache.set(jsonStr, parsed);
+  return parsed;
+}
+
 /**
  * JSON 문자열을 포맷팅 (들여쓰기 적용)
  * @param {string} jsonStr - 포맷팅할 JSON 문자열
@@ -8,8 +40,13 @@ import { pad2 } from './CommonUtil.js';
  * @throws {Error} JSON 파싱 오류 시 예외 발생
  */
 export function formatJson(jsonStr) {
+  if (!jsonStr?.trim()) {
+    throw new Error('JSON 데이터가 비어있습니다.');
+  }
+  
   try {
-    return JSON.stringify(JSON.parse(jsonStr), null, 2);
+    const parsed = cachedJsonParse(jsonStr);
+    return JSON.stringify(parsed, null, 2);
   } catch (error) {
     throw new Error('JSON 파싱 오류: ' + error.message);
   }
@@ -17,10 +54,18 @@ export function formatJson(jsonStr) {
 
 /**
  * JSON 문자열을 압축 (공백 제거)
+ * @param {string} jsonStr - 압축할 JSON 문자열
+ * @returns {string} 압축된 JSON 문자열
+ * @throws {Error} JSON 파싱 오류 시 예외 발생
  */
 export function minifyJson(jsonStr) {
+  if (!jsonStr?.trim()) {
+    throw new Error('JSON 데이터가 비어있습니다.');
+  }
+  
   try {
-    return JSON.stringify(JSON.parse(jsonStr));
+    const parsed = cachedJsonParse(jsonStr);
+    return JSON.stringify(parsed);
   } catch (error) {
     throw new Error('JSON 파싱 오류: ' + error.message);
   }
@@ -28,10 +73,16 @@ export function minifyJson(jsonStr) {
 
 /**
  * JSON 문자열이 유효한지 검증
+ * @param {string} jsonStr - 검증할 JSON 문자열
+ * @returns {boolean} 유효성 검사 결과
  */
 export function isValidJson(jsonStr) {
+  if (!jsonStr || typeof jsonStr !== 'string') {
+    return false;
+  }
+  
   try {
-    JSON.parse(jsonStr);
+    cachedJsonParse(jsonStr);
     return true;
   } catch {
     return false;
@@ -39,15 +90,18 @@ export function isValidJson(jsonStr) {
 }
 
 /**
- * JSON을 CSV로 변환
+ * JSON을 CSV로 변환 (성능 최적화 버전)
+ * @param {string} jsonStr - 변환할 JSON 문자열
+ * @returns {string} CSV 문자열
+ * @throws {Error} 변환 오류 시 예외 발생
  */
 export function jsonToCsv(jsonStr) {
-  try {
-    if (!jsonStr || jsonStr.trim() === '') {
-      throw new Error('입력된 JSON이 비어있습니다.');
-    }
+  if (!jsonStr?.trim()) {
+    throw new Error('입력된 JSON이 비어있습니다.');
+  }
 
-    const jsonData = JSON.parse(jsonStr);
+  try {
+    const jsonData = cachedJsonParse(jsonStr);
     
     // 배열이 아닌 경우 배열로 감싸기
     const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
@@ -56,68 +110,62 @@ export function jsonToCsv(jsonStr) {
       throw new Error('빈 데이터입니다.');
     }
     
-    // 첫 번째 객체에서 헤더 순서를 정의하고, 나머지 객체에서 추가 키들을 수집
-    const headers = new Set();
+    // 헤더 수집 최적화 - Set 사용
+    const headerSet = new Set();
     
     // 첫 번째 객체의 키 순서를 먼저 추가
-    if (dataArray[0] && typeof dataArray[0] === 'object') {
-      Object.keys(dataArray[0]).forEach(key => headers.add(key));
+    const firstItem = dataArray[0];
+    if (firstItem && typeof firstItem === 'object' && firstItem !== null) {
+      Object.keys(firstItem).forEach(key => headerSet.add(key));
     }
     
-    // 나머지 객체들에서 추가 키들 수집
-    dataArray.forEach(item => {
+    // 나머지 객체들에서 추가 키들 수집 (성능 최적화)
+    for (let i = 1; i < dataArray.length; i++) {
+      const item = dataArray[i];
       if (typeof item === 'object' && item !== null) {
-        Object.keys(item).forEach(key => headers.add(key));
+        Object.keys(item).forEach(key => headerSet.add(key));
       }
-    });
+    }
     
-    const headerArray = Array.from(headers);
+    const headerArray = Array.from(headerSet);
     
-    // CSV 헤더 생성 (BOM 추가로 한글 깨짐 방지)
-    let csv = '\uFEFF' + headerArray.join(',') + '\n';
+    // CSV 생성 - StringBuilder 패턴 사용
+    const csvLines = [];
+    csvLines.push('\uFEFF' + headerArray.join(',')); // BOM 추가
     
-    // 각 행 데이터 생성
-    dataArray.forEach(item => {
+    // 각 행 데이터 생성 (성능 최적화)
+    for (const item of dataArray) {
       if (typeof item !== 'object' || item === null) {
-        // 객체가 아닌 경우 빈 행 추가
-        csv += headerArray.map(() => '').join(',') + '\n';
-        return;
+        csvLines.push(headerArray.map(() => '').join(','));
+        continue;
       }
       
       const row = headerArray.map(header => {
         const value = item[header];
         
-        if (value === null || value === undefined) {
-          return '';
-        }
+        if (value == null) return '';
         
-        // 모든 값을 문자열로 변환
         let stringValue = String(value).trim();
         
-        // 빈 문자열인 경우
-        if (stringValue === '') {
-          return '';
-        }
+        if (stringValue === '') return '';
         
-        // CSV에서 특별히 처리해야 하는 문자들이 포함된 경우 따옴표로 감싸기
+        // CSV 이스케이프 처리
         if (stringValue.includes(',') || 
             stringValue.includes('"') || 
             stringValue.includes('\n') || 
             stringValue.includes('\r') ||
             stringValue.startsWith(' ') || 
             stringValue.endsWith(' ')) {
-          // 따옴표 이스케이프 처리
-          stringValue = stringValue.replace(/"/g, '""');
-          return `"${stringValue}"`;
+          stringValue = `"${stringValue.replace(/"/g, '""')}"`;
         }
         
         return stringValue;
       });
       
-      csv += row.join(',') + '\n';
-    });
+      csvLines.push(row.join(','));
+    }
     
-    return csv;
+    return csvLines.join('\n');
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Error('JSON 형식이 올바르지 않습니다: ' + error.message);
