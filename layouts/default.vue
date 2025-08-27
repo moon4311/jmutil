@@ -36,13 +36,15 @@
 
               <!-- 광고 위치 -->
               <div class="header-ad">
-                <ins 
-                  class="kakao_ad_area" 
-                  style="display:none;"
-                  data-ad-unit="DAN-q3apLfzK9uRxRmyA"
-                  data-ad-width="728"
-                  data-ad-height="90"
-                />
+                <ClientOnly>
+                  <ins 
+                    class="kakao_ad_area" 
+                    style="display:none;"
+                    data-ad-unit="DAN-q3apLfzK9uRxRmyA"
+                    data-ad-width="728"
+                    data-ad-height="90"
+                  />
+                </ClientOnly>
               </div>
               
               <div class="header-right">
@@ -118,14 +120,16 @@
               <main class="main-content">
                 <slot />
                 <!-- Toast Notification -->
-                <transition name="fade">
-                  <div 
-                    v-if="toast.show" 
-                    class="toast-notification"
-                  >
-                    {{ toast.message }}
-                  </div>
-                </transition>
+                <ClientOnly>
+                  <transition name="fade">
+                    <div 
+                      v-if="toast.show" 
+                      class="toast-notification"
+                    >
+                      {{ toast.message }}
+                    </div>
+                  </transition>
+                </ClientOnly>
               </main>
               
               <!-- Ad Banner Area -->
@@ -133,13 +137,15 @@
                 <div class="ad-sidebar-sticky">
                   <div class="ad-label">광고</div>
                   <div class="ad-container">
-                    <ins 
-                      class="kakao_ad_area" 
-                      style="display:none;"
-                      data-ad-unit="DAN-W1I8djLN57Nf4yPR"
-                      data-ad-width="160"
-                      data-ad-height="600"
-                    />
+                    <ClientOnly>
+                      <ins 
+                        class="kakao_ad_area" 
+                        style="display:none;"
+                        data-ad-unit="DAN-W1I8djLN57Nf4yPR"
+                        data-ad-width="160"
+                        data-ad-height="600"
+                      />
+                    </ClientOnly>
                   </div>
                 </div>
               </aside>

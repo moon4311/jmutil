@@ -315,7 +315,7 @@ export default {
   },
   data() {
     return {
-      // GroupPanel 상태 (중복제거, 분할, 교집합, 그룹핑, 섞기, 평탄화, 차집합, 상태체크) - 모바일에서는 기본 닫힌 상태  
+      // GroupPanel 상태 (중복제거, 분할, 교집합, 그룹핑, 섞기, 평탄화, 차집합, 상태체크) - 모바일에서는 기본 닫힌 상태
       panelStates: this.$nuxt?.ssrContext ? [false, false, false, false, false, false, false, false] : 
                    (process.client && window.innerWidth < 768) ? [false, false, false, false, false, false, false, false] : [true, true, true, true, true, true, true, true],
       

@@ -50,7 +50,7 @@
  * @component GroupPanel
  */
 
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue';
 
 /**
  * 컴포넌트 Props
@@ -58,6 +58,7 @@ import { computed } from 'vue';
  * @property {string} title - 패널 제목 (필수)
  * @property {string} [color='blue'] - 테마 색상
  * @property {boolean} modelValue - 패널 확장 상태 (필수)
+ * @property {boolean} [mobileCollapsed=true] - 모바일에서 기본값으로 닫힌 상태 사용 여부
  */
 const props = defineProps({
   title: { 
@@ -74,16 +75,69 @@ const props = defineProps({
   modelValue: { 
     type: Boolean, 
     required: true 
+  },
+  mobileCollapsed: {
+    type: Boolean,
+    default: true
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'mobile-state-changed']);
+
+// 클라이언트 사이드 마운트 여부
+const isClient = ref(false);
 
 /**
  * 고유한 패널 ID 생성
  */
 const panelId = computed(() => {
   return `panel_${Math.random().toString(36).substr(2, 9)}`;
+});
+
+/**
+ * 화면 크기에 따라 패널 상태 설정
+ */
+const setResponsiveState = () => {
+  if (!isClient.value || !props.mobileCollapsed) return;
+  
+  const isDesktop = window.innerWidth >= 768; // md 브레이크포인트
+  const shouldBeOpen = isDesktop; // 데스크톱에서는 열림, 모바일에서는 닫힘
+  
+  if (props.modelValue !== shouldBeOpen) {
+    emit('update:modelValue', shouldBeOpen);
+    emit('mobile-state-changed', { isDesktop, isOpen: shouldBeOpen });
+  }
+};
+
+// 리사이즈 핸들러 - 쓰로틀링 적용
+let resizeTimeout = null;
+const handleResize = () => {
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
+  resizeTimeout = setTimeout(setResponsiveState, 150);
+};
+
+onMounted(async () => {
+  await nextTick();
+  isClient.value = true;
+  
+  // 초기 상태 설정
+  if (props.mobileCollapsed) {
+    setResponsiveState();
+  }
+
+  // 리사이즈 이벤트 리스너
+  if (process.client) {
+    window.addEventListener('resize', handleResize);
+  }
+});
+
+onUnmounted(() => {
+  if (process.client && resizeTimeout) {
+    clearTimeout(resizeTimeout);
+    window.removeEventListener('resize', handleResize);
+  }
 });
 
 /**

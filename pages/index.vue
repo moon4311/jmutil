@@ -29,7 +29,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">케이스 변환, 문자열 패딩, 포맷팅 등</p>
-          <NuxtLink to="/string-utils" class="inline-block w-full bg-green-500 text-white text-center py-2 px-4 rounded hover:bg-green-600 transition-colors">
+          <NuxtLink to="/string/utils" class="inline-block w-full bg-green-500 text-white text-center py-2 px-4 rounded hover:bg-green-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -47,7 +47,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">유효성 검사, 포맷팅, 필터링, 검색, 정렬 등</p>
-          <NuxtLink to="/json-utils" class="inline-block w-full bg-purple-500 text-white text-center py-2 px-4 rounded hover:bg-purple-600 transition-colors">
+          <NuxtLink to="/data/json" class="inline-block w-full bg-purple-500 text-white text-center py-2 px-4 rounded hover:bg-purple-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -65,7 +65,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">형식 변환, 타임스탬프 처리, 날짜 계산 등</p>
-          <NuxtLink to="/date-utils" class="inline-block w-full bg-blue-500 text-white text-center py-2 px-4 rounded hover:bg-blue-600 transition-colors">
+          <NuxtLink to="/string/date" class="inline-block w-full bg-blue-500 text-white text-center py-2 px-4 rounded hover:bg-blue-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -83,7 +83,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">일반텍스트, 암호 등</p>
-          <NuxtLink to="/localstorage-utils" class="inline-block w-full bg-indigo-500 text-white text-center py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
+          <NuxtLink to="/string/storage" class="inline-block w-full bg-indigo-500 text-white text-center py-2 px-4 rounded hover:bg-indigo-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -101,7 +101,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">쿼리 생성, Mapper 생성, 쿼리 분석 등</p>
-          <NuxtLink to="/sql-utils" class="inline-block w-full bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+          <NuxtLink to="/database/sql" class="inline-block w-full bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -119,7 +119,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">중복제거, 평탄화, 섞기, 그룹핑 등</p>
-          <NuxtLink to="/array-utils" class="inline-block w-full bg-red-500 text-white text-center py-2 px-4 rounded hover:bg-red-600 transition-colors">
+          <NuxtLink to="/data/array" class="inline-block w-full bg-red-500 text-white text-center py-2 px-4 rounded hover:bg-red-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -137,7 +137,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">HEX/RGB 변환, 색상 조절, 랜덤 색상 등</p>
-          <NuxtLink to="/color-utils" class="inline-block w-full bg-pink-500 text-white text-center py-2 px-4 rounded hover:bg-pink-600 transition-colors">
+          <NuxtLink to="/tools/color" class="inline-block w-full bg-pink-500 text-white text-center py-2 px-4 rounded hover:bg-pink-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -159,7 +159,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">진법 변환, 랜덤 수 생성, 수학 계산 등</p>
-          <NuxtLink to="/number-utils" class="inline-block w-full bg-orange-500 text-white text-center py-2 px-4 rounded hover:bg-orange-600 transition-colors">
+          <NuxtLink to="/string/number" class="inline-block w-full bg-orange-500 text-white text-center py-2 px-4 rounded hover:bg-orange-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -175,7 +175,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">QR코드 이미지 생성 및 다운로드</p>
-          <NuxtLink to="/qr-generator" class="inline-block w-full bg-gray-700 text-white text-center py-2 px-4 rounded hover:bg-gray-800 transition-colors">
+          <NuxtLink to="/tools/qr-generator" class="inline-block w-full bg-gray-700 text-white text-center py-2 px-4 rounded hover:bg-gray-800 transition-colors">
             이용하기
           </NuxtLink>
         </div>
@@ -193,7 +193,7 @@
         </div>
         <div class="p-4">
           <p class="text-gray-600 mb-4">타이머앱 JSON 데이터 생성</p>
-          <NuxtLink to="/timer-json" class="inline-block w-full bg-teal-500 text-white text-center py-2 px-4 rounded hover:bg-teal-600 transition-colors">
+          <NuxtLink to="/tools/timer-json" class="inline-block w-full bg-teal-500 text-white text-center py-2 px-4 rounded hover:bg-teal-600 transition-colors">
             이용하기
           </NuxtLink>
         </div>
