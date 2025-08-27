@@ -247,11 +247,13 @@ definePageMeta({ layout: 'default' })
 import { ref, computed, onMounted } from 'vue';
 import CryptoJS from 'crypto-js';
 import GroupPanel from '@/components/GroupPanel.vue';
+import { useResponsive } from '@/composables/useResponsive.js';
 
-// 아코디언 상태 (모바일에서는 기본 닫힌 상태)
-const isMobile = process.client ? window.innerWidth < 768 : false;
-const showBlue = ref(!isMobile);
-const showGreen = ref(!isMobile);
+// 반응형 상태 관리
+const { createAccordionState } = useResponsive();
+const accordionState = createAccordionState(2);
+const showBlue = ref(accordionState[0]);
+const showGreen = ref(accordionState[1]);
 
 // 상수 정의 (스크립트에서만 사용)
 const COPY_SUCCESS_MESSAGE = '복사되었습니다';

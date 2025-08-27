@@ -1,5 +1,4 @@
 // CommonUtil.js - 공통 유틸리티 함수들
-import { formatDate, formatDateTime, formatTime } from './DateUtil.js';
 
 /**
  * 2자리 0 패딩
@@ -11,11 +10,41 @@ export function pad2(n) {
 }
 
 /**
+ * Date 객체를 YYYY-MM-DD 문자열로 변환 (CommonUtil 내부 구현)
+ * @param {Date} d - 변환할 Date 객체
+ * @returns {string} YYYY-MM-DD 형식 문자열
+ */
+function _formatDate(d) {
+  if (!(d instanceof Date) || isNaN(d)) return '';
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+/**
+ * Date 객체를 YYYY-MM-DD HH:mm:ss 문자열로 변환 (CommonUtil 내부 구현)
+ * @param {Date} d - 변환할 Date 객체
+ * @returns {string} YYYY-MM-DD HH:mm:ss 형식 문자열
+ */
+function _formatDateTime(d) {
+  if (!(d instanceof Date) || isNaN(d)) return '';
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
+/**
+ * Date 객체를 HH:mm:ss 문자열로 변환 (CommonUtil 내부 구현)
+ * @param {Date} d - 변환할 Date 객체
+ * @returns {string} HH:mm:ss 형식 문자열
+ */
+function _formatTime(d) {
+  if (!(d instanceof Date) || isNaN(d)) return '';
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
+/**
  * 오늘 날짜를 YYYY-MM-DD 형식으로 반환
  * @returns {string} YYYY-MM-DD 형식의 오늘 날짜
  */
 export function getToday() {
-  return formatDate(new Date());
+  return _formatDate(new Date());
 }
 
 /**
@@ -23,7 +52,7 @@ export function getToday() {
  * @returns {string} YYYY-MM-DD HH:mm:ss 형식의 현재 일시
  */
 export function getNow() {
-  return formatDateTime(new Date());
+  return _formatDateTime(new Date());
 }
 
 /**
@@ -31,7 +60,7 @@ export function getNow() {
  * @returns {string} HH:mm:ss 형식의 현재 시각
  */
 export function getNowTime() {
-  return formatTime(new Date());
+  return _formatTime(new Date());
 }
 
 /**

@@ -261,16 +261,18 @@ import {
 import CopyInput from '@/components/CopyInput.vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
+import { useResponsive } from '@/composables/useResponsive.js';
 
 const input = ref('');
-// 아코디언 상태 (모바일에서는 기본 닫힌 상태)
-const isMobile = process.client ? window.innerWidth < 768 : false;
-const showBlue = ref(!isMobile);
-const showGreen = ref(!isMobile);
-const showPurple = ref(!isMobile);
-const showOrange = ref(!isMobile);
-const showRed = ref(!isMobile);
-const showTeal = ref(!isMobile);
+// 반응형 상태 관리
+const { createAccordionState } = useResponsive();
+const accordionState = createAccordionState(6);
+const showBlue = ref(accordionState[0]);
+const showGreen = ref(accordionState[1]);
+const showPurple = ref(accordionState[2]);
+const showOrange = ref(accordionState[3]);
+const showRed = ref(accordionState[4]);
+const showTeal = ref(accordionState[5]);
 
 const upperResult = computed(() => input.value.toUpperCase());
 const lowerResult = computed(() => input.value.toLowerCase());

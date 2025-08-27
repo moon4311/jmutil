@@ -240,9 +240,8 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
-</script>
 
-<script>
+import { ref, computed, onMounted } from 'vue'
 import { 
   hexToRgb, 
   rgbToHex, 
@@ -253,139 +252,133 @@ import {
   isLightColor, 
   getContrastColor, 
   isValidHex 
-} from '~/utils/ColorUtil.js'
-import GroupPanel from '~/components/GroupPanel.vue'
-import CopyInput from '~/components/CopyInput.vue'
+} from '@/utils/ColorUtil.js'
+import GroupPanel from '@/components/GroupPanel.vue'
+import CopyInput from '@/components/CopyInput.vue'
+import { useResponsive } from '@/composables/useResponsive.js'
+import { useErrorHandler } from '@/composables/useErrorHandler.js'
 
-export default {
-  name: 'ColorUtils',
-  components: {
-    GroupPanel,
-    CopyInput
-  },
-  data() {
-    return {
-      // GroupPanel 상태 (HEX→RGB, 밝기조절, 색상분석, RGB→HEX, 랜덤색상) - 모바일에서는 기본 닫힌 상태
-      panelStates: this.$nuxt?.ssrContext ? [false, false, false, false, false] : 
-                   (process.client && window.innerWidth < 768) ? [false, false, false, false, false] : [true, true, true, true, true],
-      
-      // HEX to RGB
-      hexToRgbInput: '#FF5733',
-      hexToRgbResult: '',
-      
-      // RGB to HEX
-      rgbR: 255,
-      rgbG: 87,
-      rgbB: 51,
-      rgbToHexResult: '',
-      
-      // 밝기 조절
-      brightnessColor: '#3498db',
-      brightnessPercent: 20,
-      lightenResult: '',
-      darkenResult: '',
-      
-      // 랜덤 색상
-      randomColors: [],
-      
-      // 색상 분석
-      analyzeColor: '#FF5733',
-      colorInfo: null,
-      
-      errorMessage: ''
+// 반응형 상태 관리
+const { createAccordionState } = useResponsive()
+const panelStates = ref(createAccordionState(5))
+
+// 에러 처리
+const { safeSyncExecute } = useErrorHandler()
+
+// HEX to RGB
+const hexToRgbInput = ref('#FF5733')
+const hexToRgbResult = ref('')
+
+// RGB to HEX
+const rgbR = ref(255)
+const rgbG = ref(87)
+const rgbB = ref(51)
+const rgbToHexResult = ref('')
+
+// 밝기 조절
+const brightnessColor = ref('#3498db')
+const brightnessPercent = ref(20)
+const lightenResult = ref('')
+const darkenResult = ref('')
+
+// 랜덤 색상
+const randomColors = ref([])
+
+// 색상 분석
+const analyzeColor = ref('#FF5733')
+const colorInfo = ref(null)
+
+// 에러 메시지
+const errorMessage = ref('')
+
+// 메서드들
+const processHexToRgb = () => {
+  safeSyncExecute(() => {
+    if (!isValidHex(hexToRgbInput.value)) {
+      hexToRgbResult.value = '올바른 HEX 색상을 입력하세요'
+      return
     }
-  },
-  methods: {
-    processHexToRgb() {
-      try {
-        this.errorMessage = ''
-        if (!isValidHex(this.hexToRgbInput)) {
-          this.hexToRgbResult = '올바른 HEX 색상을 입력하세요'
-          return
-        }
-        const rgb = hexToRgb(this.hexToRgbInput)
-        this.hexToRgbResult = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
-      } catch (error) {
-        this.errorMessage = `HEX→RGB 변환 오류: ${error.message}`
-      }
-    },
-    
-    processRgbToHex() {
-      try {
-        this.errorMessage = ''
-        const hex = rgbToHex(this.rgbR, this.rgbG, this.rgbB)
-        this.rgbToHexResult = hex
-      } catch (error) {
-        this.errorMessage = `RGB→HEX 변환 오류: ${error.message}`
-      }
-    },
-    
-    updateBrightnessResults() {
-      this.processLighten()
-      this.processDarken()
-    },
-    
-    processLighten() {
-      try {
-        this.errorMessage = ''
-        if (!isValidHex(this.brightnessColor)) {
-          this.lightenResult = '올바른 HEX 색상을 입력하세요'
-          return
-        }
-        this.lightenResult = lighten(this.brightnessColor, this.brightnessPercent)
-      } catch (error) {
-        this.errorMessage = `밝게 하기 오류: ${error.message}`
-      }
-    },
-    
-    processDarken() {
-      try {
-        this.errorMessage = ''
-        if (!isValidHex(this.brightnessColor)) {
-          this.darkenResult = '올바른 HEX 색상을 입력하세요'
-          return
-        }
-        this.darkenResult = darken(this.brightnessColor, this.brightnessPercent)
-      } catch (error) {
-        this.errorMessage = `어둡게 하기 오류: ${error.message}`
-      }
-    },
-    
-    generateRandomColors() {
-      this.randomColors = Array.from({ length: 5 }, () => randomColor())
-    },
-    
-    analyzeColorInfo() {
-      try {
-        this.errorMessage = ''
-        if (!isValidHex(this.analyzeColor)) {
-          this.colorInfo = null
-          return
-        }
-        
-        const rgb = hexToRgb(this.analyzeColor)
-        const brightness = getBrightness(this.analyzeColor)
-        const lightType = isLightColor(this.analyzeColor) ? '밝은 색상' : '어두운 색상'
-        const contrastColor = getContrastColor(this.analyzeColor)
-        
-        this.colorInfo = {
-          rgb,
-          brightness,
-          lightType,
-          contrastColor
-        }
-      } catch (error) {
-        this.errorMessage = `색상 분석 오류: ${error.message}`
-      }
-    }
-  },
-  
-  mounted() {
-    // 초기값들로 실행
-    this.processHexToRgb()
-    this.processRgbToHex()
-    this.generateRandomColors()
-    this.analyzeColorInfo()
-  }
+    const rgb = hexToRgb(hexToRgbInput.value)
+    hexToRgbResult.value = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+  }, 'HEX→RGB 변환', () => {
+    hexToRgbResult.value = 'HEX→RGB 변환 오류'
+  })
 }
+
+const processRgbToHex = () => {
+  safeSyncExecute(() => {
+    const hex = rgbToHex(rgbR.value, rgbG.value, rgbB.value)
+    rgbToHexResult.value = hex
+  }, 'RGB→HEX 변환', () => {
+    rgbToHexResult.value = 'RGB→HEX 변환 오류'
+  })
+}
+
+const updateBrightnessResults = () => {
+  processLighten()
+  processDarken()
+}
+
+const processLighten = () => {
+  safeSyncExecute(() => {
+    if (!isValidHex(brightnessColor.value)) {
+      lightenResult.value = '올바른 HEX 색상을 입력하세요'
+      return
+    }
+    lightenResult.value = lighten(brightnessColor.value, brightnessPercent.value)
+  }, '밝게 하기', () => {
+    lightenResult.value = '밝게 하기 오류'
+  })
+}
+
+const processDarken = () => {
+  safeSyncExecute(() => {
+    if (!isValidHex(brightnessColor.value)) {
+      darkenResult.value = '올바른 HEX 색상을 입력하세요'
+      return
+    }
+    darkenResult.value = darken(brightnessColor.value, brightnessPercent.value)
+  }, '어둡게 하기', () => {
+    darkenResult.value = '어둡게 하기 오류'
+  })
+}
+
+const generateRandomColors = () => {
+  safeSyncExecute(() => {
+    randomColors.value = Array.from({ length: 5 }, () => randomColor())
+  }, '랜덤 색상 생성', () => {
+    randomColors.value = []
+  })
+}
+
+const analyzeColorInfo = () => {
+  safeSyncExecute(() => {
+    if (!isValidHex(analyzeColor.value)) {
+      colorInfo.value = null
+      return
+    }
+    
+    const rgb = hexToRgb(analyzeColor.value)
+    const brightness = getBrightness(analyzeColor.value)
+    const lightType = isLightColor(analyzeColor.value) ? '밝은 색상' : '어두운 색상'
+    const contrastColor = getContrastColor(analyzeColor.value)
+    
+    colorInfo.value = {
+      rgb,
+      brightness,
+      lightType,
+      contrastColor
+    }
+  }, '색상 분석', () => {
+    colorInfo.value = null
+  })
+}
+
+// 초기화
+onMounted(() => {
+  processHexToRgb()
+  processRgbToHex()
+  generateRandomColors()
+  analyzeColorInfo()
+})
 </script>

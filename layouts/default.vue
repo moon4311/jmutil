@@ -160,8 +160,8 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import SideBar from '~/components/SideBar.vue';
-import { useKakaoAds } from '~/composables/useKakaoAds';
+import SideBar from '@/components/SideBar.vue';
+import { useKakaoAds } from '@/composables/useKakaoAds';
 
 // 카카오 애드핏 스크립트 추가
 useHead({

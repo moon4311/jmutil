@@ -288,13 +288,15 @@ import { getToday, getNowTimestamp, toDatetimeLocal } from '@/utils/CommonUtil.j
 import { formatDateInput } from '@/utils/InputFormatUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
+import { useResponsive } from '@/composables/useResponsive.js';
 
-// 아코디언 상태 (모바일에서는 기본 닫힌 상태)
-const isMobile = process.client ? window.innerWidth < 768 : false;
-const showBlue = ref(!isMobile);
-const showGreen = ref(!isMobile);
-const showPurple = ref(!isMobile);
-const showOrange = ref(!isMobile);
+// 반응형 상태 관리
+const { createAccordionState } = useResponsive();
+const accordionState = createAccordionState(4);
+const showBlue = ref(accordionState[0]);
+const showGreen = ref(accordionState[1]);
+const showPurple = ref(accordionState[2]);
+const showOrange = ref(accordionState[3]);
 
 // 일시 입력 분리 (연/월/일/시/분/초)
 const now = new Date();

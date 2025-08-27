@@ -289,9 +289,8 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
-</script>
 
-<script>
+import { ref, onMounted } from 'vue'
 import { 
   unique, 
   flatten, 
@@ -301,200 +300,191 @@ import {
   intersection, 
   difference, 
   isEmpty 
-} from '~/utils/ArrayUtil.js'
-import GroupPanel from '~/components/GroupPanel.vue'
-import CopyInput from '~/components/CopyInput.vue'
-import CopyTextArea from '~/components/CopyTextArea.vue'
+} from '@/utils/ArrayUtil.js'
+import GroupPanel from '@/components/GroupPanel.vue'
+import CopyInput from '@/components/CopyInput.vue'
+import CopyTextArea from '@/components/CopyTextArea.vue'
+import { useResponsive } from '@/composables/useResponsive.js'
 
-export default {
-  name: 'ArrayUtils',
-  components: {
-    GroupPanel,
-    CopyInput,
-    CopyTextArea
-  },
-  data() {
-    return {
-      // GroupPanel 상태 (중복제거, 분할, 교집합, 그룹핑, 섞기, 평탄화, 차집합, 상태체크) - 모바일에서는 기본 닫힌 상태
-      panelStates: this.$nuxt?.ssrContext ? [false, false, false, false, false, false, false, false] : 
-                   (process.client && window.innerWidth < 768) ? [false, false, false, false, false, false, false, false] : [true, true, true, true, true, true, true, true],
-      
-      // 중복 제거
-      uniqueInput: '1,2,3,2,4,3,5,1',
-      uniqueResult: '',
-      
-      // 배열 섞기
-      shuffleInput: '사과,바나나,체리,포도,오렌지',
-      shuffleResult: '',
-      
-      // 배열 분할
-      chunkInput: '1,2,3,4,5,6,7,8,9,10',
-      chunkSize: 3,
-      chunkResult: '',
-      
-      // 배열 평탄화
-      flattenInput: '[1, [2, 3], [4, [5, 6]], 7]',
-      flattenDepth: null,
-      flattenResult: '',
-      
-      // 교집합
-      intersectionInput1: '1,2,3,4,5',
-      intersectionInput2: '3,4,5,6,7',
-      intersectionResult: '',
-      
-      // 차집합
-      differenceInput1: '1,2,3,4,5',
-      differenceInput2: '3,4,5,6,7',
-      differenceResult: '',
-      
-      // 객체 배열 그룹핑
-      groupByInput: '[{"name":"John","age":25},{"name":"Jane","age":25},{"name":"Bob","age":30}]',
-      groupByKey: 'age',
-      groupByResult: '',
-      
-      // 배열 상태 체크
-      checkInput: '[]',
-      checkResults: {
-        isEmpty: true,
-        length: 0,
-        isValidArray: true
-      },
-      
-      errorMessage: ''
+// 반응형 상태 관리
+const { createAccordionState } = useResponsive()
+const panelStates = ref(createAccordionState(8))
+
+// 중복 제거
+const uniqueInput = ref('1,2,3,2,4,3,5,1')
+const uniqueResult = ref('')
+
+// 배열 섞기
+const shuffleInput = ref('사과,바나나,체리,포도,오렌지')
+const shuffleResult = ref('')
+
+// 배열 분할
+const chunkInput = ref('1,2,3,4,5,6,7,8,9,10')
+const chunkSize = ref(3)
+const chunkResult = ref('')
+
+// 배열 평탄화
+const flattenInput = ref('[1, [2, 3], [4, [5, 6]], 7]')
+const flattenDepth = ref(null)
+const flattenResult = ref('')
+
+// 교집합
+const intersectionInput1 = ref('1,2,3,4,5')
+const intersectionInput2 = ref('3,4,5,6,7')
+const intersectionResult = ref('')
+
+// 차집합
+const differenceInput1 = ref('1,2,3,4,5')
+const differenceInput2 = ref('3,4,5,6,7')
+const differenceResult = ref('')
+
+// 객체 배열 그룹핑
+const groupByInput = ref('[{"name":"John","age":25},{"name":"Jane","age":25},{"name":"Bob","age":30}]')
+const groupByKey = ref('age')
+const groupByResult = ref('')
+
+// 배열 상태 체크
+const checkInput = ref('[]')
+const checkResults = ref({
+  isEmpty: true,
+  length: 0,
+  isValidArray: true
+})
+
+// 에러 메시지
+const errorMessage = ref('')
+
+// 배열 파싱 함수
+const parseArray = (input) => {
+  try {
+    // JSON 형태인 경우
+    if (input.trim().startsWith('[')) {
+      return JSON.parse(input)
     }
-  },
-  methods: {
-    parseArray(input) {
-      try {
-        // JSON 형태인 경우
-        if (input.trim().startsWith('[')) {
-          return JSON.parse(input)
-        }
-        // 쉼표로 구분된 문자열인 경우
-        return input.split(',').map(item => {
-          const trimmed = item.trim()
-          // 숫자인지 확인
-          if (!isNaN(trimmed) && trimmed !== '') {
-            return Number(trimmed)
-          }
-          return trimmed
-        }).filter(item => item !== '')
-      } catch (error) {
-        throw new Error('배열 파싱 실패')
+    // 쉼표로 구분된 문자열인 경우
+    return input.split(',').map(item => {
+      const trimmed = item.trim()
+      // 숫자인지 확인
+      if (!isNaN(trimmed) && trimmed !== '') {
+        return Number(trimmed)
       }
-    },
-    
-    processUnique() {
-      try {
-        this.errorMessage = ''
-        const arr = this.parseArray(this.uniqueInput)
-        const result = unique(arr)
-        this.uniqueResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `중복 제거 오류: ${error.message}`
-      }
-    },
-    
-    processShuffle() {
-      try {
-        this.errorMessage = ''
-        const arr = this.parseArray(this.shuffleInput)
-        const result = shuffle(arr)
-        this.shuffleResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `배열 섞기 오류: ${error.message}`
-      }
-    },
-    
-    processChunk() {
-      try {
-        this.errorMessage = ''
-        const arr = this.parseArray(this.chunkInput)
-        const result = chunk(arr, this.chunkSize || 1)
-        this.chunkResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `배열 분할 오류: ${error.message}`
-      }
-    },
-    
-    processFlatten() {
-      try {
-        this.errorMessage = ''
-        const arr = JSON.parse(this.flattenInput)
-        const depth = this.flattenDepth || Infinity
-        const result = flatten(arr, depth)
-        this.flattenResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `배열 평탄화 오류: ${error.message}`
-      }
-    },
-    
-    processIntersection() {
-      try {
-        this.errorMessage = ''
-        const arr1 = this.parseArray(this.intersectionInput1)
-        const arr2 = this.parseArray(this.intersectionInput2)
-        const result = intersection(arr1, arr2)
-        this.intersectionResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `교집합 오류: ${error.message}`
-      }
-    },
-    
-    processDifference() {
-      try {
-        this.errorMessage = ''
-        const arr1 = this.parseArray(this.differenceInput1)
-        const arr2 = this.parseArray(this.differenceInput2)
-        const result = difference(arr1, arr2)
-        this.differenceResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `차집합 오류: ${error.message}`
-      }
-    },
-    
-    processGroupBy() {
-      try {
-        this.errorMessage = ''
-        const arr = JSON.parse(this.groupByInput)
-        const result = groupBy(arr, this.groupByKey)
-        this.groupByResult = JSON.stringify(result, null, 2)
-      } catch (error) {
-        this.errorMessage = `객체 배열 그룹핑 오류: ${error.message}`
-      }
-    },
-    
-    processCheck() {
-      try {
-        this.errorMessage = ''
-        let arr
-        try {
-          arr = JSON.parse(this.checkInput)
-        } catch {
-          arr = this.checkInput
-        }
-        
-        this.checkResults = {
-          isEmpty: isEmpty(arr),
-          length: Array.isArray(arr) ? arr.length : 0,
-          isValidArray: Array.isArray(arr)
-        }
-      } catch (error) {
-        this.errorMessage = `배열 체크 오류: ${error.message}`
-      }
-    }
-  },
-  
-  mounted() {
-    // 초기값들로 실행
-    this.processUnique()
-    this.processShuffle()
-    this.processChunk()
-    this.processFlatten()
-    this.processIntersection()
-    this.processDifference()
-    this.processGroupBy()
-    this.processCheck()
+      return trimmed
+    }).filter(item => item !== '')
+  } catch (error) {
+    throw new Error('배열 파싱 실패')
   }
 }
+
+// 처리 함수들
+const processUnique = () => {
+  try {
+    errorMessage.value = ''
+    const arr = parseArray(uniqueInput.value)
+    const result = unique(arr)
+    uniqueResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `중복 제거 오류: ${error.message}`
+  }
+}
+
+const processShuffle = () => {
+  try {
+    errorMessage.value = ''
+    const arr = parseArray(shuffleInput.value)
+    const result = shuffle(arr)
+    shuffleResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `배열 섞기 오류: ${error.message}`
+  }
+}
+
+const processChunk = () => {
+  try {
+    errorMessage.value = ''
+    const arr = parseArray(chunkInput.value)
+    const result = chunk(arr, chunkSize.value || 1)
+    chunkResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `배열 분할 오류: ${error.message}`
+  }
+}
+
+const processFlatten = () => {
+  try {
+    errorMessage.value = ''
+    const arr = JSON.parse(flattenInput.value)
+    const depth = flattenDepth.value || Infinity
+    const result = flatten(arr, depth)
+    flattenResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `배열 평탄화 오류: ${error.message}`
+  }
+}
+
+const processIntersection = () => {
+  try {
+    errorMessage.value = ''
+    const arr1 = parseArray(intersectionInput1.value)
+    const arr2 = parseArray(intersectionInput2.value)
+    const result = intersection(arr1, arr2)
+    intersectionResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `교집합 오류: ${error.message}`
+  }
+}
+
+const processDifference = () => {
+  try {
+    errorMessage.value = ''
+    const arr1 = parseArray(differenceInput1.value)
+    const arr2 = parseArray(differenceInput2.value)
+    const result = difference(arr1, arr2)
+    differenceResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `차집합 오류: ${error.message}`
+  }
+}
+
+const processGroupBy = () => {
+  try {
+    errorMessage.value = ''
+    const arr = JSON.parse(groupByInput.value)
+    const result = groupBy(arr, groupByKey.value)
+    groupByResult.value = JSON.stringify(result, null, 2)
+  } catch (error) {
+    errorMessage.value = `객체 배열 그룹핑 오류: ${error.message}`
+  }
+}
+
+const processCheck = () => {
+  try {
+    errorMessage.value = ''
+    let arr
+    try {
+      arr = JSON.parse(checkInput.value)
+    } catch {
+      arr = checkInput.value
+    }
+    
+    checkResults.value = {
+      isEmpty: isEmpty(arr),
+      length: Array.isArray(arr) ? arr.length : 0,
+      isValidArray: Array.isArray(arr)
+    }
+  } catch (error) {
+    errorMessage.value = `배열 체크 오류: ${error.message}`
+  }
+}
+
+// 초기화
+onMounted(() => {
+  processUnique()
+  processShuffle()
+  processChunk()
+  processFlatten()
+  processIntersection()
+  processDifference()
+  processGroupBy()
+  processCheck()
+})
 </script>

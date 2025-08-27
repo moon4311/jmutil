@@ -197,13 +197,14 @@ import { ref } from 'vue';
 import { csvToJson, jsonArrayToCsv, createCSVDownload, createJSONDownload } from '@/utils/CsvUtil.js';
 import CopyTextArea from '@/components/CopyTextArea.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
+import { useResponsive } from '@/composables/useResponsive.js';
 
-// 아코디언 상태
-// 아코디언 상태 (모바일에서는 기본 닫힌 상태)
-const isMobile = process.client ? window.innerWidth < 768 : false;
-const showBlue = ref(!isMobile);
-const showGreen = ref(!isMobile);
-const showOrange = ref(false);
+// 반응형 상태 관리
+const { createAccordionState } = useResponsive();
+const accordionState = createAccordionState(3);
+const showBlue = ref(accordionState[0]);
+const showGreen = ref(accordionState[1]);
+const showPurple = ref(accordionState[2]);
 
 // CSV to JSON
 const csvInput = ref('');
