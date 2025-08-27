@@ -24,8 +24,10 @@
     </button>
     <transition 
       name="panel-expand"
+      @before-enter="onBeforeEnter"
       @enter="onEnter"
       @after-enter="onAfterEnter"
+      @before-leave="onBeforeLeave"
       @leave="onLeave"
       @after-leave="onAfterLeave"
     >
@@ -141,25 +143,50 @@ onUnmounted(() => {
 });
 
 /**
- * 애니메이션 이벤트 핸들러들
+ * 애니메이션 이벤트 핸들러들 - 부드러운 높이 애니메이션
  */
-function onEnter(el) {
+function onBeforeEnter(el) {
   el.style.height = '0px';
+  el.style.overflow = 'hidden';
+}
+
+function onEnter(el, done) {
+  el.style.height = el.scrollHeight + 'px';
+  
+  // 트랜지션 완료 후 콜백 실행
+  const transitionEnd = () => {
+    el.removeEventListener('transitionend', transitionEnd);
+    done();
+  };
+  el.addEventListener('transitionend', transitionEnd);
 }
 
 function onAfterEnter(el) {
   el.style.height = 'auto';
+  el.style.overflow = 'visible';
 }
 
-function onLeave(el) {
+function onBeforeLeave(el) {
   el.style.height = el.scrollHeight + 'px';
+  el.style.overflow = 'hidden';
+}
+
+function onLeave(el, done) {
   // Force reflow
   el.offsetHeight;
   el.style.height = '0px';
+  
+  // 트랜지션 완료 후 콜백 실행
+  const transitionEnd = () => {
+    el.removeEventListener('transitionend', transitionEnd);
+    done();
+  };
+  el.addEventListener('transitionend', transitionEnd);
 }
 
 function onAfterLeave(el) {
   el.style.height = 'auto';
+  el.style.overflow = 'visible';
 }
 </script>
 
@@ -208,14 +235,15 @@ function onAfterLeave(el) {
   padding: 1rem;
 }
 
-/* 애니메이션 - 공통 트랜지션 사용 */
+/* 애니메이션 - 부드러운 높이 트랜지션 */
 .panel-expand-enter-active,
 .panel-expand-leave-active {
-  transition: height 0.3s ease;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden !important;
 }
 
 .panel-expand-enter-from,
 .panel-expand-leave-to {
-  height: 0;
+  height: 0 !important;
 }
 </style>

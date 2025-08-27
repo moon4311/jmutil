@@ -67,7 +67,7 @@
                     href="https://github.com/moon4311/jmutil/issues/new" 
                     target="_blank"
                     variant="text"
-                    size="small"
+                    size="large"
                     icon="mdi-bug"
                     class="issue-btn"
                   />
@@ -79,9 +79,10 @@
                     <template v-slot:activator="{ props }">
                       <v-btn 
                         v-bind="props" 
-                        variant="outlined" 
-                        size="small" 
+                        variant="text" 
+                        size="large" 
                         icon="mdi-github"
+                        class="mobile-github-btn"
                       />
                     </template>
                     <v-list>
@@ -319,6 +320,25 @@ onUnmounted(() => {
   .mobile-github-menu {
     display: none;
   }
+}
+
+/* GitHub 버튼 스타일링 */
+.issue-btn {
+  min-width: auto !important;
+  padding: 8px !important;
+}
+
+.issue-btn .v-btn__content {
+  font-size: 1.25rem !important;
+}
+
+.mobile-github-btn {
+  min-width: auto !important;
+  padding: 8px !important;
+}
+
+.mobile-github-btn .v-btn__content {
+  font-size: 1.25rem !important;
 }
 
 .user-name {
