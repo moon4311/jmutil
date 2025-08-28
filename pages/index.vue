@@ -201,15 +201,15 @@ const filteredItems = computed(() => {
 
 // SEO 메타 태그 설정
 useHead({
-  title: 'JavaScript 유틸리티 도구 모음 - 개발자를 위한 편리한 웹 도구들',
+  title: 'JavaScript 유틸리티 도구 모음 - 편리한 웹 도구들',
   meta: [
     { 
       name: 'description', 
-      content: '개발자를 위한 다양한 JavaScript 유틸리티 도구를 제공합니다. 문자열 처리, JSON 가공, SQL 쿼리 생성, 파일 변환 등 ' + totalToolsCount + '개의 유용한 도구를 무료로 사용해보세요.' 
+      content: '다양한 JavaScript 유틸리티 도구를 제공합니다. 문자열 처리, JSON 가공, SQL 쿼리 생성, 파일 변환 등 다양한 유용한 도구를 무료로 사용해보세요.' 
     },
     { name: 'keywords', content: 'JavaScript, 유틸리티, 도구, 문자열, JSON, SQL, 개발자, 웹도구, 변환, 가공' },
     { property: 'og:title', content: 'JavaScript 유틸리티 도구 모음' },
-    { property: 'og:description', content: '개발자를 위한 편리한 웹 기반 유틸리티 도구들' }
+    { property: 'og:description', content: '편리한 웹 기반 유틸리티 도구들' }
   ]
 })
 </script>

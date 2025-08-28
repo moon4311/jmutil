@@ -1,6 +1,6 @@
 // Nuxt 3 + Vuetify + Tailwind (JavaScript, no TypeScript)
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
+  modules: ['@nuxtjs/tailwindcss'], // '@nuxtjs/sitemap' 임시 비활성화
   ssr: true,
   css: [
     '@/assets/css/tailwind.css', 
@@ -16,7 +16,8 @@ export default defineNuxtConfig({
       'global': 'globalThis',
     },
     optimizeDeps: {
-      include: ['crypto-js', 'qrcode']
+      include: ['crypto-js', 'qrcode'],
+      exclude: ['@nuxt/kit']
     },
     build: {
       commonjsOptions: {
@@ -89,7 +90,8 @@ export default defineNuxtConfig({
     payloadExtraction: false,
     inlineSSRStyles: false, // CSS 파일을 분리하여 캐싱 활용
     renderJsonPayloads: true,
-    viewTransition: true // 페이지 전환 애니메이션 최적화
+    viewTransition: true, // 페이지 전환 애니메이션 최적화
+    importProtection: false // import protection 비활성화
   },
   ssr: true,
   // 특정 페이지들을 클라이언트 전용으로 설정
@@ -141,111 +143,17 @@ export default defineNuxtConfig({
     }
   },
   
-  // Sitemap 설정 - 현재 페이지 구조에 맞게 업데이트
+  // Sitemap 설정 - 임시 비활성화하여 import 오류 해결
+  /*
   sitemap: {
     hostname: 'http://www.web-util.com',
     gzip: true,
     routes: [
-      {
-        url: '/',
-        changefreq: 'daily',
-        priority: 1.0,
-        lastmod: new Date().toISOString()
-      },
-      // 문자열 관련 도구들
-      {
-        url: '/string/utils',
-        changefreq: 'weekly',
-        priority: 0.9,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/string/storage',
-        changefreq: 'weekly',
-        priority: 0.7,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/string/number',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/string/date',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      // 데이터 관련 도구들
-      {
-        url: '/data/json',
-        changefreq: 'weekly',
-        priority: 0.9,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/data/csv',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/data/array',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      // 데이터베이스 관련 도구들
-      {
-        url: '/database/sql',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/database/sql-analyzer',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/database/mybatis-mapper',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      // 도구들
-      {
-        url: '/tools/color',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/tools/qr-generator',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/tools/timer',
-        changefreq: 'weekly',
-        priority: 0.7,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/tools/timer-json',
-        changefreq: 'weekly',
-        priority: 0.7,
-        lastmod: new Date().toISOString()
-      }
-    ],
-    defaults: {
-      changefreq: 'weekly',
-      priority: 0.8,
-      lastmod: new Date().toISOString()
-    }
+      '/', '/string/utils', '/string/storage', '/string/number', '/string/date',
+      '/data/json', '/data/csv', '/data/array',
+      '/database/sql', '/tools/color', '/tools/qr-generator', '/tools/timer', '/tools/timer-json'
+    ]
   }
+  */
 
 })
