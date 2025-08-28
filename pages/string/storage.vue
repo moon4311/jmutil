@@ -145,8 +145,8 @@
       <!-- 우측 컬럼 -->
       <div class="space-y-6">
         <GroupPanel v-model="showGreen" title="패스워드 저장 (암호화)" color="green">
-          <div class="space-y-4">
-            <form @submit.prevent="savePwItem" class="space-y-3">
+            <div class="space-y-4">
+              <form @submit.prevent="savePwItem" class="space-y-3">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <v-text-field 
                   v-model="pwKey" 
@@ -243,7 +243,10 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'default' })
+definePageMeta({ 
+  layout: 'default',
+  ssr: false  // 클라이언트 사이드 전용
+})
 import { ref, computed, onMounted } from 'vue';
 import CryptoJS from 'crypto-js';
 import GroupPanel from '@/components/GroupPanel.vue';

@@ -111,68 +111,59 @@
       <div class="space-y-6">
         <GroupPanel v-model="showPurple" title="QR코드 미리보기" color="purple">
           <div class="space-y-4">
-            <ClientOnly>
-              <div class="text-center">
-                <div
-                  v-if="inputText.trim()"
-                  class="inline-block p-4 bg-white rounded-lg shadow-inner mb-4"
-                >
-                  <canvas
-                    ref="qrCanvas"
-                    :width="qrSize"
-                    :height="qrSize"
-                    class="border max-w-full h-auto"
-                  />
-                </div>
-                
-                <div v-else class="py-20 text-gray-500">
-                  텍스트를 입력하면 QR코드가 여기에 표시됩니다
-                </div>
-                
-                <div v-if="inputText.trim()" class="space-y-2">
-                  <v-btn
-                    @click="downloadQR"
-                    color="primary"
-                    variant="elevated"
-                    size="large"
-                    prepend-icon="mdi-download"
-                    block
-                  >
-                    PNG로 다운로드
-                  </v-btn>
-                  
-                  <v-btn
-                    @click="copyToClipboard"
-                    variant="elevated"
-                    size="large"
-                    prepend-icon="mdi-content-copy"
-                    block
-                  >
-                    클립보드에 복사
-                  </v-btn>
-                </div>
+            <div class="text-center">
+              <div
+                v-if="inputText.trim()"
+                class="inline-block p-4 bg-white rounded-lg shadow-inner mb-4"
+              >
+                <canvas
+                  ref="qrCanvas"
+                  :width="qrSize"
+                  :height="qrSize"
+                  class="border max-w-full h-auto"
+                />
               </div>
-              <template #fallback>
-                <div class="text-center py-20 text-gray-500">
-                  QR코드 생성기 로딩 중...
-                </div>
-              </template>
-            </ClientOnly>
+              
+              <div v-else class="py-20 text-gray-500">
+                텍스트를 입력하면 QR코드가 여기에 표시됩니다
+              </div>
+              
+              <div v-if="inputText.trim()" class="space-y-2">
+                <v-btn
+                  @click="downloadQR"
+                  color="primary"
+                  variant="elevated"
+                  size="large"
+                  prepend-icon="mdi-download"
+                  block
+                >
+                  PNG로 다운로드
+                </v-btn>
+                
+                <v-btn
+                  @click="copyToClipboard"
+                  variant="elevated"
+                  size="large"
+                  prepend-icon="mdi-content-copy"
+                  block
+                >
+                  클립보드에 복사
+                </v-btn>
+              </div>
+            </div>
           </div>
         </GroupPanel>
 
         <GroupPanel v-model="showOrange" title="QR코드 정보" color="orange">
           <div class="space-y-2">
-            <ClientOnly>
-              <div v-if="qrInfo" class="text-sm space-y-1">
-                <div><strong>데이터 길이:</strong> {{ qrInfo.dataLength }}자</div>
-                <div><strong>버전:</strong> {{ qrInfo.version }}</div>
-                <div><strong>오류 정정:</strong> {{ qrInfo.errorCorrection }}</div>
-              </div>
-              <div v-else class="text-gray-500 text-sm">
-                QR코드를 생성하면 정보가 여기에 표시됩니다
-              </div>
-            </ClientOnly>
+            <div v-if="qrInfo" class="text-sm space-y-1">
+              <div><strong>데이터 길이:</strong> {{ qrInfo.dataLength }}자</div>
+              <div><strong>버전:</strong> {{ qrInfo.version }}</div>
+              <div><strong>오류 정정:</strong> {{ qrInfo.errorCorrection }}</div>
+            </div>
+            <div v-else class="text-gray-500 text-sm">
+              QR코드를 생성하면 정보가 여기에 표시됩니다
+            </div>
           </div>
         </GroupPanel>
       </div>
@@ -181,7 +172,10 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'default' })
+definePageMeta({ 
+  layout: 'default',
+  ssr: false  // 클라이언트 사이드 전용
+})
 import { ref, watch, nextTick, onMounted } from 'vue'
 import QRCode from 'qrcode'
 import GroupPanel from '@/components/GroupPanel.vue'

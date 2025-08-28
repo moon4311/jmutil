@@ -53,7 +53,13 @@
         </div>
         <div class="space-y-2 pl-5" v-show="databaseOpen">
           <NuxtLink to="/database/sql" custom v-slot="{ navigate, href }">
-            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-database-search">SQL 유틸리티</v-btn>
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-pencil-outline">쿼리 생성기</v-btn>
+          </NuxtLink>
+          <NuxtLink to="/database/sql-analyzer" custom v-slot="{ navigate, href }">
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-magnify">쿼리 분석기</v-btn>
+          </NuxtLink>
+          <NuxtLink to="/database/mybatis-mapper" custom v-slot="{ navigate, href }">
+            <v-btn :href="href" @click="navigate; emit('close')" block variant="text" class="justify-start" prepend-icon="mdi-code-tags">MyBatis Mapper</v-btn>
           </NuxtLink>
         </div>
       </div>
@@ -79,6 +85,18 @@
         </div>
       </div>
     </nav>
+    <!-- 광고 추가 -->
+    <div class="ad-container">
+      <ClientOnly>
+        <ins
+          class="kakao_ad_area"
+          style="display:none;"
+          data-ad-unit="DAN-03qvHyP7MQAvCIUk"
+          data-ad-width="250"
+          data-ad-height="250"
+        />
+      </ClientOnly>
+    </div>
   </aside>
 </template>
 

@@ -8,28 +8,108 @@ export default defineNuxtConfig({
     '@mdi/font/css/materialdesignicons.css',
   ],
   build: {
-    transpile: ['vuetify']
+    transpile: ['vuetify', 'crypto-js', 'qrcode']
   },
   vite: {
     define: {
-      'process.env.DEBUG': false
+      'process.env.DEBUG': false,
+      'global': 'globalThis',
+    },
+    optimizeDeps: {
+      include: ['crypto-js', 'qrcode']
+    },
+    build: {
+      commonjsOptions: {
+        transformMixedEsModules: true
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // 벤더 라이브러리를 별도 청크로 분리
+            'vendor-vue': ['vue', '@vue/runtime-core'],
+            'vendor-nuxt': ['nuxt'],
+            'vendor-ui': ['vuetify'],
+            'vendor-utils': ['crypto-js', 'qrcode']
+          }
+        }
+      },
+      // 압축 및 최적화 설정
+      cssCodeSplit: true,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: process.env.NODE_ENV === 'production',
+          drop_debugger: process.env.NODE_ENV === 'production',
+          pure_funcs: process.env.NODE_ENV === 'production' ? ['console.log'] : []
+        }
+      }
     }
   },
   nitro: {
-    minify: process.env.NODE_ENV === 'production',          // 프로덕션에서만 minify
-    compressPublicAssets: true,                    // 정적 에셋 gzip/br
-    storage: { cache: { driver: 'memory' } },      // SSR 캐시 스토리지
+    minify: process.env.NODE_ENV === 'production',
+    compressPublicAssets: {
+      gzip: true,
+      brotli: true
+    },
+    storage: { cache: { driver: 'memory' } },
+    rollupConfig: {
+      external: [],
+      plugins: []
+    },
     prerender: {
-      crawlLinks: true,  // 링크 자동 크롤링으로 정적 생성
-      routes: ['/']      // 미리 렌더링할 라우트
-    }
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/string/utils',
+        '/string/storage', 
+        '/string/number',
+        '/string/date',
+        '/data/json',
+        '/data/csv',
+        '/data/array',
+        '/database/sql',
+        '/database/sql-analyzer',
+        '/database/mybatis-mapper',
+        '/tools/color',
+        '/tools/qr-generator',
+        '/tools/timer',
+        '/tools/timer-json'
+      ]
+    },
+    // 정적 에셋 최적화
+    publicAssets: [
+      {
+        dir: '~/assets/img',
+        maxAge: 60 * 60 * 24 * 365, // 1년 캐시
+        immutable: true
+      }
+    ]
   },
   experimental: {
-    payloadExtraction: false,  // SSR에서는 payload 추출 비활성화
-    inlineSSRStyles: true,     // 크리티컬 CSS 인라인
-    renderJsonPayloads: true   // JSON payload 렌더링 최적화
+    payloadExtraction: false,
+    inlineSSRStyles: false, // CSS 파일을 분리하여 캐싱 활용
+    renderJsonPayloads: true,
+    viewTransition: true // 페이지 전환 애니메이션 최적화
+  },
+  ssr: true,
+  // 특정 페이지들을 클라이언트 전용으로 설정
+  hooks: {
+    'render:route': (url, result, context) => {
+      const clientOnlyRoutes = ['/string/storage', '/tools/qr-generator'];
+      if (clientOnlyRoutes.includes(url)) {
+        result.html = result.html.replace('data-ssr="true"', 'data-ssr="false"');
+      }
+    }
   },
   compatibilityDate: '2024-04-03',
+  
+  // 런타임 최적화
+  runtimeConfig: {
+    public: {
+      // 클라이언트에서 필요한 설정만 포함
+      siteUrl: 'http://www.web-util.com'
+    }
+  },
   
   // Site 설정
   site: {
@@ -61,9 +141,9 @@ export default defineNuxtConfig({
     }
   },
   
-  // Sitemap 설정
+  // Sitemap 설정 - 현재 페이지 구조에 맞게 업데이트
   sitemap: {
-    hostname: 'http://www.web-util.com', // 실제 도메인으로 변경하세요
+    hostname: 'http://www.web-util.com',
     gzip: true,
     routes: [
       {
@@ -72,62 +152,90 @@ export default defineNuxtConfig({
         priority: 1.0,
         lastmod: new Date().toISOString()
       },
+      // 문자열 관련 도구들
       {
-        url: '/array-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/color-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/date-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/json-utils',
+        url: '/string/utils',
         changefreq: 'weekly',
         priority: 0.9,
         lastmod: new Date().toISOString()
       },
       {
-        url: '/localstorage-utils',
+        url: '/string/storage',
         changefreq: 'weekly',
         priority: 0.7,
         lastmod: new Date().toISOString()
       },
       {
-        url: '/number-utils',
+        url: '/string/number',
         changefreq: 'weekly',
         priority: 0.8,
         lastmod: new Date().toISOString()
       },
       {
-        url: '/qr-generator',
+        url: '/string/date',
         changefreq: 'weekly',
         priority: 0.8,
         lastmod: new Date().toISOString()
       },
+      // 데이터 관련 도구들
       {
-        url: '/string-utils',
+        url: '/data/json',
         changefreq: 'weekly',
         priority: 0.9,
         lastmod: new Date().toISOString()
       },
       {
-        url: '/timer',
+        url: '/data/csv',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        url: '/data/array',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      // 데이터베이스 관련 도구들
+      {
+        url: '/database/sql',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        url: '/database/sql-analyzer',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        url: '/database/mybatis-mapper',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      // 도구들
+      {
+        url: '/tools/color',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        url: '/tools/qr-generator',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        url: '/tools/timer',
         changefreq: 'weekly',
         priority: 0.7,
         lastmod: new Date().toISOString()
       },
       {
-        url: '/timer-json',
+        url: '/tools/timer-json',
         changefreq: 'weekly',
         priority: 0.7,
         lastmod: new Date().toISOString()
