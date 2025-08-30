@@ -3,9 +3,10 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
   ssr: false, // CSR 방식으로 변경
   css: [
-    '@/assets/css/tailwind.css', 
-    'vuetify/styles', 
-    '@mdi/font/css/materialdesignicons.css',
+    '@/assets/css/tailwind.css',
+    // 메인 페이지 성능 최적화: Vuetify와 MDI 아이콘 지연 로딩
+    // 'vuetify/styles', 
+    // '@mdi/font/css/materialdesignicons.css',
   ],
   build: {
     transpile: ['vuetify']
@@ -18,17 +19,25 @@ export default defineNuxtConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            'vuetify': ['vuetify'],
-            'utils': ['~/utils/JsonUtil.js', '~/utils/StringUtil.js', '~/utils/ArrayUtil.js'],
-            'vendor': ['qrcode', 'crypto-js']
+            // 메인 페이지에서 분리할 청크들
+            'vuetify-components': ['vuetify/components'],
+            'heavy-utils': ['~/utils/JsonUtil.js', '~/utils/CsvUtil.js', '~/utils/SqlUtil.js'],
+            'light-utils': ['~/utils/StringUtil.js', '~/utils/DateUtil.js'],
+            'vendor-heavy': ['qrcode', 'crypto-js'],
+            'vendor-light': ['vue']
           }
         }
       },
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 800, // 더 작은 청크 크기로 설정
       minify: 'esbuild'
     },
     esbuild: {
       drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+    },
+    // 메인 페이지 최적화를 위한 설정
+    optimizeDeps: {
+      include: ['vue', 'vue-router'],
+      exclude: ['qrcode', 'crypto-js'] // 메인 페이지에서 불필요한 의존성 제외
     }
   },
   nitro: {

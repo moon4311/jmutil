@@ -76,37 +76,12 @@
 
     <!-- Tools Grid -->
     <div class="container mx-auto px-6 pb-16">
-      <div class="max-w-7xl mx-auto">
-        <!-- Loading Skeleton -->
-        <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
-          <div 
-            v-for="n in 12" 
-            :key="`skeleton-${n}`"
-            class="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-pulse"
-          >
-            <div class="p-6">
-              <div class="flex items-start justify-between mb-4">
-                <div class="w-12 h-12 bg-gray-300 rounded-xl"></div>
-                <div class="w-16 h-6 bg-gray-300 rounded-full"></div>
-              </div>
-              <div class="h-6 bg-gray-300 rounded mb-2"></div>
-              <div class="h-4 bg-gray-300 rounded mb-4"></div>
-              <div class="flex gap-2 mb-4">
-                <div class="w-16 h-6 bg-gray-300 rounded"></div>
-                <div class="w-20 h-6 bg-gray-300 rounded"></div>
-              </div>
-              <div class="w-full h-12 bg-gray-300 rounded-xl"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Actual Tools Grid -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center fade-in">
-          <div 
-            v-for="tool in filteredTools" 
-            :key="tool.path"
-            class="w-full max-w-sm bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden group"
-          >
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div 
+          v-for="tool in filteredTools" 
+          :key="tool.path"
+          class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden group"
+        >
           <div class="p-6">
             <!-- Tool Icon & Category -->
             <div class="flex items-start justify-between mb-4">
@@ -181,48 +156,26 @@
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 
-// 빈 레이아웃 사용 (성능 최적화)
+// 빈 레이아웃 사용
 definePageMeta({
   layout: 'empty'
-})
-
-// SEO 메타 설정
-useHead({
-  title: 'Web-Util - 개발자 온라인 도구 모음',
-  meta: [
-    { name: 'description', content: 'JSON 포맷팅, 문자열 변환, 날짜 처리 등 개발 작업을 위한 필수 온라인 도구 모음. 브라우저에서 안전하게 처리되며 무료로 제공됩니다.' }
-  ]
 })
 
 // 반응형 데이터
 const searchQuery = ref('')
 const activeCategory = ref('all')
-const isLoading = ref(true)
 
-// 빠른 초기 로딩을 위한 최적화
-onMounted(() => {
-  // 필수 리소스 로딩 완료 후 바로 화면 표시
-  const timer = setTimeout(() => {
-    isLoading.value = false
-  }, 50) // 매우 짧은 지연으로 플리커 방지
-  
-  // 컴포넌트 언마운트 시 타이머 정리
-  onUnmounted(() => {
-    if (timer) clearTimeout(timer)
-  })
-})
-
-// 카테고리 정의 (최소화)
+// 카테고리 정의
 const categories = [
   { key: 'all', name: '전체' },
-  { key: 'data', name: '데이터' },
   { key: 'string', name: '문자열' },
+  { key: 'data', name: '데이터' },
+  { key: 'database', name: 'DB' },
   { key: 'tools', name: '도구' }
 ]
 
@@ -401,35 +354,5 @@ useHead({
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-/* 스켈레톤 로딩 애니메이션 개선 */
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: .5;
-  }
-}
-
-/* 빠른 fade-in 애니메이션 */
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>
