@@ -79,6 +79,16 @@
         </div>
       </div>
     </nav>
+    <!-- 광고위치-->
+     <ClientOnly>
+      <ins 
+        class="kakao_ad_area" 
+        style="display:none;"
+        data-ad-unit="DAN-03qvHyP7MQAvCIUk"
+        data-ad-width="250"
+        data-ad-height="250"
+      />
+    </ClientOnly>
   </aside>
 </template>
 
