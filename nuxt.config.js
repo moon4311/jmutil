@@ -35,15 +35,30 @@ export default defineNuxtConfig({
     minify: process.env.NODE_ENV === 'production',
     compressPublicAssets: true,
     prerender: {
-      crawlLinks: true,
-      concurrency: 100
+      routes: [
+        '/',
+        '/data/json',
+        '/data/csv', 
+        '/data/array',
+        '/database/sql',
+        '/string/utils',
+        '/string/date',
+        '/string/number',
+        '/string/storage',
+        '/tools/color',
+        '/tools/qr-generator',
+        '/tools/timer',
+        '/tools/timer-json'
+      ]
     },
     output: {
       dir: '../app/public',  // generate 출력 경로 설정
       publicDir: '../app/public'
       // dir: 'C:/workspace/app/public',  // generate 출력 경로 설정
       // publicDir: 'C:/workspace/app/public'
-    }
+    },
+    // SPA fallback 비활성화하여 각 라우트 파일 생성
+    spa: false
   },
   experimental: {
     payloadExtraction: false,
@@ -52,13 +67,36 @@ export default defineNuxtConfig({
     treeshakeClientOnly: true,
     componentIslands: false
   },
-  // CSR 최적화 설정 추가
+  // Trailing slash 설정 - nginx와 호환성을 위해
+  trailingSlash: false,
+  
+  // Router 설정
   router: {
     options: {
       hashMode: false,
       linkActiveClass: 'active-link',
       linkExactActiveClass: 'exact-active-link'
     }
+  },
+  
+  // Generate 설정 (정적 사이트 생성)
+  generate: {
+    routes: [
+      '/',
+      '/data/json',
+      '/data/csv', 
+      '/data/array',
+      '/database/sql',
+      '/string/utils',
+      '/string/date',
+      '/string/number',
+      '/string/storage',
+      '/tools/color',
+      '/tools/qr-generator',
+      '/tools/timer',
+      '/tools/timer-json'
+    ],
+    fallback: '404.html'
   },
   compatibilityDate: '2024-04-03',
   
