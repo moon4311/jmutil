@@ -15,5 +15,17 @@ export default {
   theme: {
     extend: {}
   },
-  plugins: []
+  plugins: [],
+  // CSR 최적화를 위한 설정
+  corePlugins: {
+    // 사용하지 않는 기본 플러그인 비활성화로 경량화
+    preflight: true, // 기본 스타일 리셋은 유지
+    container: true,
+    accessibility: false, // 접근성 관련 플러그인 비활성화 (필요시 활성화)
+    backgroundOpacity: false, // 배경 투명도 미사용시 비활성화
+    borderOpacity: false,
+    divideOpacity: false,
+    placeholderOpacity: false,
+    textOpacity: false
+  }
 }

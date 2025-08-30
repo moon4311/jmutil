@@ -1,7 +1,7 @@
-// Nuxt 3 + Vuetify + Tailwind (JavaScript, no TypeScript)
+// Nuxt 3 + Vuetify + Tailwind (JavaScript, no TypeScript) - CSR 최적화
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
-  ssr: true,
+  ssr: false, // CSR 방식으로 변경
   css: [
     '@/assets/css/tailwind.css', 
     'vuetify/styles', 
@@ -16,18 +16,21 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
-    minify: process.env.NODE_ENV === 'production',          // 프로덕션에서만 minify
-    compressPublicAssets: true,                    // 정적 에셋 gzip/br
-    storage: { cache: { driver: 'memory' } },      // SSR 캐시 스토리지
-    prerender: {
-      crawlLinks: true,  // 링크 자동 크롤링으로 정적 생성
-      routes: ['/']      // 미리 렌더링할 라우트
-    }
+    minify: process.env.NODE_ENV === 'production',
+    compressPublicAssets: true
   },
   experimental: {
-    payloadExtraction: false,  // SSR에서는 payload 추출 비활성화
-    inlineSSRStyles: true,     // 크리티컬 CSS 인라인
-    renderJsonPayloads: true   // JSON payload 렌더링 최적화
+    payloadExtraction: false,
+    inlineSSRStyles: false,
+    renderJsonPayloads: false
+  },
+  // CSR 최적화 설정 추가
+  router: {
+    options: {
+      hashMode: false,
+      linkActiveClass: 'active-link',
+      linkExactActiveClass: 'exact-active-link'
+    }
   },
   compatibilityDate: '2024-04-03',
   
@@ -61,77 +64,24 @@ export default defineNuxtConfig({
     }
   },
   
-  // Sitemap 설정
+  // Sitemap 설정 (CSR 최적화)
   sitemap: {
-    hostname: 'http://www.web-util.com', // 실제 도메인으로 변경하세요
+    hostname: 'http://www.web-util.com',
     gzip: true,
     routes: [
-      {
-        url: '/',
-        changefreq: 'daily',
-        priority: 1.0,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/array-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/color-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/date-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/json-utils',
-        changefreq: 'weekly',
-        priority: 0.9,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/localstorage-utils',
-        changefreq: 'weekly',
-        priority: 0.7,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/number-utils',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/qr-generator',
-        changefreq: 'weekly',
-        priority: 0.8,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/string-utils',
-        changefreq: 'weekly',
-        priority: 0.9,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/timer',
-        changefreq: 'weekly',
-        priority: 0.7,
-        lastmod: new Date().toISOString()
-      },
-      {
-        url: '/timer-json',
-        changefreq: 'weekly',
-        priority: 0.7,
-        lastmod: new Date().toISOString()
-      }
+      '/',
+      '/data/json',
+      '/data/csv', 
+      '/data/array',
+      '/database/sql',
+      '/string/utils',
+      '/string/date',
+      '/string/number',
+      '/string/storage',
+      '/tools/color',
+      '/tools/qr-generator',
+      '/tools/timer',
+      '/tools/timer-json'
     ],
     defaults: {
       changefreq: 'weekly',

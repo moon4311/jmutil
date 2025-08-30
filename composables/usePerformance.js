@@ -1,5 +1,5 @@
 // usePerformance.js - 성능 최적화 관련 composable
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted, defineAsyncComponent } from 'vue';
 
 /**
  * 성능 최적화를 위한 composable
@@ -158,14 +158,91 @@ export function usePerformance() {
    * 메모리 사용량 모니터링 (가능한 경우)
    */
   const getMemoryInfo = () => {
-    if ('memory' in performance) {
+    if (typeof window !== 'undefined' && 'memory' in performance) {
       return {
-        usedJSHeapSize: performance.memory.usedJSHeapSize,
-        totalJSHeapSize: performance.memory.totalJSHeapSize,
-        jsHeapSizeLimit: performance.memory.jsHeapSizeLimit
+        usedJSHeapSize: Math.round(performance.memory.usedJSHeapSize / 1048576), // MB
+        totalJSHeapSize: Math.round(performance.memory.totalJSHeapSize / 1048576), // MB
+        jsHeapSizeLimit: Math.round(performance.memory.jsHeapSizeLimit / 1048576) // MB
       };
     }
     return null;
+  };
+
+  /**
+   * CSR 최적화: 웹 워커 사용
+   * @param {string} workerScript - 워커 스크립트 경로
+   * @returns {Object|null} 워커 객체 또는 null
+   */
+  const useWebWorker = (workerScript) => {
+    if (typeof window === 'undefined' || !window.Worker) return null;
+    
+    const worker = new Worker(workerScript);
+    
+    const postMessage = (data) => {
+      return new Promise((resolve, reject) => {
+        worker.postMessage(data);
+        worker.onmessage = (e) => resolve(e.data);
+        worker.onerror = reject;
+      });
+    };
+    
+    const terminate = () => worker.terminate();
+    
+    return { postMessage, terminate };
+  };
+
+  /**
+   * CSR 최적화: 교차점 관찰자 (Intersection Observer)
+   * @param {Function} callback - 교차점 콜백 함수
+   * @param {Object} options - 관찰자 옵션
+   * @returns {Function} cleanup 함수
+   */
+  const useIntersectionObserver = (callback, options = {}) => {
+    if (typeof window === 'undefined') return () => {};
+    
+    const observer = new IntersectionObserver(callback, {
+      root: null,
+      rootMargin: '50px',
+      threshold: 0.1,
+      ...options
+    });
+    
+    return {
+      observe: (element) => observer.observe(element),
+      unobserve: (element) => observer.unobserve(element),
+      disconnect: () => observer.disconnect()
+    };
+  };
+
+  /**
+   * CSR 최적화: 이벤트 리스너 정리 관리
+   */
+  const useEventListenerCleanup = () => {
+    const listeners = [];
+    
+    const addEventListener = (element, event, handler, options) => {
+      element.addEventListener(event, handler, options);
+      listeners.push({ element, event, handler, options });
+    };
+    
+    const removeAllListeners = () => {
+      listeners.forEach(({ element, event, handler, options }) => {
+        element.removeEventListener(event, handler, options);
+      });
+      listeners.length = 0;
+    };
+    
+    return { addEventListener, removeAllListeners };
+  };
+
+  /**
+   * CSR 최적화: 컴포넌트 지연 로딩
+   * @param {Function} importFn - dynamic import 함수
+   * @returns {Object} 지연 로딩 컴포넌트
+   */
+  const lazyLoadComponent = (importFn) => {
+    if (typeof window === 'undefined') return null;
+    return defineAsyncComponent(importFn);
   };
 
   /**
@@ -193,6 +270,11 @@ export function usePerformance() {
     calculateVisibleRange,
     getMemoryInfo,
     clearCache,
-    resetMetrics
+    resetMetrics,
+    // CSR 최적화 기능들
+    useWebWorker,
+    useIntersectionObserver,
+    useEventListenerCleanup,
+    lazyLoadComponent
   };
 }
