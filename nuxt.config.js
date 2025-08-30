@@ -13,20 +13,44 @@ export default defineNuxtConfig({
   vite: {
     define: {
       'process.env.DEBUG': false
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vuetify': ['vuetify'],
+            'utils': ['~/utils/JsonUtil.js', '~/utils/StringUtil.js', '~/utils/ArrayUtil.js'],
+            'vendor': ['qrcode', 'crypto-js']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000,
+      minify: 'esbuild'
+    },
+    esbuild: {
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
     }
   },
   nitro: {
     minify: process.env.NODE_ENV === 'production',
     compressPublicAssets: true,
+    prerender: {
+      crawlLinks: true,
+      concurrency: 100
+    },
     output: {
-      dir: 'C:/workspace/app/public',  // generate 출력 경로 설정
-      publicDir: 'C:/workspace/app/public'
+      dir: '../app/public',  // generate 출력 경로 설정
+      publicDir: '../app/public'
+      // dir: 'C:/workspace/app/public',  // generate 출력 경로 설정
+      // publicDir: 'C:/workspace/app/public'
     }
   },
   experimental: {
     payloadExtraction: false,
     inlineSSRStyles: false,
-    renderJsonPayloads: false
+    renderJsonPayloads: false,
+    treeshakeClientOnly: true,
+    componentIslands: false
   },
   // CSR 최적화 설정 추가
   router: {

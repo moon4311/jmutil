@@ -9,10 +9,17 @@
     "dev:profile": "nuxt dev --host 0.0.0.0 --port 80 --profile",
     "build": "nuxt build",
     "build:analyze": "nuxt build --analyze",
+    "build:prod": "cross-env NODE_ENV=production nuxt build",
+    "build:report": "nuxt build --analyze && node scripts/bundle-analyzer.js",
     "generate": "nuxt generate",
     "preview": "nuxt preview --host 0.0.0.0 --port 80",
     "postinstall": "nuxt prepare",
-    "generate:sitemap": "nuxt generate"
+    "generate:sitemap": "nuxt generate",
+    "optimize": "pnpm build:prod && pnpm analyze-bundle",
+    "analyze-bundle": "node scripts/analyze-bundle.js",
+    "clean": "rm -rf .nuxt dist .output",
+    "lint": "eslint . --fix",
+    "perf": "node scripts/performance-check.js"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -24,6 +31,7 @@
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
+    "cross-env": "^10.0.0",
     "sass": "^1.77.0"
   },
   "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"

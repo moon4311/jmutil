@@ -262,7 +262,7 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
-import { formatJson, minifyJson, selectKeys, filterObjects, filterObjectsMultiple, sortObjects, extractKeys } from '@/utils/JsonUtil.js';
+import { extractKeys, selectKeys, filterObjects, filterObjectsMultiple, sortObjects, JsonUtil } from '@/utils/JsonUtil.js';
 import GroupPanel from '@/components/GroupPanel.vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
 import { useAccordion } from '@/composables/useAccordion.js';
@@ -477,23 +477,33 @@ const toggleKey = (key) => {
   }
 };
 
-const handleFormat = () => {
+const handleFormat = async () => {
   try {
     const sourceData = processedData.value || input.value;
-    processedData.value = formatJson(sourceData);
-    processMode.value = 'format';
-    activeTab.value = 'processed';
+    const result = await JsonUtil.format(sourceData);
+    if (result.success) {
+      processedData.value = result.data;
+      processMode.value = 'format';
+      activeTab.value = 'processed';
+    } else {
+      processedData.value = `오류: ${result.error}`;
+    }
   } catch (error) {
     processedData.value = `오류: ${error.message}`;
   }
 };
 
-const handleMinify = () => {
+const handleMinify = async () => {
   try {
     const sourceData = processedData.value || input.value;
-    processedData.value = minifyJson(sourceData);
-    processMode.value = 'minify';
-    activeTab.value = 'processed';
+    const result = await JsonUtil.minify(sourceData);
+    if (result.success) {
+      processedData.value = result.data;
+      processMode.value = 'minify';
+      activeTab.value = 'processed';
+    } else {
+      processedData.value = `오류: ${result.error}`;
+    }
   } catch (error) {
     processedData.value = `오류: ${error.message}`;
   }

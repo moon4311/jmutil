@@ -1,228 +1,607 @@
-// StringUtil.js - 문자열 관련 유틸리티 함수들
+// StringUtil.js - 문자열 관련 유틸리티 함수들 (리팩토링)
+import { BaseUtil } from './BaseUtil.js';
 
 /**
- * 카멜케이스로 변환
+ * 문자열 처리 유틸리티 클래스
  */
+class StringUtilClass extends BaseUtil {
+  constructor() {
+    super(100, 5 * 60 * 1000) // 100개 캐시, 5분 TTL
+  }
+
+  /**
+   * 카멜케이스로 변환
+   */
+  toCamelCase(str) {
+    const cacheKey = `camel_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      
+      const result = str
+        .replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
+        .replace(/^(.)/, (m) => m.toLowerCase())
+      
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str // 오류 시 원본 반환
+    }
+  }
+
+  /**
+   * 스네이크케이스로 변환
+   */
+  toSnakeCase(str) {
+    const cacheKey = `snake_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      
+      const result = str
+        .replace(/([a-z])([A-Z])/g, '$1_$2')
+        .replace(/[-\s]+/g, '_')
+        .replace(/_+/g, '_')
+        .toLowerCase()
+      
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * 케밥케이스로 변환
+   */
+  toKebabCase(str) {
+    const cacheKey = `kebab_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      
+      const result = str
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .replace(/[_\s]+/g, '-')
+        .replace(/-+/g, '-')
+        .toLowerCase()
+      
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * 파스칼케이스로 변환
+   */
+  toPascalCase(str) {
+    const cacheKey = `pascal_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      
+      const result = str
+        .replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
+        .replace(/^(.)/, (m) => m.toUpperCase())
+      
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * 문자열 패딩
+   */
+  lpad(str, length, char = ' ') {
+    const cacheKey = `lpad_${str}_${length}_${char}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      if (!str) str = ''
+      const numLength = parseInt(length, 10)
+      if (isNaN(numLength) || numLength <= 0) return str.toString()
+      if (!char || char === '') char = ' '
+      
+      const result = str.toString().padStart(numLength, char)
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str.toString()
+    }
+  }
+
+  rpad(str, length, char = ' ') {
+    const cacheKey = `rpad_${str}_${length}_${char}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      if (!str) str = ''
+      const numLength = parseInt(length, 10)
+      if (isNaN(numLength) || numLength <= 0) return str.toString()
+      if (!char || char === '') char = ' '
+      
+      const result = str.toString().padEnd(numLength, char)
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str.toString()
+    }
+  }
+
+  /**
+   * Base64 인코딩
+   */
+  encodeBase64(str) {
+    const cacheKey = `base64enc_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = btoa(unescape(encodeURIComponent(str)))
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      throw new Error('Base64 인코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * Base64 디코딩
+   */
+  decodeBase64(str) {
+    const cacheKey = `base64dec_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = decodeURIComponent(escape(atob(str)))
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      throw new Error('Base64 디코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * URL 인코딩
+   */
+  encodeURL(str) {
+    const cacheKey = `urlenc_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = encodeURIComponent(str)
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      throw new Error('URL 인코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * URL 디코딩
+   */
+  decodeURL(str) {
+    const cacheKey = `urldec_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = decodeURIComponent(str)
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      throw new Error('URL 디코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * HTML 이스케이프
+   */
+  escapeHTML(str) {
+    const cacheKey = `htmlesc_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+      
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * HTML 언이스케이프
+   */
+  unescapeHTML(str) {
+    const cacheKey = `htmlunesc_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = str
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+      
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * 문자열 뒤집기
+   */
+  reverse(str) {
+    const cacheKey = `reverse_${str}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const result = str.split('').reverse().join('')
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * 문자열 반복
+   */
+  repeat(str, count) {
+    const cacheKey = `repeat_${str}_${count}`
+    const cached = this.getCached(cacheKey)
+    if (cached !== null) return cached
+
+    try {
+      this.validateInput(str, 'string')
+      const numCount = parseInt(count, 10)
+      if (isNaN(numCount) || numCount < 0) return str
+      
+      const result = str.repeat(numCount)
+      this.setCached(cacheKey, result)
+      return result
+    } catch (error) {
+      return str
+    }
+  }
+
+  /**
+   * 문자 개수 세기
+   */
+  countChars(str) {
+    try {
+      this.validateInput(str, 'string')
+      return {
+        total: str.length,
+        withoutSpaces: str.replace(/\s/g, '').length,
+        words: str.trim() ? str.trim().split(/\s+/).length : 0,
+        lines: str.split('\n').length
+      }
+    } catch (error) {
+      return { total: 0, withoutSpaces: 0, words: 0, lines: 0 }
+    }
+  }
+
+  /**
+   * HEX 인코딩
+   */
+  encodeHex(str) {
+    try {
+      this.validateInput(str, 'string')
+      return Array.from(str)
+        .map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
+        .join('')
+    } catch (error) {
+      throw new Error('HEX 인코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * HEX 디코딩
+   */
+  decodeHex(str) {
+    try {
+      this.validateInput(str, 'string')
+      return str.match(/.{2}/g)
+        ?.map(byte => String.fromCharCode(parseInt(byte, 16)))
+        .join('') || ''
+    } catch (error) {
+      throw new Error('HEX 디코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * Unicode 인코딩
+   */
+  encodeUnicode(str) {
+    try {
+      this.validateInput(str, 'string')
+      return Array.from(str)
+        .map(c => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`)
+        .join('')
+    } catch (error) {
+      throw new Error('Unicode 인코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * Unicode 디코딩
+   */
+  decodeUnicode(str) {
+    try {
+      this.validateInput(str, 'string')
+      return str.replace(/\\u([\dA-Fa-f]{4})/g, (m, p1) =>
+        String.fromCharCode(parseInt(p1, 16))
+      )
+    } catch (error) {
+      throw new Error('Unicode 디코딩 실패: ' + error.message)
+    }
+  }
+
+  /**
+   * 모든 공백 제거
+   */
+  removeAllSpaces(str) {
+    try {
+      if (!str) return ''
+      return str.replace(/\s+/g, '')
+    } catch (error) {
+      return str || ''
+    }
+  }
+
+  /**
+   * 여러 공백을 하나로 변환
+   */
+  normalizeSpaces(str) {
+    try {
+      if (!str) return ''
+      return str.replace(/\s+/g, ' ').trim()
+    } catch (error) {
+      return str || ''
+    }
+  }
+
+  /**
+   * 특수문자 제거
+   */
+  removeSpecialChars(str) {
+    try {
+      if (!str) return ''
+      return str.replace(/[^a-zA-Z0-9가-힣\s]/g, '')
+    } catch (error) {
+      return str || ''
+    }
+  }
+
+  /**
+   * 숫자만 추출
+   */
+  extractNumbers(str) {
+    try {
+      if (!str) return ''
+      return str.replace(/[^0-9]/g, '')
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * 영문자만 추출
+   */
+  extractAlphabets(str) {
+    try {
+      if (!str) return ''
+      return str.replace(/[^a-zA-Z]/g, '')
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * 한글만 추출
+   */
+  extractKorean(str) {
+    try {
+      if (!str) return ''
+      return str.replace(/[^가-힣]/g, '')
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * 정규식 테스트
+   */
+  regexTest(str, pattern, flags = 'g') {
+    try {
+      if (!str || !pattern) {
+        return { success: false, error: '문자열과 패턴을 모두 입력해주세요.' }
+      }
+
+      const regex = new RegExp(pattern, flags)
+      const matches = str.match(regex)
+      
+      return {
+        success: true,
+        isMatch: matches !== null,
+        matchCount: matches ? matches.length : 0,
+        matches: matches || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: `정규식 오류: ${error.message}`,
+        isMatch: false,
+        matchCount: 0,
+        matches: []
+      }
+    }
+  }
+
+  /**
+   * 정규식 치환
+   */
+  regexReplace(str, pattern, replacement, flags = 'g') {
+    try {
+      if (!str || !pattern) {
+        return { success: false, error: '문자열과 패턴을 모두 입력해주세요.' }
+      }
+
+      const regex = new RegExp(pattern, flags)
+      const result = str.replace(regex, replacement)
+      
+      return {
+        success: true,
+        result: result
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: `정규식 치환 오류: ${error.message}`,
+        result: str
+      }
+    }
+  }
+}
+
+// 인스턴스 생성
+const stringUtilInstance = new StringUtilClass()
+
+// 기존 함수들 (호환성을 위해 유지)
 export function toCamelCase(str) {
-  return str
-    .replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
-    .replace(/^(.)/, (m) => m.toLowerCase());
+  return stringUtilInstance.toCamelCase(str)
 }
 
-/**
- * 스네이크케이스로 변환  
- */
 export function toSnakeCase(str) {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1_$2')
-    .replace(/[-\s]+/g, '_')
-    .replace(/_+/g, '_')
-    .toLowerCase();
+  return stringUtilInstance.toSnakeCase(str)
 }
 
-/**
- * 문자열을 지정된 길이만큼 왼쪽에 특정 문자로 채움 (lpad)
- */
-export function lpad(str, length, char = ' ') {
-  if (!str) str = '';
-  const numLength = parseInt(length, 10);
-  if (isNaN(numLength) || numLength <= 0) return str.toString();
-  if (!char || char === '') char = ' ';
-  return str.toString().padStart(numLength, char);
+export function toKebabCase(str) {
+  return stringUtilInstance.toKebabCase(str)
 }
 
-/**
- * 문자열을 지정된 길이만큼 오른쪽에 특정 문자로 채움 (rpad)
- */
-export function rpad(str, length, char = ' ') {
-  if (!str) str = '';
-  const numLength = parseInt(length, 10);
-  if (isNaN(numLength) || numLength <= 0) return str.toString();
-  if (!char || char === '') char = ' ';
-  return str.toString().padEnd(numLength, char);
+export function toPascalCase(str) {
+  return stringUtilInstance.toPascalCase(str)
 }
 
-// =============== 인코딩/디코딩 함수들 ===============
+export function lpad(str, length, char) {
+  return stringUtilInstance.lpad(str, length, char)
+}
 
-/**
- * Base64 인코딩
- */
+export function rpad(str, length, char) {
+  return stringUtilInstance.rpad(str, length, char)
+}
+
 export function encodeBase64(str) {
-  try {
-    return btoa(unescape(encodeURIComponent(str)));
-  } catch {
-    return 'Base64 인코딩 오류';
-  }
+  return stringUtilInstance.encodeBase64(str)
 }
 
-/**
- * Base64 디코딩
- */
 export function decodeBase64(str) {
-  try {
-    return decodeURIComponent(escape(atob(str)));
-  } catch {
-    return 'Base64 디코딩 오류';
-  }
+  return stringUtilInstance.decodeBase64(str)
 }
 
-/**
- * URL 인코딩
- */
 export function encodeURL(str) {
-  return encodeURIComponent(str);
+  return stringUtilInstance.encodeURL(str)
 }
 
-/**
- * URL 디코딩
- */
 export function decodeURL(str) {
-  try {
-    return decodeURIComponent(str);
-  } catch {
-    return 'URL 디코딩 오류';
-  }
+  return stringUtilInstance.decodeURL(str)
 }
 
-/**
- * HEX 인코딩
- */
+export function escapeHTML(str) {
+  return stringUtilInstance.escapeHTML(str)
+}
+
+export function unescapeHTML(str) {
+  return stringUtilInstance.unescapeHTML(str)
+}
+
+// 추가된 함수들
 export function encodeHex(str) {
-  return Array.from(str)
-    .map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
-    .join('');
+  return stringUtilInstance.encodeHex(str)
 }
 
-/**
- * HEX 디코딩
- */
 export function decodeHex(str) {
-  try {
-    return str.replace(/(..)/g, (m, p1) =>
-      String.fromCharCode(parseInt(p1, 16))
-    );
-  } catch {
-    return 'HEX 디코딩 오류';
-  }
+  return stringUtilInstance.decodeHex(str)
 }
 
-/**
- * Unicode 인코딩
- */
 export function encodeUnicode(str) {
-  return Array.from(str)
-    .map(c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'))
-    .join('');
+  return stringUtilInstance.encodeUnicode(str)
 }
 
-/**
- * Unicode 디코딩
- */
 export function decodeUnicode(str) {
-  try {
-    return str.replace(/\\u([\dA-Fa-f]{4})/g, (m, p1) =>
-      String.fromCharCode(parseInt(p1, 16))
-    );
-  } catch {
-    return 'Unicode 디코딩 오류';
-  }
+  return stringUtilInstance.decodeUnicode(str)
 }
 
-// =============== 공백/특수문자 처리 함수들 ===============
-
-/**
- * 모든 공백 제거 (스페이스, 탭, 줄바꿈 등)
- */
 export function removeAllSpaces(str) {
-  if (!str) return '';
-  return str.replace(/\s+/g, '');
+  return stringUtilInstance.removeAllSpaces(str)
 }
 
-/**
- * 여러 공백을 하나로 변환
- */
 export function normalizeSpaces(str) {
-  if (!str) return '';
-  return str.replace(/\s+/g, ' ').trim();
+  return stringUtilInstance.normalizeSpaces(str)
 }
 
-/**
- * 특수문자 제거 (알파벳, 숫자, 한글, 공백만 남김)
- */
 export function removeSpecialChars(str) {
-  if (!str) return '';
-  return str.replace(/[^a-zA-Z0-9가-힣\s]/g, '');
+  return stringUtilInstance.removeSpecialChars(str)
 }
 
-/**
- * 숫자만 추출
- */
 export function extractNumbers(str) {
-  if (!str) return '';
-  return str.replace(/[^0-9]/g, '');
+  return stringUtilInstance.extractNumbers(str)
 }
 
-/**
- * 영문자만 추출
- */
 export function extractAlphabets(str) {
-  if (!str) return '';
-  return str.replace(/[^a-zA-Z]/g, '');
+  return stringUtilInstance.extractAlphabets(str)
 }
 
-/**
- * 한글만 추출
- */
 export function extractKorean(str) {
-  if (!str) return '';
-  return str.replace(/[^가-힣]/g, '');
+  return stringUtilInstance.extractKorean(str)
 }
 
-// =============== 정규식 테스트 함수들 ===============
-
-/**
- * 정규식 매칭 테스트
- */
-export function regexTest(str, pattern, flags = 'g') {
-  try {
-    if (!str || !pattern) return { success: false, error: '문자열과 패턴을 입력해주세요.' };
-    
-    const regex = new RegExp(pattern, flags);
-    const matches = str.match(regex);
-    const isMatch = regex.test(str);
-    
-    return {
-      success: true,
-      isMatch,
-      matches: matches || [],
-      matchCount: matches ? matches.length : 0
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: `정규식 오류: ${error.message}`
-    };
-  }
+export function regexTest(str, pattern, flags) {
+  return stringUtilInstance.regexTest(str, pattern, flags)
 }
 
-/**
- * 정규식으로 문자열 치환
- */
-export function regexReplace(str, pattern, replacement, flags = 'g') {
-  try {
-    if (!str || !pattern) return { success: false, error: '문자열과 패턴을 입력해주세요.' };
-    
-    const regex = new RegExp(pattern, flags);
-    const result = str.replace(regex, replacement || '');
-    
-    return {
-      success: true,
-      result
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: `정규식 오류: ${error.message}`
-    };
-  }
+export function regexReplace(str, pattern, replacement, flags) {
+  return stringUtilInstance.regexReplace(str, pattern, replacement, flags)
 }
+
+// 새로운 클래스 기반 인스턴스 내보내기
+export const StringUtil = stringUtilInstance
+export default stringUtilInstance
