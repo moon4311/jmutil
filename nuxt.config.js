@@ -17,7 +17,11 @@ export default defineNuxtConfig({
   },
   nitro: {
     minify: process.env.NODE_ENV === 'production',
-    compressPublicAssets: true
+    compressPublicAssets: true,
+    output: {
+      dir: 'C:/workspace/app/public',  // generate 출력 경로 설정
+      publicDir: 'C:/workspace/app/public'
+    }
   },
   experimental: {
     payloadExtraction: false,
