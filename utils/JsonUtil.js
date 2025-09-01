@@ -69,6 +69,7 @@ class JsonUtilClass extends BaseUtil {
         return result
       } catch (error) {
         const result = { success: false, error: this.getErrorMessage(error) }
+        this.setCached(cacheKey, result)
         return result
       }
     }, 'JSON Minify')
@@ -471,7 +472,20 @@ const jsonUtilInstance = new JsonUtilClass()
 
 // 호환성을 위한 기존 함수들 (deprecated)
 export function formatJson(jsonStr) {
-  const result = jsonUtilInstance.format(jsonStr)
+  try {
+    // 동기 버전 - 간단한 JSON 포맷팅
+    if (!jsonStr || !jsonStr.trim()) {
+      throw new Error('JSON 데이터가 비어있습니다.')
+    }
+    const parsed = JSON.parse(jsonStr)
+    return JSON.stringify(parsed, null, 2)
+  } catch (error) {
+    throw new Error(`JSON 오류: ${error.message}`)
+  }
+}
+
+export async function formatJsonAsync(jsonStr) {
+  const result = await jsonUtilInstance.format(jsonStr)
   if (result.success) {
     return result.data
   }

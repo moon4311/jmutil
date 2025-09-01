@@ -262,7 +262,7 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
-import { extractKeys, selectKeys, filterObjects, filterObjectsMultiple, sortObjects, JsonUtil } from '@/utils/JsonUtil.js';
+import { extractKeys, selectKeys, filterObjects, filterObjectsMultiple, sortObjects, JsonUtil, formatJson } from '@/utils/JsonUtil.js';
 import GroupPanel from '@/components/GroupPanel.vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';
 import { useAccordion } from '@/composables/useAccordion.js';
@@ -345,11 +345,16 @@ const availableKeys = computed(() => {
         try {
           const result = selectKeys(input.value, keys);
           // 기본적으로 포맷팅 적용
-          processedData.value = formatJson(result);
-          processMode.value = 'format';
+          if (result) {
+            processedData.value = formatJson(result);
+            processMode.value = 'format';
+          }
           // activeTab.value = 'processed'; // 자동 탭 이동 제거
         } catch (error) {
-          console.error('자동 키 선택 오류:', error);
+          console.warn('자동 키 선택 실패:', error.message);
+          // 오류 발생 시 가공 데이터 초기화
+          processedData.value = '';
+          processMode.value = '';
         }
       }
     }, 100);
