@@ -1,7 +1,7 @@
 // Nuxt 3 + Vuetify + Tailwind (JavaScript, no TypeScript) - CSR 최적화
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
-  ssr: false, // CSR 방식으로 변경
+  ssr: true, // SSR 서버 실행 (nginx 프록시 대상)
   css: [
     '@/assets/css/tailwind.css',
     '@/assets/css/common.css',

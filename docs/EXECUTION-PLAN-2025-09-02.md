@@ -4,32 +4,39 @@
 
 ### P0. 빠른 안정화 패치 (로컬 즉시 적용)
 체크리스트
-- [ ] `utils/JsonUtil.js`의 `jsonToCsv` 비동기 버그 수정 적용 확인
-- [ ] `package.json`의 `clean` Windows 호환으로 교체, `build:report` 경로 수정
+- [x] `utils/JsonUtil.js`의 `jsonToCsv` 비동기 버그 수정 적용 확인
+- [x] `package.json`의 `clean` Windows 호환으로 교체, `build:report` 경로 수정
 
 검증
-- [ ] pnpm install/빌드 정상 동작
+- [x] pnpm install/빌드 정상 동작
 - [ ] CSV/JSON 페이지에서 변환 기능 동작
 
 ### P1. HTTPS 전환 및 URL 일관화
 체크리스트
-- [ ] 인증서 적용(Cloudflare/Let's Encrypt 등)
-- [ ] nginx 80 → 443 리다이렉트(301), HSTS 적용
-- [ ] `nuxt.config.js`의 site.url, canonical, og:url, sitemap.hostname을 https로 변경
-- [ ] robots.txt의 Sitemap URL https 확인
+- [x] 인증서 적용(Cloudflare/Let's Encrypt 등)
+- [x] nginx 80 → 443 리다이렉트(301), HSTS 적용
+- [x] `nuxt.config.js`의 site.url, canonical, og:url, sitemap.hostname을 https로 변경
+- [x] robots.txt의 Sitemap URL https 확인
 
 검증
-- [ ] http 접속 시 https로 301 이동 확인
+- [x] http 접속 시 https로 301 이동 확인
 - [ ] canonical/OG가 https로 노출 확인
 
 ### P2. 서버 301 리다이렉트 맵 도입
 체크리스트
-- [ ] nginx `map` 또는 `rewrite`로 구 URL → 신 URL 301 구성
-- [ ] Nuxt 미들웨어는 보조 유지(클라이언트 내비게이션 시 이점)
+- [x] nginx `rewrite`로 구 URL → 신 URL 301 구성
+- [x] Nuxt 미들웨어는 보조 유지(클라이언트 내 내비게이션 시 쿼리/해시 보존, 루프 방지)
 
 검증
 - [ ] 검색엔진 테스트 도구로 301 확인
 - [ ] 구 URL 직접 입력 시 상태코드 301
+
+### Next (바로 진행)
+- P1: 인증서 파일을 Windows 경로에 배치하고 NGINX 재시작 후 리다이렉트/https 노출 확인
+	- C:/nginx/certs/www.web-util.com.crt
+	- C:/nginx/certs/www.web-util.com.key
+- P2: 리다이렉트 동작 점검(레거시 URL 301), Nuxt 미들웨어는 보조 유지 여부 확인
+- 이어서 P3로 이동: CSP 세분화, Brotli 가능 시 적용, 캐시 정책 정교화
 
 ### P3. 보안/성능 헤더 및 압축
 체크리스트
