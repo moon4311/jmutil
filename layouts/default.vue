@@ -36,15 +36,11 @@
 
               <!-- 광고 위치 -->
               <div class="header-ad">
-                <ClientOnly>
-                  <ins 
-                    class="kakao_ad_area" 
-                    style="display:none;"
-                    data-ad-unit="DAN-q3apLfzK9uRxRmyA"
-                    data-ad-width="728"
-                    data-ad-height="90"
-                  />
-                </ClientOnly>
+                <AdSlot
+                  :unit-id="headerUnitId"
+                  :width="headerWidth"
+                  :height="headerHeight"
+                />
               </div>
               
               <div class="header-right">
@@ -138,15 +134,7 @@
                 <div class="ad-sidebar-sticky">
                   <div class="ad-label">광고</div>
                   <div class="ad-container">
-                    <ClientOnly>
-                      <ins 
-                        class="kakao_ad_area" 
-                        style="display:none;"
-                        data-ad-unit="DAN-W1I8djLN57Nf4yPR"
-                        data-ad-width="160"
-                        data-ad-height="600"
-                      />
-                    </ClientOnly>
+                    <AdSlot unit-id="DAN-W1I8djLN57Nf4yPR" :width="160" :height="600" />
                   </div>
                 </div>
               </aside>
@@ -159,9 +147,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import SideBar from '@/components/SideBar.vue';
 import { useKakaoAds } from '@/composables/useKakaoAds';
+import AdSlot from '@/components/AdSlot.vue';
+import { useABVariant } from '@/composables/useABVariant.js';
 
 // 카카오 애드핏 스크립트 추가
 useHead({
@@ -204,6 +194,12 @@ onUnmounted(() => {
     window.removeEventListener('toast', onToastEvent);
     cleanupAds();
 });
+
+// Header Ad A/B 사이즈 테스트
+const headerVariant = useABVariant('header-ad-size', ['A', 'B'])
+const headerUnitId = computed(() => 'DAN-q3apLfzK9uRxRmyA')
+const headerWidth = computed(() => (headerVariant === 'A' ? 728 : 970))
+const headerHeight = computed(() => 90)
 </script>
 <style scoped>
 /* === 레이아웃 컨테이너 === */
