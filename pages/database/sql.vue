@@ -849,12 +849,35 @@ const copyToClipboard = async (text, type) => {
   }
 }
 
-// SEO 및 페이지 설정
+// SEO 및 페이지 설정 (canonical/OG + JSON-LD)
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
 useHead({
-  title: 'SQL 유틸리티 - JM Utils',
+  title: 'SQL 유틸리티 · 쿼리/Mapper 생성·분석 | Web-Util',
   meta: [
-    { name: 'description', content: 'SQL 쿼리 생성, MyBatis Mapper 생성, 쿼리 분석 등의 SQL 개발 도구를 제공합니다.' },
-    { name: 'keywords', content: 'SQL, MyBatis, Mapper, 쿼리 생성, 쿼리 분석, INSERT, UPDATE, SELECT' }
+    { name: 'description', content: 'SQL 쿼리 생성, MyBatis Mapper 생성, 포맷팅과 분석까지 한 곳에서 처리하는 SQL 개발 도구.' },
+    { property: 'og:title', content: 'SQL 유틸리티 - Web-Util' },
+    { property: 'og:description', content: 'SQL 생성·분석·포맷팅을 지원하는 무료 웹 도구입니다.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/database/sql' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/database/sql' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'SQL 유틸리티',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/database/sql',
+        description: 'SQL 쿼리 및 MyBatis Mapper 생성, 포맷팅과 분석을 제공하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
   ]
 })
 </script>

@@ -57,6 +57,37 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
+// SEO 메타 및 구조화 데이터
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '타이머 JSON 생성기 · 이벤트 데이터 생성 | Web-Util',
+  meta: [
+    { name: 'description', content: '타이머/스플릿/정지 이벤트를 기반으로 앱 연동용 JSON 데이터를 손쉽게 생성합니다.' },
+    { property: 'og:title', content: '타이머 JSON 생성기 - Web-Util' },
+    { property: 'og:description', content: '타이머 앱에 필요한 JSON 이벤트 데이터를 자동 생성하세요.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/tools/timer-json' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/tools/timer-json' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '타이머 JSON 생성기',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/tools/timer-json',
+        description: '타이머 이벤트 기반 JSON 데이터 세트를 생성하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 
 import { ref } from 'vue';
 import CopyTextArea from '@/components/CopyTextArea.vue';

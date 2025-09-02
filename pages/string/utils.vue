@@ -236,6 +236,36 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 import { ref, computed } from 'vue';
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '문자열 변환 · 케이스/인코딩/정규식 도구 | Web-Util',
+  meta: [
+    { name: 'description', content: '문자열 대/소문자, Trim, 패딩, 케이스(camel/snake), Base64/URL/HEX/Unicode 인코딩·디코딩, 공백/특수문자 처리, 정규식 테스트까지 한 곳에서.' },
+    { property: 'og:title', content: '문자열 변환 도구 - Web-Util' },
+    { property: 'og:description', content: '개발자가 자주 쓰는 문자열 변환/인코딩/정규식 기능을 빠르게 처리하세요.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/string/utils' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/string/utils' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '문자열 변환 도구',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/string/utils',
+        description: '문자열 케이스 변환, 인코딩/디코딩, 정규식 테스트를 제공하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 import { 
   toCamelCase, 
   toSnakeCase, 

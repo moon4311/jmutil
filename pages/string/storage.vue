@@ -244,6 +244,37 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
+// SEO 메타 및 구조화 데이터
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '문자열 저장소 · 로컬스토리지/암호화 | Web-Util',
+  meta: [
+    { name: 'description', content: '브라우저 로컬스토리지에 문자열을 저장·검색·관리하고 AES 암호화까지 지원하는 도구.' },
+    { property: 'og:title', content: '문자열 저장소 - Web-Util' },
+    { property: 'og:description', content: '로컬 저장 및 암호화를 지원하는 문자열 관리 도구.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/string/storage' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/string/storage' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '문자열 저장소',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/string/storage',
+        description: '문자열 저장/검색/관리와 AES 암호화를 제공하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 import { ref, computed, onMounted } from 'vue';
 import CryptoJS from 'crypto-js';
 import GroupPanel from '@/components/GroupPanel.vue';

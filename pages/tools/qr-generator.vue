@@ -182,6 +182,37 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
+// SEO 메타 및 구조화 데이터
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: 'QR 코드 생성기 · 이미지 다운로드/에러보정 | Web-Util',
+  meta: [
+    { name: 'description', content: '텍스트로 QR 코드를 생성하고 크기, 색상, 에러 보정 수준을 조절한 뒤 이미지로 다운로드할 수 있습니다.' },
+    { property: 'og:title', content: 'QR 코드 생성기 - Web-Util' },
+    { property: 'og:description', content: '맞춤 크기/색상/에러 보정으로 QR 이미지를 빠르게 생성하세요.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/tools/qr-generator' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/tools/qr-generator' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'QR 코드 생성기',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/tools/qr-generator',
+        description: '텍스트 → QR 코드 이미지 생성 및 다운로드. 크기/색상/에러 보정 설정 지원.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 import { ref, watch, nextTick, onMounted } from 'vue'
 import QRCode from 'qrcode'
 import GroupPanel from '@/components/GroupPanel.vue'

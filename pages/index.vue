@@ -193,10 +193,34 @@ definePageMeta({
 })
 
 // SEO 메타 설정
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
 useHead({
   title: 'Web-Util - 개발자 온라인 도구 모음',
   meta: [
-    { name: 'description', content: 'JSON 포맷팅, 문자열 변환, 날짜 처리 등 개발 작업을 위한 필수 온라인 도구 모음. 브라우저에서 안전하게 처리되며 무료로 제공됩니다.' }
+    { name: 'description', content: 'JSON 포맷팅, 문자열 변환, 날짜 처리 등 개발 작업을 위한 필수 온라인 도구 모음. 브라우저에서 안전하게 처리되며 무료로 제공됩니다.' },
+    { property: 'og:title', content: 'Web-Util - 개발자 온라인 도구 모음' },
+    { property: 'og:description', content: 'JSON/문자열/날짜/색상/QR 등 개발자를 위한 무료 웹 유틸리티' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'Web-Util',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/',
+        description: '개발자를 위한 JSON/문자열/날짜/색상/QR 등 온라인 유틸리티 모음.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
   ]
 })
 

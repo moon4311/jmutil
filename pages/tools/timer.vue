@@ -263,6 +263,37 @@
 
 <script setup>
 import { ref, computed, onUnmounted, onMounted } from 'vue'
+// SEO 메타 및 구조화 데이터
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '타이머 · 스탑워치 · 알림/랩타임 | Web-Util',
+  meta: [
+    { name: 'description', content: '시/분/초 타이머 설정, 브라우저 알림, 스탑워치 랩타임 기록까지 제공하는 웹 타이머 도구.' },
+    { property: 'og:title', content: '타이머 & 스탑워치 - Web-Util' },
+    { property: 'og:description', content: '타이머와 스탑워치를 브라우저에서 간편하게 사용하세요.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/tools/timer' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/tools/timer' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '타이머 & 스탑워치',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/tools/timer',
+        description: '타이머 설정, 스탑워치, 브라우저 알림, 랩타임 기록 기능 제공.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 
 // 탭 상태
 const activeTab = ref('timer')

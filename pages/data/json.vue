@@ -261,6 +261,37 @@
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
+// SEO 메타 및 구조화 데이터 설정
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: 'JSON 가공 · 포맷팅/유효성/필터/정렬 | Web-Util',
+  meta: [
+    { name: 'description', content: 'JSON 유효성 검사, 포맷팅, 키 선택, 다중 필터링, 정렬까지 한 번에 처리하는 개발자용 JSON 도구.' },
+    { property: 'og:title', content: 'JSON 가공 도구 - Web-Util' },
+    { property: 'og:description', content: 'JSON 포맷팅·검증·필터·정렬 기능을 제공하는 무료 웹 도구입니다.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/data/json' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/data/json' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'JSON 가공 도구',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/data/json',
+        description: 'JSON 포맷팅, 유효성 검사, 키 선택, 다중 필터링, 정렬을 지원하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 import { ref, computed } from 'vue';
 import { extractKeys, selectKeys, filterObjects, filterObjectsMultiple, sortObjects, JsonUtil, formatJson } from '@/utils/JsonUtil.js';
 import GroupPanel from '@/components/GroupPanel.vue';

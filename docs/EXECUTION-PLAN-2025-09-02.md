@@ -51,12 +51,15 @@
 
 ### P4. SEO 정합성 및 자동화
 체크리스트
-- [ ] sitemap 자동 라우트 수집 활성화 또는 생성 로직 개선
-- [ ] 페이지별 meta/og 보강(도구별 키워드/설명/이미지)
-- [ ] 구조화 데이터(FAQ/SoftwareApplication)
+- [x] sitemap 자동 라우트 수집 활성화 또는 생성 로직 개선
+- [x] 페이지별 meta/og 보강(대표: /string/utils, /tools/color 적용)
+- [x] 구조화 데이터(SoftwareApplication JSON-LD, 대표 2페이지 적용)
+	- [x] 나머지 주요 페이지에도 확장(/data/json, /database/sql, /tools/qr-generator, /tools/timer, /tools/timer-json, /string/date, /string/number, /string/storage, /)
 
 검증
 - [ ] 구글 Search Console 색인 현황 개선 추적
+- [ ] 각 페이지의 canonical/OG/JSON-LD가 올바르게 노출
+  - [ ] 페이지 소스 확인으로 title/description/og:url/canonical/JSON-LD 출력 검증
 
 ### P5. 대용량 처리 UX(Worker)
 체크리스트

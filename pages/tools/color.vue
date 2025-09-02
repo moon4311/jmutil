@@ -240,6 +240,36 @@
 
 <script setup>
 definePageMeta({ layout: 'default' })
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '색상 유틸리티 · HEX/RGB 변환·밝기/대비 분석 | Web-Util',
+  meta: [
+    { name: 'description', content: 'HEX↔RGB 변환, 색상 밝기 조절, 대비 색상 추천, 무작위 색상 생성 등 색상 관련 기능을 제공합니다.' },
+    { property: 'og:title', content: '색상 유틸리티 - Web-Util' },
+    { property: 'og:description', content: 'HEX/RGB 변환과 밝기·대비 분석으로 UI 색상 결정을 도와드립니다.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/tools/color' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/tools/color' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '색상 유틸리티',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/tools/color',
+        description: 'HEX↔RGB 변환, 밝기 조절, 대비 색상 분석을 제공하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 
 import { ref, computed, onMounted } from 'vue'
 import { 

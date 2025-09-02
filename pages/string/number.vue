@@ -145,6 +145,37 @@
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
+// SEO 메타 및 구조화 데이터
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '숫자 유틸 · 진법변환/랜덤/반올림 | Web-Util',
+  meta: [
+    { name: 'description', content: '2/16진수 변환, 랜덤 수 생성, 반올림·올림·내림·버림 계산을 제공하는 숫자 처리 도구.' },
+    { property: 'og:title', content: '숫자 유틸리티 - Web-Util' },
+    { property: 'og:description', content: '진법 변환과 수치 계산을 빠르게 처리하세요.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/string/number' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/string/number' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '숫자 유틸리티',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/string/number',
+        description: '진법변환, 랜덤 수 생성, 반올림/올림/내림/버림을 제공하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 import { ref, computed } from 'vue';
 import { toBinary, toHex, getRandomInts, roundNumber, ceilNumber, floorNumber, truncNumber } from '@/utils/NumberUtil.js';
 import CopyInput from '@/components/CopyInput.vue';

@@ -1,4 +1,31 @@
 // Nuxt 3 + Vuetify + Tailwind (JavaScript, no TypeScript) - CSR 최적화
+import { readdirSync, statSync } from 'node:fs'
+import { join, relative } from 'node:path'
+
+function scanPageRoutes(pagesDir) {
+  const routes = []
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry)
+      const st = statSync(full)
+      if (st.isDirectory()) {
+        walk(full)
+      } else if (st.isFile() && /\.vue$/i.test(entry)) {
+        const rel = relative(pagesDir, full).replace(/\\/g, '/').replace(/\.vue$/i, '')
+        let path = '/' + rel
+        // Nuxt 파일 기반 라우팅 규칙 반영
+        if (path.endsWith('/index')) path = path.slice(0, -('/index'.length)) || '/'
+        routes.push(path)
+      }
+    }
+  }
+  walk(pagesDir)
+  // 중복 제거 및 정렬
+  return Array.from(new Set(routes)).sort()
+}
+
+const discoveredRoutes = scanPageRoutes(join(process.cwd(), 'pages'))
+
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
   ssr: true, // SSR 서버 실행 (nginx 프록시 대상)
@@ -47,6 +74,11 @@ export default defineNuxtConfig({
     treeshakeClientOnly: true,
     componentIslands: false
   },
+  runtimeConfig: {
+    public: {
+      siteUrl: 'https://www.web-util.com'
+    }
+  },
   // Trailing slash 설정 - nginx와 호환성을 위해
   trailingSlash: false,
   
@@ -59,23 +91,9 @@ export default defineNuxtConfig({
     }
   },
   
-  // Generate 설정 (정적 사이트 생성)
+  // Generate 설정 (SSR 환경에서 사용 빈도 낮음, 참고용 유지)
   generate: {
-    routes: [
-      '/',
-      '/data/json',
-      '/data/csv', 
-      '/data/array',
-      '/database/sql',
-      '/string/utils',
-      '/string/date',
-      '/string/number',
-      '/string/storage',
-      '/tools/color',
-      '/tools/qr-generator',
-      '/tools/timer',
-      '/tools/timer-json'
-    ],
+    routes: discoveredRoutes,
     fallback: '404.html'
   },
   compatibilityDate: '2024-04-03',
@@ -116,25 +134,11 @@ export default defineNuxtConfig({
     }
   },
   
-  // Sitemap 설정 (CSR 최적화)
+  // Sitemap 설정 (페이지 자동 수집)
   sitemap: {
     hostname: 'https://www.web-util.com',
     gzip: true,
-    routes: [
-      '/',
-      '/data/json',
-      '/data/csv', 
-      '/data/array',
-      '/database/sql',
-      '/string/utils',
-      '/string/date',
-      '/string/number',
-      '/string/storage',
-      '/tools/color',
-      '/tools/qr-generator',
-      '/tools/timer',
-      '/tools/timer-json'
-    ],
+    routes: discoveredRoutes,
     defaults: {
       changefreq: 'weekly',
       priority: 0.8,

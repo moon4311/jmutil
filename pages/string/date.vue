@@ -280,6 +280,37 @@
 </template>
 <script setup>
 definePageMeta({ layout: 'default' })
+// SEO 메타 및 구조화 데이터
+const config = useRuntimeConfig()
+const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+useHead({
+  title: '날짜/시간 유틸 · 포맷/타임스탬프/계산 | Web-Util',
+  meta: [
+    { name: 'description', content: '날짜/시간 포맷 변환, 타임스탬프 처리, 날짜 차이 계산, 일괄 변환 등 시간 관련 도구를 제공합니다.' },
+    { property: 'og:title', content: '날짜/시간 유틸리티 - Web-Util' },
+    { property: 'og:description', content: '형식 변환, 타임스탬프, 날짜 계산 기능을 한 곳에서.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: siteUrl + '/string/date' }
+  ],
+  link: [{ rel: 'canonical', href: siteUrl + '/string/date' }]
+})
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '날짜/시간 유틸리티',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Web',
+        url: siteUrl + '/string/date',
+        description: '날짜 포맷/타임스탬프 변환과 날짜 계산을 제공하는 무료 웹 도구.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' }
+      })
+    }
+  ]
+})
 import { ref, nextTick, watchEffect, onMounted } from 'vue';
 import {
   isValidDate, isValidTime, isValidDatetime, formatDate, formatDateTime
