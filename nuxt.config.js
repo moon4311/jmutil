@@ -82,7 +82,7 @@ export default defineNuxtConfig({
   
   // Site 설정
   site: {
-    url: 'http://www.web-util.com'
+    url: 'https://www.web-util.com'
   },
   
   // SEO 설정
@@ -98,14 +98,14 @@ export default defineNuxtConfig({
         { property: 'og:title', content: '온라인 유틸리티 도구 모음 - Web-Util' },
         { property: 'og:description', content: 'JSON 포맷팅, Base64 인코딩, 날짜 변환, 색상 변환, QR코드 생성 등 개발 작업에 필요한 다양한 온라인 도구를 무료로 제공하는 웹 유틸리티 사이트입니다.' },
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: 'http://www.web-util.com' },
+  { property: 'og:url', content: 'https://www.web-util.com' },
         { name: 'robots', content: 'index, follow' },
         { name: 'naver-site-verification', content: '3322ede285ccfd87c679389722eac0eb8b41e0e9' },
         { name: 'google-site-verification', content: 'RK1XMQK_sHYw4ITO1qX8JvYERZqe_RTUL9ylIjivbMw' },
         { name: 'google-adsense-account', content: 'ca-pub-8305610158424209' }
       ],
       link: [
-        { rel: 'canonical', href: 'http://www.web-util.com' },
+        { rel: 'canonical', href: 'https://www.web-util.com' },
         { 
           rel: 'stylesheet', 
           href: 'https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css',
@@ -118,7 +118,7 @@ export default defineNuxtConfig({
   
   // Sitemap 설정 (CSR 최적화)
   sitemap: {
-    hostname: 'http://www.web-util.com',
+    hostname: 'https://www.web-util.com',
     gzip: true,
     routes: [
       '/',

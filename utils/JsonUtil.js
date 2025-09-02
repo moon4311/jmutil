@@ -518,8 +518,8 @@ export function isValidJson(jsonStr) {
   return result.valid
 }
 
-export function jsonToCsv(jsonStr) {
-  const result = jsonUtilInstance.toCsv(jsonStr)
+export async function jsonToCsv(jsonStr) {
+  const result = await jsonUtilInstance.toCsv(jsonStr)
   if (result.success) {
     return result.data
   }
