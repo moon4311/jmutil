@@ -4,9 +4,9 @@ export default defineNuxtConfig({
   ssr: false, // CSR 방식으로 변경
   css: [
     '@/assets/css/tailwind.css',
-    // 메인 페이지 성능 최적화: Vuetify와 MDI 아이콘 지연 로딩
-    // 'vuetify/styles', 
-    // '@mdi/font/css/materialdesignicons.css',
+    '@/assets/css/common.css',
+    'vuetify/styles',
+    '@mdi/font/css/materialdesignicons.css'
   ],
   build: {
     transpile: ['vuetify']
@@ -39,35 +39,6 @@ export default defineNuxtConfig({
       include: ['vue', 'vue-router'],
       exclude: ['qrcode', 'crypto-js'] // 메인 페이지에서 불필요한 의존성 제외
     }
-  },
-  nitro: {
-    minify: process.env.NODE_ENV === 'production',
-    compressPublicAssets: true,
-    prerender: {
-      routes: [
-        '/',
-        '/data/json',
-        '/data/csv', 
-        '/data/array',
-        '/database/sql',
-        '/string/utils',
-        '/string/date',
-        '/string/number',
-        '/string/storage',
-        '/tools/color',
-        '/tools/qr-generator',
-        '/tools/timer',
-        '/tools/timer-json'
-      ]
-    },
-    output: {
-      dir: '../app/public',  // generate 출력 경로 설정
-      publicDir: '../app/public'
-      // dir: 'C:/workspace/app/public',  // generate 출력 경로 설정
-      // publicDir: 'C:/workspace/app/public'
-    },
-    // SPA fallback 비활성화하여 각 라우트 파일 생성
-    spa: false
   },
   experimental: {
     payloadExtraction: false,
@@ -134,7 +105,13 @@ export default defineNuxtConfig({
         { name: 'google-adsense-account', content: 'ca-pub-8305610158424209' }
       ],
       link: [
-        { rel: 'canonical', href: 'http://www.web-util.com' }
+        { rel: 'canonical', href: 'http://www.web-util.com' },
+        { 
+          rel: 'stylesheet', 
+          href: 'https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css',
+          integrity: 'sha384-rD/hsKwBgzQV4RmixJJ06XlWccvKW1JzxXePOPeCvWNO5kbh7Vfmu8NF9LJOJUQh',
+          crossorigin: 'anonymous'
+        }
       ]
     }
   },

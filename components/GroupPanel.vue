@@ -98,18 +98,30 @@ const panelId = computed(() => {
   return `panel_${Math.random().toString(36).substr(2, 9)}`;
 });
 
+// 현재 화면 크기 상태 추적
+const currentBreakpoint = ref('desktop');
+
 /**
- * 화면 크기에 따라 패널 상태 설정
+ * 화면 크기에 따라 패널 상태 설정 (개선된 버전)
  */
 const setResponsiveState = () => {
   if (!isClient.value || !props.mobileCollapsed) return;
   
   const isDesktop = window.innerWidth >= 768; // md 브레이크포인트
-  const shouldBeOpen = isDesktop; // 데스크톱에서는 열림, 모바일에서는 닫힘
+  const newBreakpoint = isDesktop ? 'desktop' : 'mobile';
   
-  if (props.modelValue !== shouldBeOpen) {
-    emit('update:modelValue', shouldBeOpen);
-    emit('mobile-state-changed', { isDesktop, isOpen: shouldBeOpen });
+  // 브레이크포인트가 실제로 변경된 경우만 처리
+  if (currentBreakpoint.value !== newBreakpoint) {
+    currentBreakpoint.value = newBreakpoint;
+    
+    // 초기 로딩 시에만 자동 상태 변경, 사용자가 수동으로 변경한 이후에는 그대로 유지
+    const shouldBeOpen = isDesktop;
+    
+    // 실제 모델값과 다를 때만 변경
+    if (props.modelValue !== shouldBeOpen) {
+      emit('update:modelValue', shouldBeOpen);
+      emit('mobile-state-changed', { isDesktop, isOpen: shouldBeOpen });
+    }
   }
 };
 
@@ -119,16 +131,23 @@ const handleResize = () => {
   if (resizeTimeout) {
     clearTimeout(resizeTimeout);
   }
-  resizeTimeout = setTimeout(setResponsiveState, 150);
+  resizeTimeout = setTimeout(setResponsiveState, 200); // 딜레이 증가
 };
 
 onMounted(async () => {
   await nextTick();
   isClient.value = true;
   
-  // 초기 상태 설정
-  if (props.mobileCollapsed) {
-    setResponsiveState();
+  // 초기 브레이크포인트 설정
+  if (props.mobileCollapsed && process.client) {
+    const isDesktop = window.innerWidth >= 768;
+    currentBreakpoint.value = isDesktop ? 'desktop' : 'mobile';
+    
+    // 초기 상태만 설정 (한 번만)
+    const shouldBeOpen = isDesktop;
+    if (props.modelValue !== shouldBeOpen) {
+      emit('update:modelValue', shouldBeOpen);
+    }
   }
 
   // 리사이즈 이벤트 리스너

@@ -514,6 +514,19 @@ const handleMinify = async () => {
   }
 };
 
+// minifyJson 헬퍼 함수 추가
+const minifyJson = (jsonStr) => {
+  try {
+    if (!jsonStr || !jsonStr.trim()) {
+      throw new Error('JSON 데이터가 비어있습니다.');
+    }
+    const parsed = JSON.parse(jsonStr);
+    return JSON.stringify(parsed);
+  } catch (error) {
+    throw new Error(`JSON 압축 오류: ${error.message}`);
+  }
+};
+
 const handleReset = () => {
   // 가공 데이터 초기화
   processedData.value = '';
@@ -564,8 +577,23 @@ const handleResetFilter = () => {
 
 const handleMultiFilter = () => {
   try {
+    // 유효한 조건이 있는지 확인
+    const validConditions = filterConditions.value.filter(condition => 
+      condition.key && condition.value.trim()
+    );
+    
+    if (validConditions.length === 0) {
+      processedData.value = '오류: 유효한 필터 조건을 입력해주세요.';
+      return;
+    }
+
     const sourceData = processedData.value || input.value;
-    const result = filterObjectsMultiple(sourceData, filterConditions.value, logicalOperator.value);
+    if (!sourceData || !sourceData.trim()) {
+      processedData.value = '오류: 필터링할 JSON 데이터가 없습니다.';
+      return;
+    }
+
+    const result = filterObjectsMultiple(sourceData, validConditions, logicalOperator.value);
     
     // 현재 모드에 따라 결과 포맷팅
     if (processMode.value === 'format') {
@@ -573,7 +601,8 @@ const handleMultiFilter = () => {
     } else if (processMode.value === 'minify') {
       processedData.value = minifyJson(result);
     } else {
-      processedData.value = result;
+      processedData.value = formatJson(result);
+      processMode.value = 'format';
     }
     
     activeTab.value = 'processed';
@@ -593,7 +622,17 @@ const handleMultiFilter = () => {
 
 const handleSort = () => {
   try {
+    if (!sortKey.value || !sortKey.value.trim()) {
+      processedData.value = '오류: 정렬할 키를 선택해주세요.';
+      return;
+    }
+
     const sourceData = processedData.value || input.value;
+    if (!sourceData || !sourceData.trim()) {
+      processedData.value = '오류: 정렬할 JSON 데이터가 없습니다.';
+      return;
+    }
+
     const result = sortObjects(sourceData, sortKey.value, sortOrder.value, sortType.value);
     
     // 현재 모드에 따라 결과 포맷팅
@@ -602,7 +641,8 @@ const handleSort = () => {
     } else if (processMode.value === 'minify') {
       processedData.value = minifyJson(result);
     } else {
-      processedData.value = result;
+      processedData.value = formatJson(result);
+      processMode.value = 'format';
     }
     
     activeTab.value = 'processed';

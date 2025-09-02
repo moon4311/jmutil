@@ -1,5 +1,18 @@
 /* ===== 공통 CSS - Vue 컴포넌트 간 공통 스타일 ===== */
 
+/* === MDI 아이콘 폰트 강제 로드 === */
+@import url('https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css');
+
+/* 아이콘 표시 보장 */
+.v-icon {
+  font-family: 'Material Design Icons' !important;
+}
+
+.mdi:before,
+.mdi-set {
+  font-family: 'Material Design Icons' !important;
+}
+
 /* === 기본 리셋 및 유틸리티 === */
 .font-mono {
   font-family: 'Courier New', Consolas, Monaco, 'Lucida Console', monospace;

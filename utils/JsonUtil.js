@@ -493,7 +493,20 @@ export async function formatJsonAsync(jsonStr) {
 }
 
 export function minifyJson(jsonStr) {
-  const result = jsonUtilInstance.minify(jsonStr)
+  try {
+    // 동기 버전 - 간단한 JSON 압축
+    if (!jsonStr || !jsonStr.trim()) {
+      throw new Error('JSON 데이터가 비어있습니다.');
+    }
+    const parsed = JSON.parse(jsonStr);
+    return JSON.stringify(parsed);
+  } catch (error) {
+    throw new Error(`JSON 압축 오류: ${error.message}`);
+  }
+}
+
+export async function minifyJsonAsync(jsonStr) {
+  const result = await jsonUtilInstance.minify(jsonStr)
   if (result.success) {
     return result.data
   }
