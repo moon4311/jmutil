@@ -5,9 +5,17 @@ export const useLazyLoad = () => {
   const isClient = typeof window !== 'undefined'
 
   // 컴포넌트 지연 로딩
-  const lazyComponent = (componentPath) => {
+  // - loader 함수(() => import('...')) 또는 문자열 경로 지원
+  // - 문자열 경로는 Vite 경고 방지를 위해 /* @vite-ignore */ 사용
+  const lazyComponent = (componentOrPath) => {
     if (!isClient) return null
-    return defineAsyncComponent(() => import(componentPath))
+    if (typeof componentOrPath === 'function') {
+      return defineAsyncComponent(componentOrPath)
+    }
+    if (typeof componentOrPath === 'string') {
+      return defineAsyncComponent(() => import(/* @vite-ignore */ componentOrPath))
+    }
+    throw new Error('lazyComponent expects a loader function or a path string')
   }
 
   // 이미지 지연 로딩
@@ -52,7 +60,7 @@ export const useLazyLoad = () => {
       
       const observer = new IntersectionObserver(callback, {
         root: null,
-        rootMargin: '50px',
+        // rootMargin: '50px',
         threshold: 0.1,
         ...options
       })

@@ -195,10 +195,10 @@ onUnmounted(() => {
     cleanupAds();
 });
 
-// Header Ad A/B 사이즈 테스트
-const headerVariant = useABVariant('header-ad-size', ['A', 'B'])
+// Header Ad 사이즈 고정(728x90) — 카카오 단위 규격 일치 보장
+const headerVariant = useABVariant('header-ad-size', ['A'])
 const headerUnitId = computed(() => 'DAN-q3apLfzK9uRxRmyA')
-const headerWidth = computed(() => (headerVariant === 'A' ? 728 : 970))
+const headerWidth = computed(() => 728)
 const headerHeight = computed(() => 90)
 </script>
 <style scoped>
@@ -279,14 +279,14 @@ const headerHeight = computed(() => 90)
 }
 
 .header-ad {
-  display: none;
+  display: flex;
   align-items: center;
   padding: 0 0.5rem;
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 1023px) {
   .header-ad {
-    display: flex;
+    display: none;
   }
 }
 
