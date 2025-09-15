@@ -1,3 +1,7 @@
+import { ref, nextTick } from 'vue'
+import { useCopy } from './useCopy.js'
+import { useNotification } from './useNotification.js'
+
 /**
  * 모든 도구에서 공통으로 사용하는 기능들
  */

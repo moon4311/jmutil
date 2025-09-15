@@ -78,7 +78,7 @@ useSeoMeta({
 })
 
 // 컴포넌트 동적 로딩 (Nuxt Lazy 경고 해결)
-const LazyGrid = defineAsyncComponent(() => import('~/components/LazyToolsGrid.vue'))
+const LazyGrid = defineAsyncComponent(() => import('~/components/ToolsGrid.vue'))
 
 // 검색 상태 (reactive)
 const searchQuery = ref('')

@@ -5,7 +5,9 @@ import {
   VApp, VMain, VBtn, VIcon, VList, VListItem, VListItemTitle,
   VMenu, VCard, VCardText, VTextField, VTextarea, VSelect,
   VCheckbox, VRadio, VRadioGroup, VContainer, VRow, VCol,
-  VAlert, VProgressLinear, VTooltip, VAvatar, VDivider
+  VAlert, VProgressLinear, VTooltip, VAvatar, VDivider,
+  VTabs, VTab, VWindow, VWindowItem, VSlider, VExpansionPanels,
+  VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText
 } from 'vuetify/components'
 import { Intersect } from 'vuetify/directives'
 
@@ -15,7 +17,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       VApp, VMain, VBtn, VIcon, VList, VListItem, VListItemTitle,
       VMenu, VCard, VCardText, VTextField, VTextarea, VSelect,
       VCheckbox, VRadio, VRadioGroup, VContainer, VRow, VCol,
-      VAlert, VProgressLinear, VTooltip, VAvatar, VDivider
+      VAlert, VProgressLinear, VTooltip, VAvatar, VDivider,
+      VTabs, VTab, VWindow, VWindowItem, VSlider, VExpansionPanels,
+      VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText
     },
     directives: { Intersect },
     icons: {
