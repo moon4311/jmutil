@@ -71,17 +71,7 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            // 더 세분화된 청크 분리
-            'vuetify-core': ['vuetify/lib'],
-            'vuetify-components': ['vuetify/components'],
-            'utils-heavy': ['~/utils/JsonUtil.js', '~/utils/CsvUtil.js', '~/utils/SqlUtil.js'],
-            'utils-light': ['~/utils/StringUtil.js', '~/utils/DateUtil.js', '~/utils/NumberUtil.js'],
-            'utils-base': ['~/utils/BaseUtil.js', '~/utils/CommonUtil.js'],
-            'vendor-crypto': ['crypto-js'],
-            'vendor-qr': ['qrcode'],
-            'vendor-vue': ['vue', 'vue-router']
-          }
+          // 자동 청크 분리 사용
         }
       },
       chunkSizeWarningLimit: 500, // 더 작은 청크 크기
