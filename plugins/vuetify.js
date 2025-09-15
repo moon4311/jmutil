@@ -1,13 +1,23 @@
-import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css' // MDI 폰트 먼저 로드
+// 트리쉐이킹 최적화를 위한 개별 임포트
 import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+// 필수 컴포넌트만 선택적 임포트
+import {
+  VApp, VMain, VBtn, VIcon, VList, VListItem, VListItemTitle,
+  VMenu, VCard, VCardText, VTextField, VTextarea, VSelect,
+  VCheckbox, VRadio, VRadioGroup, VContainer, VRow, VCol,
+  VAlert, VProgressLinear, VTooltip, VAvatar, VDivider
+} from 'vuetify/components'
+import { Intersect } from 'vuetify/directives'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
-    components,
-    directives,
+    components: {
+      VApp, VMain, VBtn, VIcon, VList, VListItem, VListItemTitle,
+      VMenu, VCard, VCardText, VTextField, VTextarea, VSelect,
+      VCheckbox, VRadio, VRadioGroup, VContainer, VRow, VCol,
+      VAlert, VProgressLinear, VTooltip, VAvatar, VDivider
+    },
+    directives: { Intersect },
     icons: {
       defaultSet: 'mdi',
     },

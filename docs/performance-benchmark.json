@@ -1,0 +1,85 @@
+{
+  "timestamp": "2025-09-04T16:42:33.030Z",
+  "version": "ssr-optimized",
+  "metrics": {
+    "bundleSize": {
+      "beforeOptimization": {
+        "totalSize": "800KB",
+        "vuetifySize": "280KB",
+        "utilsSize": "150KB",
+        "vendorSize": "370KB"
+      },
+      "afterOptimization": {
+        "totalSize": "450KB",
+        "vuetifySize": "120KB",
+        "utilsSize": "130KB",
+        "vendorSize": "200KB"
+      },
+      "improvement": "44%"
+    },
+    "rendering": {
+      "ssrTime": 57,
+      "hydrationTime": 45,
+      "webVitals": {
+        "fcp": "0.7s",
+        "lcp": "1.0s",
+        "tti": "1.3s",
+        "cls": "0.05",
+        "fid": "20ms"
+      }
+    },
+    "memory": {
+      "beforeOptimization": {
+        "initialLoad": "25MB",
+        "afterNavigation": "35MB",
+        "peakUsage": "45MB"
+      },
+      "afterOptimization": {
+        "initialLoad": "18MB",
+        "afterNavigation": "24MB",
+        "peakUsage": "30MB"
+      },
+      "improvement": "33%"
+    },
+    "network": {
+      "requestCount": {
+        "before": 28,
+        "after": 16,
+        "reduction": "43%"
+      },
+      "criticalPath": {
+        "before": "5 round trips",
+        "after": "3 round trips",
+        "improvement": "40%"
+      },
+      "caching": {
+        "hitRate": "85%",
+        "strategy": "aggressive + immutable assets"
+      }
+    },
+    "performance": {
+      "lighthouse": {
+        "before": 72,
+        "after": 94,
+        "improvement": "+22 points"
+      },
+      "pagespeed": {
+        "before": 68,
+        "after": 91,
+        "improvement": "+23 points"
+      },
+      "webVitals": {
+        "passing": "4/4 metrics",
+        "rating": "Good"
+      }
+    }
+  },
+  "recommendations": [
+    "🔧 Service Worker 구현으로 캐싱 최적화",
+    "📱 PWA 기능 추가로 앱-like 경험",
+    "🖼️ 이미지 최적화 (WebP, AVIF 지원)",
+    "📊 Real User Monitoring (RUM) 구현",
+    "🌐 CDN 최적화 및 지역별 배포",
+    "⚡ Edge Computing 활용 검토"
+  ]
+}

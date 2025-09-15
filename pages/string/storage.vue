@@ -276,9 +276,22 @@ useHead({
   ]
 })
 import { ref, computed, onMounted } from 'vue';
-import CryptoJS from 'crypto-js';
 import GroupPanel from '@/components/GroupPanel.vue';
 import { useResponsive } from '@/composables/useResponsive.js';
+
+// crypto-js 동적 import (성능 최적화 + SSR 호환성)
+let CryptoJS = null;
+const loadCryptoJS = async () => {
+  if (!CryptoJS && process.client) {
+    try {
+      CryptoJS = await import('crypto-js');
+    } catch (error) {
+      console.error('crypto-js 로딩 실패:', error);
+      throw new Error('암호화 라이브러리를 로드할 수 없습니다.');
+    }
+  }
+  return CryptoJS;
+};
 
 // 반응형 상태 관리
 const { createAccordionState } = useResponsive();
@@ -417,8 +430,14 @@ function saveEditText(k) {
 }
 
 // 패스워드(암호화) CRUD
-function hash(str) {
-  return CryptoJS.SHA256(str).toString();
+async function hash(str) {
+  try {
+    const crypto = await loadCryptoJS();
+    return crypto.SHA256(str).toString();
+  } catch (error) {
+    console.error('해시 생성 실패:', error);
+    return '';
+  }
 }
 
 function loadPwItems() {
@@ -432,19 +451,32 @@ function loadPwItems() {
   }
 }
 
-function savePwItem() {
+async function savePwItem() {
   if (!pwKey.value || !pwValue.value) return;
-  const encVal = CryptoJS.AES.encrypt(pwValue.value, pwKey.value).toString();
-  localStorage.setItem(PW_PREFIX + pwKey.value, encVal);
-  pwKey.value = '';
-  pwValue.value = '';
-  loadPwItems();
+  
+  try {
+    const crypto = await loadCryptoJS();
+    const encVal = crypto.AES.encrypt(pwValue.value, pwKey.value).toString();
+    localStorage.setItem(PW_PREFIX + pwKey.value, encVal);
+    pwKey.value = '';
+    pwValue.value = '';
+    loadPwItems();
+    showNotification('암호화하여 저장되었습니다');
+  } catch (error) {
+    console.error('암호화 저장 실패:', error);
+    showNotification('암호화 저장에 실패했습니다');
+  }
 }
-function copyDecryptedPwValue(key, encVal) {
+async function copyDecryptedPwValue(key, encVal) {
   let decrypted = '';
   try {
-    decrypted = CryptoJS.AES.decrypt(encVal, key.replace(PW_PREFIX, '')).toString(CryptoJS.enc.Utf8);
-  } catch { decrypted = ''; }
+    const crypto = await loadCryptoJS();
+    decrypted = crypto.AES.decrypt(encVal, key.replace(PW_PREFIX, '')).toString(crypto.enc.Utf8);
+  } catch (error) {
+    console.error('복호화 실패:', error);
+    decrypted = '';
+  }
+  
   if (!decrypted) {
     showNotification(DECRYPT_FAIL_MESSAGE);
     return;

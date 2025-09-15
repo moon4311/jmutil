@@ -1,33 +1,59 @@
-// CSR 최적화를 위한 전역 플러그인
+// SSR 최적화를 위한 전역 플러그인
 export default defineNuxtPlugin(() => {
-  // 클라이언트 전용 플러그인이므로 window 체크만 수행
+  // 클라이언트 전용 최적화
   if (typeof window === 'undefined') return
 
-  // 페이지 로드 완료 후 최적화 기능들 실행
-  window.addEventListener('load', () => {
-    // 리소스 힌트 추가
-    const preloadResources = [
-      '/assets/css/tailwind.css',
-      '/assets/css/common.css'
+  // Critical Resource Hints
+  const addCriticalHints = () => {
+    const hints = [
+      { rel: 'preload', href: '/assets/css/critical.css', as: 'style' },
+      { rel: 'preload', href: '/assets/css/tailwind.css', as: 'style' }
     ]
     
-    preloadResources.forEach(resource => {
+    hints.forEach(hint => {
       const link = document.createElement('link')
-      link.rel = 'preload'
-      link.as = 'style'
-      link.href = resource
+      Object.assign(link, hint)
       document.head.appendChild(link)
     })
+  }
 
-    // 성능 메트릭 로깅 (개발 환경에서만)
-    if (process.env.NODE_ENV === 'development') {
-      const perfData = performance.getEntriesByType('navigation')[0]
-      if (perfData) {
-        console.log('CSR Performance:', {
-          domContentLoaded: Math.round(perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart),
-          loadComplete: Math.round(perfData.loadEventEnd - perfData.loadEventStart)
-        })
-      }
-    }
-  })
+  // DOM Ready 시점에 힌트 추가
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addCriticalHints)
+  } else {
+    addCriticalHints()
+  }
+
+  // 성능 메트릭 수집 (개발 환경)
+  if (process.env.NODE_ENV === 'development') {
+    window.addEventListener('load', () => {
+      // Web Vitals 측정
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'navigation') {
+            console.log('📊 Navigation Metrics:', {
+              'DNS Lookup': Math.round(entry.domainLookupEnd - entry.domainLookupStart),
+              'TCP Connect': Math.round(entry.connectEnd - entry.connectStart),
+              'Request': Math.round(entry.responseStart - entry.requestStart),
+              'Response': Math.round(entry.responseEnd - entry.responseStart),
+              'DOM Parse': Math.round(entry.domContentLoadedEventEnd - entry.responseEnd),
+              'Total Load': Math.round(entry.loadEventEnd - entry.navigationStart)
+            })
+          }
+        }
+      })
+      
+      observer.observe({ entryTypes: ['navigation'] })
+      
+      // Core Web Vitals
+      setTimeout(() => {
+        const paintEntries = performance.getEntriesByType('paint')
+        const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint')
+        
+        if (fcpEntry) {
+          console.log('🎨 First Contentful Paint:', Math.round(fcpEntry.startTime), 'ms')
+        }
+      }, 1000)
+    })
+  }
 })

@@ -26,14 +26,40 @@ function scanPageRoutes(pagesDir) {
 
 const discoveredRoutes = scanPageRoutes(join(process.cwd(), 'pages'))
 
+// 설정 객체들을 분리하여 HMR 문제 해결
+const runtimeConfigSettings = {
+  public: {
+    siteUrl: 'https://www.web-util.com'
+  }
+}
+
+const routeRulesSettings = {
+  // 홈페이지는 SSR (SEO 중요)
+  '/': { ssr: true, prerender: true },
+  // 카테고리 페이지들은 SSR
+  '/data/**': { ssr: true },
+  '/string/**': { ssr: true },
+  '/tools/**': { ssr: true },
+  '/database/**': { ssr: true },
+  // API 라우트는 SPA
+  '/api/**': { ssr: false },
+  // 관리자 페이지는 SPA
+  '/admin/**': { ssr: false }
+}
+
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
-  ssr: true, // SSR 서버 실행 (nginx 프록시 대상)
+  ssr: true, // SSR 활성화로 초기 로딩 개선
+  nitro: {
+    // Streaming SSR 및 압축 최적화
+    compressPublicAssets: true,
+    experimental: {
+      wasm: false
+    }
+  },
   css: [
-    '@/assets/css/tailwind.css',
-    '@/assets/css/common.css',
-    'vuetify/styles',
-    '@mdi/font/css/materialdesignicons.css'
+    '@/assets/css/critical.css', // Critical CSS 우선 로딩
+    '@/assets/css/tailwind.css'
   ],
   build: {
     transpile: ['vuetify']
@@ -46,39 +72,49 @@ export default defineNuxtConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            // 메인 페이지에서 분리할 청크들
+            // 더 세분화된 청크 분리
+            'vuetify-core': ['vuetify/lib'],
             'vuetify-components': ['vuetify/components'],
-            'heavy-utils': ['~/utils/JsonUtil.js', '~/utils/CsvUtil.js', '~/utils/SqlUtil.js'],
-            'light-utils': ['~/utils/StringUtil.js', '~/utils/DateUtil.js'],
-            'vendor-heavy': ['qrcode', 'crypto-js'],
-            'vendor-light': ['vue']
+            'utils-heavy': ['~/utils/JsonUtil.js', '~/utils/CsvUtil.js', '~/utils/SqlUtil.js'],
+            'utils-light': ['~/utils/StringUtil.js', '~/utils/DateUtil.js', '~/utils/NumberUtil.js'],
+            'utils-base': ['~/utils/BaseUtil.js', '~/utils/CommonUtil.js'],
+            'vendor-crypto': ['crypto-js'],
+            'vendor-qr': ['qrcode'],
+            'vendor-vue': ['vue', 'vue-router']
           }
         }
       },
-      chunkSizeWarningLimit: 800, // 더 작은 청크 크기로 설정
-      minify: 'esbuild'
+      chunkSizeWarningLimit: 500, // 더 작은 청크 크기
+      minify: 'esbuild',
+      target: 'es2020' // 최신 브라우저 타겟팅
     },
     esbuild: {
-      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+      treeShaking: true
     },
-    // 메인 페이지 최적화를 위한 설정
     optimizeDeps: {
       include: ['vue', 'vue-router'],
-      exclude: ['qrcode', 'crypto-js'] // 메인 페이지에서 불필요한 의존성 제외
+      exclude: ['qrcode', 'crypto-js'] // 메인 페이지에서 제외
+    },
+    // CommonJS 호환성 개선
+    commonjsOptions: {
+      include: [/crypto-js/, /node_modules/]
     }
   },
   experimental: {
     payloadExtraction: false,
-    inlineSSRStyles: false,
+    inlineSSRStyles: true, // Critical CSS 인라인화
     renderJsonPayloads: false,
     treeshakeClientOnly: true,
-    componentIslands: false
+    componentIslands: true, // Islands 아키텍처 활용
+    viewTransition: true // 페이지 전환 최적화
   },
-  runtimeConfig: {
-    public: {
-      siteUrl: 'https://www.web-util.com'
-    }
-  },
+  // 하이브리드 렌더링 설정 (분리된 설정 사용)
+  routeRules: routeRulesSettings,
+  
+  // 런타임 설정 (분리된 설정 사용)
+  runtimeConfig: runtimeConfigSettings,
+  
   // Trailing slash 설정 - nginx와 호환성을 위해
   trailingSlash: false,
   
@@ -123,13 +159,8 @@ export default defineNuxtConfig({
         { name: 'google-adsense-account', content: 'ca-pub-8305610158424209' }
       ],
       link: [
-        { rel: 'canonical', href: 'https://www.web-util.com' },
-        { 
-          rel: 'stylesheet', 
-          href: 'https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css',
-          integrity: 'sha384-rD/hsKwBgzQV4RmixJJ06XlWccvKW1JzxXePOPeCvWNO5kbh7Vfmu8NF9LJOJUQh',
-          crossorigin: 'anonymous'
-        }
+        { rel: 'canonical', href: 'https://www.web-util.com' }
+        // MDI 폰트는 font-optimization.client.js에서 지연 로딩으로 처리
       ]
     }
   },
