@@ -6,8 +6,8 @@ export default defineNuxtPlugin(() => {
   // Critical Resource Hints
   const addCriticalHints = () => {
     const hints = [
-      { rel: 'preload', href: '/assets/css/critical.css', as: 'style' },
-      { rel: 'preload', href: '/assets/css/tailwind.css', as: 'style' }
+      { rel: 'preload', href: '/css/critical.css', as: 'style' },
+      { rel: 'preload', href: '/css/common.css', as: 'style' }
     ]
     
     hints.forEach(hint => {

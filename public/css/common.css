@@ -1,0 +1,473 @@
+/* ===== 공통 CSS - Vue 컴포넌트 간 공통 스타일 ===== */
+
+/* === MDI 아이콘 폰트 강제 로드 === */
+@import url('https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css');
+
+/* 아이콘 표시 보장 */
+.v-icon {
+  font-family: 'Material Design Icons' !important;
+}
+
+.mdi:before,
+.mdi-set {
+  font-family: 'Material Design Icons' !important;
+}
+
+/* === 기본 리셋 및 유틸리티 === */
+.font-mono {
+  font-family: 'Courier New', Consolas, Monaco, 'Lucida Console', monospace;
+}
+
+/* === 공통 트랜지션 === */
+.fade-enter-active, 
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from, 
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.slide-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+/* === 공통 버튼 스타일 === */
+.btn-hover-effect {
+  transition: all 0.2s ease;
+}
+
+.btn-hover-effect:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* === 공통 카드 스타일 === */
+.common-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.common-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.common-card-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+}
+
+.common-card-body {
+  padding: 1rem;
+}
+
+/* === 공통 입력 필드 스타일 === */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-field:disabled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.input-field.error {
+  border-color: #ef4444;
+}
+
+.input-field.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* === 공통 복사 버튼 스타일 === */
+.copy-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.copy-button:hover {
+  background-color: #f3f4f6;
+}
+
+.copy-button svg,
+.copy-button .v-icon {
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.copy-button:hover svg,
+.copy-button:hover .v-icon {
+  color: #3b82f6;
+}
+
+/* === 공통 알림/토스트 스타일 === */
+.toast-base {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.toast-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.toast-error {
+  background-color: #ef4444;
+  color: white;
+}
+
+.toast-info {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.toast-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+/* === 공통 로딩 스타일 === */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner.small {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.loading-spinner.large {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* === 공통 프로그레스 바 === */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.success {
+  background-color: #10b981;
+}
+
+.progress-fill.warning {
+  background-color: #f59e0b;
+}
+
+.progress-fill.error {
+  background-color: #ef4444;
+}
+
+/* === 공통 오버레이 === */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+
+.overlay.light {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.overlay.dark {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* === 공통 모달/다이얼로그 === */
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+/* === 공통 그리드 레이아웃 === */
+.grid-responsive {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.grid-responsive.cols-4 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-responsive.cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive.cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* === 공통 텍스트 스타일 === */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === 공통 스크롤바 스타일 === */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* === 공통 상태 스타일 === */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-chip.success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-chip.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-chip.warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-chip.info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* === 반응형 유틸리티 === */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* === 공통 애니메이션 === */
+.bounce-in {
+  animation: bounceIn 0.6s ease-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* === 다크모드 지원 === */
+@media (prefers-color-scheme: dark) {
+  .common-card {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .input-field {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .input-field:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+  
+  .loading-spinner {
+    border-color: #374151;
+    border-top-color: #60a5fa;
+  }
+  
+  .modal-content {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+}

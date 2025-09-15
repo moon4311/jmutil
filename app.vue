@@ -18,7 +18,10 @@ useHead({
     { rel: 'dns-prefetch', href: '//cdn.jsdelivr.net' },
     { rel: 'dns-prefetch', href: '//t1.daumcdn.net' },
     // Preconnect for critical resources
-    { rel: 'preconnect', href: 'https://cdn.jsdelivr.net', crossorigin: 'anonymous' }
+    { rel: 'preconnect', href: 'https://cdn.jsdelivr.net', crossorigin: 'anonymous' },
+    // CSS 파일들을 public 폴더에서 로드
+    { rel: 'stylesheet', href: '/css/critical.css' },
+    { rel: 'stylesheet', href: '/css/common.css' }
   ]
 })
 </script>

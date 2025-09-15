@@ -1,0 +1,81 @@
+/* Critical CSS - 초기 렌더링에 필요한 최소 스타일 */
+
+/* MDI 아이콘 폰트 Fallback */
+.mdi::before,
+.v-icon.mdi::before {
+  font-family: "Material Design Icons", sans-serif;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* MDI 폰트 로딩 실패 시 대체 문자 */
+.mdi:not([class*="mdi-"])::before {
+  content: "○"; /* 기본 원형 아이콘 */
+}
+
+/* 레이아웃 기본 구조 */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout {
+  display: flex;
+  flex: 1;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 헤더 기본 스타일 */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+}
+
+/* 스켈레톤 로딩 */
+.skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 반응형 기본 */
+@media (max-width: 768px) {
+  .mobile-only { display: block; }
+  .desktop-only { display: none; }
+}
+
+@media (min-width: 769px) {
+  .mobile-only { display: none; }
+  .desktop-only { display: block; }
+}

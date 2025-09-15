@@ -49,6 +49,13 @@ const routeRulesSettings = {
 
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
+  
+  // Tailwind CSS 설정
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.css',
+    configPath: 'tailwind.config.js'
+  },
+  
   ssr: true, // SSR 활성화로 초기 로딩 개선
   nitro: {
     // Streaming SSR 및 압축 최적화
@@ -58,8 +65,7 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    '@/assets/css/critical.css', // Critical CSS 우선 로딩
-    '@/assets/css/tailwind.css'
+    // Tailwind CSS에서 모든 CSS 파일들을 관리
   ],
   build: {
     transpile: ['vuetify']
