@@ -1,32 +1,11 @@
-# Cloudflare Pages 빌드 설정
+# Cloudflare Pages 프로젝트 설정
 name = "web-util"
-pages_build_output_dir = ".output/public"
-
-[build]
-command = "npm install && npm run build"
-cwd = ""
-ignore = ""
-
-[build.environment]
-NODE_VERSION = "20.19.4"
-PNPM_VERSION = "9"
 
 # 환경 변수 설정
 [vars]
 NUXT_PUBLIC_SITE_URL = "https://web-util.pages.dev"
 
-# Functions 설정 (필요시)
-[[functions]]
-pattern = "/api/*"
-script = ".output/server/index.mjs"
-
-# 리다이렉트 설정
-[[redirects]]
-from = "/assets/*"
-to = "/:splat"
-status = 301
-
-# 헤더 설정
+# 헤더 설정 (선택사항 - public/_headers 파일로도 가능)
 [[headers]]
 for = "/_nuxt/*"
 [headers.values]
@@ -53,3 +32,9 @@ for = "/*"
 X-Frame-Options = "DENY"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
+
+# 리다이렉트 설정 (선택사항 - public/_redirects 파일로도 가능)
+[[redirects]]
+from = "/assets/*"
+to = "/:splat"
+status = 301
