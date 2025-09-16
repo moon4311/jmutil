@@ -3,7 +3,7 @@ name = "web-util"
 pages_build_output_dir = ".output/public"
 
 [build]
-command = "pnpm install && pnpm build:cloudflare"
+command = "npm install && npm run build"
 cwd = ""
 ignore = ""
 
