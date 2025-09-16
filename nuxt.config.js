@@ -26,13 +26,7 @@ function scanPageRoutes(pagesDir) {
 
 const discoveredRoutes = scanPageRoutes(join(process.cwd(), 'pages'))
 
-// 설정 객체들을 분리하여 HMR 문제 해결
-const runtimeConfigSettings = {
-  public: {
-    siteUrl: 'https://www.web-util.com'
-  }
-}
-
+// Route Rules 설정
 const routeRulesSettings = {
   // 홈페이지는 SSR (SEO 중요)
   '/': { ssr: true, prerender: true },
@@ -58,10 +52,18 @@ export default defineNuxtConfig({
   
   ssr: true, // SSR 활성화로 초기 로딩 개선
   nitro: {
-    // Streaming SSR 및 압축 최적화
+    // Cloudflare Pages 최적화
+    preset: 'cloudflare-pages',
     compressPublicAssets: true,
+    minify: true,
     experimental: {
       wasm: false
+    },
+    // Cloudflare 환경 변수 지원
+    runtimeConfig: {
+      public: {
+        siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://www.web-util.com'
+      }
     }
   },
   css: [
@@ -77,12 +79,18 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          // 자동 청크 분리 사용
+          // Cloudflare Pages 최적화된 청크 분리
+          manualChunks: {
+            vendor: ['vue', 'vue-router'],
+            utils: ['~/utils/JsonUtil.js', '~/utils/StringUtil.js', '~/utils/DateUtil.js'],
+            vuetify: ['vuetify']
+          }
         }
       },
-      chunkSizeWarningLimit: 500, // 더 작은 청크 크기
+      chunkSizeWarningLimit: 1000, // Cloudflare 제한에 맞춤
       minify: 'esbuild',
-      target: 'es2020' // 최신 브라우저 타겟팅
+      target: 'es2020',
+      sourcemap: false // 프로덕션에서 소스맵 제거
     },
     esbuild: {
       drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
@@ -92,7 +100,7 @@ export default defineNuxtConfig({
       include: ['vue', 'vue-router'],
       exclude: ['qrcode', 'crypto-js'] // 메인 페이지에서 제외
     },
-    // CommonJS 호환성 개선
+    // Cloudflare Workers 호환성
     commonjsOptions: {
       include: [/crypto-js/, /node_modules/]
     }
@@ -108,8 +116,22 @@ export default defineNuxtConfig({
   // 하이브리드 렌더링 설정 (분리된 설정 사용)
   routeRules: routeRulesSettings,
   
-  // 런타임 설정 (분리된 설정 사용)
-  runtimeConfig: runtimeConfigSettings,
+  // 런타임 설정 (Cloudflare 환경 변수 통합)
+  runtimeConfig: {
+    // 서버 사이드 전용 환경 변수
+    apiSecret: process.env.API_SECRET,
+    
+    // 클라이언트에서도 접근 가능한 환경 변수
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://www.web-util.com',
+      gaId: process.env.NUXT_PUBLIC_GA_ID || '',
+      naverSiteVerification: process.env.NUXT_PUBLIC_NAVER_SITE_VERIFICATION || '3322ede285ccfd87c679389722eac0eb8b41e0e9',
+      googleSiteVerification: process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'RK1XMQK_sHYw4ITO1qX8JvYERZqe_RTUL9ylIjivbMw',
+      googleAdsenseAccount: process.env.NUXT_PUBLIC_GOOGLE_ADSENSE_ACCOUNT || 'ca-pub-8305610158424209',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '',
+      devMode: process.env.NUXT_PUBLIC_DEV_MODE === 'true'
+    }
+  },
   
   // Trailing slash 설정 - nginx와 호환성을 위해
   trailingSlash: false,

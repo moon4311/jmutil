@@ -11,11 +11,13 @@
 
 ## 💻 기술 스택
 
-- **Framework**: Nuxt 3 (CSR 모드)
+- **Framework**: Nuxt 3 (SSR/Hybrid)
 - **UI**: Vuetify + Tailwind CSS
 - **Language**: JavaScript (TypeScript 비활성)
 - **Package Manager**: pnpm
 - **Node Version**: 20.19.4
+- **Deployment**: Cloudflare Pages
+- **CDN**: Cloudflare Global CDN
 
 ## 🛠 설치 및 실행
 
@@ -27,6 +29,34 @@
 ```bash
 npm install -g pnpm
 ```
+
+### 로컬 개발
+```bash
+# 의존성 설치
+pnpm install
+
+# 개발 서버 실행 (포트 80)
+pnpm dev
+
+# 분석 모드로 빌드
+pnpm build:analyze
+```
+
+## 🚀 배포
+
+### Cloudflare Pages 배포
+```bash
+# Cloudflare용 빌드
+pnpm build:cloudflare
+
+# 로컬에서 미리보기
+pnpm preview:cloudflare
+
+# Cloudflare Pages에 배포
+pnpm deploy:cloudflare
+```
+
+자세한 배포 가이드는 [Cloudflare 배포 가이드](docs/cloudflare-deployment.md)를 참조하세요.
 
 ### 프로젝트 설정
 ```bash

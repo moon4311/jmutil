@@ -1,0 +1,16 @@
+# Cloudflare Pages 리다이렉트 설정
+
+# 레거시 URL 리다이렉트
+/assets/* /:splat 301
+
+# 트레일링 슬래시 처리
+/string-utils /string/utils 301
+/data-tools /data/json 301
+/color-tools /tools/color 301
+
+# HTTPS 리다이렉트 (필요시)
+http://web-util.pages.dev/* https://web-util.pages.dev/:splat 301
+http://www.web-util.com/* https://www.web-util.com/:splat 301
+
+# 404 페이지
+/* /404.html 404
