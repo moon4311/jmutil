@@ -1,6 +1,40 @@
-/* Critical CSS - 초기 렌더링에 필요한 최소 스타일 */
+/* ===== Critical CSS - 초기 렌더링 필수 스타일 ===== */
 
-/* MDI 아이콘 폰트 Fallback */
+/* === CSS 변수 정의 === */
+:root {
+  /* 핵심 색상 */
+  --color-primary: #2563eb;
+  --color-secondary: #64748b;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  
+  /* 배경 & 텍스트 */
+  --color-background: #ffffff;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-border: #e5e7eb;
+  
+  /* 스페이싱 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* 전환 */
+  --transition-fast: 150ms ease-in-out;
+}
+
+/* === 다크 모드 === */
+.dark {
+  --color-background: #111827;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-border: #374151;
+}
+
+/* === MDI 아이콘 최적화 === */
 .mdi::before,
 .v-icon.mdi::before {
   font-family: "Material Design Icons", sans-serif;
@@ -8,9 +42,8 @@
   line-height: inherit;
 }
 
-/* MDI 폰트 로딩 실패 시 대체 문자 */
 .mdi:not([class*="mdi-"])::before {
-  content: "○"; /* 기본 원형 아이콘 */
+  content: "○";
 }
 
 /* 레이아웃 기본 구조 */

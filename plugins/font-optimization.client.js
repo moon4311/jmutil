@@ -1,54 +1,41 @@
-// 폰트 최적화 플러그인 - Critical path에서 제외
-export default defineNuxtPlugin({
-  name: 'font-optimization',
-  setup() {
-    // 폰트 지연 로딩
-    if (process.client) {
-      // DOM 로드 완료 후 폰트 로딩
-      const loadFonts = () => {
-        // 이미 로딩된 경우 중복 로딩 방지
-        if (document.querySelector('link[href*="materialdesignicons"]')) {
-          console.log('MDI 폰트 이미 로딩됨')
-          return
-        }
-
-        // MDI 폰트 지연 로딩 (integrity 제거로 SRI 검증 문제 해결)
+// 폰트 최적화 플러그인 - 아이콘 체크 및 폴백 처리
+export default defineNuxtPlugin(() => {
+  if (process.client) {
+    const checkMDIIcons = () => {
+      // MDI 폰트가 로드되었는지 확인
+      const testElement = document.createElement('span')
+      testElement.className = 'mdi mdi-check'
+      testElement.style.position = 'absolute'
+      testElement.style.visibility = 'hidden'
+      document.body.appendChild(testElement)
+      
+      const computedStyle = window.getComputedStyle(testElement, '::before')
+      const content = computedStyle.content
+      
+      document.body.removeChild(testElement)
+      
+      // MDI 아이콘이 제대로 로드되었는지 확인
+      if (content && content !== 'none' && content !== '""') {
+        document.body.classList.add('mdi-loaded')
+        console.log('✅ MDI 아이콘 로드 완료')
+      } else {
+        console.warn('⚠️ MDI 아이콘 로드 실패 - 폴백 처리')
+        document.body.classList.add('mdi-fallback')
+        
+        // 폴백으로 다시 시도
         const link = document.createElement('link')
         link.rel = 'stylesheet'
         link.href = 'https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css'
         link.crossOrigin = 'anonymous'
-        
-        // 폰트 로딩 완료 후 추가
-        link.onload = () => {
-          console.log('MDI 폰트 로딩 완료')
-          // 폰트 로딩 완료를 전역에 알림
-          document.body.classList.add('mdi-loaded')
-        }
-        
-        // 로딩 실패 시 fallback
-        link.onerror = () => {
-          console.warn('MDI 폰트 로딩 실패 - fallback 사용')
-          document.body.classList.add('mdi-fallback')
-        }
-        
         document.head.appendChild(link)
-        
-        // Vuetify 스타일 지연 로딩
-        import('vuetify/styles').then(() => {
-          console.log('Vuetify 스타일 로딩 완료')
-        }).catch(() => {
-          console.warn('Vuetify 스타일 로딩 실패')
-        })
       }
-      
-      // 페이지 로드 완료 후 실행
-      if (document.readyState === 'complete') {
-        setTimeout(loadFonts, 100) // 100ms 지연
-      } else {
-        window.addEventListener('load', () => {
-          setTimeout(loadFonts, 100)
-        })
-      }
+    }
+
+    // DOM이 준비된 후 체크
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkMDIIcons)
+    } else {
+      setTimeout(checkMDIIcons, 100)
     }
   }
 })

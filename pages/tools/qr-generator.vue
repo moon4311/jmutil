@@ -181,10 +181,18 @@
 </template>
 
 <script setup>
+// Vue 및 컴포넌트 임포트
+import { ref, watch, nextTick, onMounted } from 'vue'
+import GroupPanel from '@/components/GroupPanel.vue'
+import { useResponsive } from '@/composables/useResponsive.js'
+
+// 페이지 메타데이터 설정
 definePageMeta({ layout: 'default' })
+
 // SEO 메타 및 구조화 데이터
 const config = useRuntimeConfig()
 const siteUrl = config.public?.siteUrl || 'https://www.web-util.com'
+
 useHead({
   title: 'QR 코드 생성기 · 이미지 다운로드/에러보정 | Web-Util',
   meta: [
@@ -194,9 +202,7 @@ useHead({
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: siteUrl + '/tools/qr-generator' }
   ],
-  link: [{ rel: 'canonical', href: siteUrl + '/tools/qr-generator' }]
-})
-useHead({
+  link: [{ rel: 'canonical', href: siteUrl + '/tools/qr-generator' }],
   script: [
     {
       type: 'application/ld+json',
@@ -213,10 +219,6 @@ useHead({
     }
   ]
 })
-import { ref, watch, nextTick, onMounted } from 'vue'
-import QRCode from 'qrcode'
-import GroupPanel from '@/components/GroupPanel.vue'
-import { useResponsive } from '@/composables/useResponsive.js'
 
 // 반응형 상태 관리
 const { createAccordionState } = useResponsive()
@@ -235,15 +237,17 @@ const backgroundColor = ref('#ffffff')
 const qrCanvas = ref(null)
 const qrInfo = ref(null)
 
-// QR코드 생성 함수
+// QR코드 생성 함수 (동적 임포트 사용)
 const generateQR = async () => {
   if (!inputText.value.trim() || !qrCanvas.value) return
   
   try {
+    // 동적 임포트로 QRCode 라이브러리 로드
+    const QRCode = await import('qrcode')
     const canvas = qrCanvas.value
     
     // QR코드 생성
-    await QRCode.toCanvas(canvas, inputText.value, {
+    await QRCode.default.toCanvas(canvas, inputText.value, {
       width: qrSize.value,
       height: qrSize.value,
       color: {

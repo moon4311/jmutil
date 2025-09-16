@@ -1,29 +1,34 @@
-// 트리쉐이킹 최적화를 위한 개별 임포트
+// 트리쉐이킹 최적화를 위한 최소한의 컴포넌트만 임포트
 import { createVuetify } from 'vuetify'
-// 필수 컴포넌트만 선택적 임포트
+// 실제 사용되는 필수 컴포넌트만 선별
 import {
   VApp, VMain, VBtn, VIcon, VList, VListItem, VListItemTitle,
-  VMenu, VCard, VCardText, VTextField, VTextarea, VSelect,
-  VCheckbox, VRadio, VRadioGroup, VContainer, VRow, VCol,
-  VAlert, VProgressLinear, VTooltip, VAvatar, VDivider,
-  VTabs, VTab, VWindow, VWindowItem, VSlider, VExpansionPanels,
-  VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText
+  VCard, VCardText, VTextField, VTextarea, VSelect,
+  VContainer, VRow, VCol, VAlert, VTooltip, VDivider,
+  VTabs, VTab, VWindow, VWindowItem, VExpansionPanels,
+  VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText,
+  VBtnToggle, VChip, VMenu, VAvatar
 } from 'vuetify/components'
-import { Intersect } from 'vuetify/directives'
+
+// MDI 아이콘 직접 임포트
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     components: {
       VApp, VMain, VBtn, VIcon, VList, VListItem, VListItemTitle,
-      VMenu, VCard, VCardText, VTextField, VTextarea, VSelect,
-      VCheckbox, VRadio, VRadioGroup, VContainer, VRow, VCol,
-      VAlert, VProgressLinear, VTooltip, VAvatar, VDivider,
-      VTabs, VTab, VWindow, VWindowItem, VSlider, VExpansionPanels,
-      VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText
+      VCard, VCardText, VTextField, VTextarea, VSelect,
+      VContainer, VRow, VCol, VAlert, VTooltip, VDivider,
+      VTabs, VTab, VWindow, VWindowItem, VExpansionPanels,
+      VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText,
+      VBtnToggle, VChip, VMenu, VAvatar
     },
-    directives: { Intersect },
     icons: {
       defaultSet: 'mdi',
+      aliases,
+      sets: {
+        mdi
+      }
     },
     theme: {
       defaultTheme: 'light',

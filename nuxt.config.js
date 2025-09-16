@@ -67,7 +67,11 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    // Tailwind CSS에서 모든 CSS 파일들을 관리
+    // 최적화된 CSS만 로드
+    '@mdi/font/css/materialdesignicons.min.css', // MDI 아이콘 폰트
+    '~/assets/css/critical.css', // 인라인으로 처리됨
+    '~/assets/css/optimized.css', // 경량화된 공통 CSS
+    '~/assets/css/tailwind.css'
   ],
   build: {
     transpile: ['vuetify']
@@ -79,18 +83,23 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          // Cloudflare Pages 최적화된 청크 분리
+          // 더 세밀한 청크 분리
           manualChunks: {
             vendor: ['vue', 'vue-router'],
+            vuetify: ['vuetify'],
             utils: ['~/utils/JsonUtil.js', '~/utils/StringUtil.js', '~/utils/DateUtil.js'],
-            vuetify: ['vuetify']
+            // 무거운 라이브러리들을 별도 청크로 분리
+            qrcode: ['qrcode'],
+            crypto: ['crypto-js']
           }
         }
       },
-      chunkSizeWarningLimit: 1000, // Cloudflare 제한에 맞춤
+      chunkSizeWarningLimit: 500, // 경고 임계값을 낮춤
       minify: 'esbuild',
       target: 'es2020',
-      sourcemap: false // 프로덕션에서 소스맵 제거
+      sourcemap: false,
+      cssCodeSplit: true, // CSS 코드 분할 활성화
+      reportCompressedSize: false // 빌드 시간 단축
     },
     esbuild: {
       drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],

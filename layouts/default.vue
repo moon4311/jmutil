@@ -69,6 +69,9 @@
                   />
                 </div>
                 
+                <!-- 테마 토글 -->
+                <ThemeToggle />
+                
                 <!-- 모바일용 GitHub 드롭다운 -->
                 <div class="mobile-github-menu">
                   <v-menu>
@@ -149,6 +152,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import SideBar from '@/components/SideBar.vue';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 import { useKakaoAds } from '@/composables/useKakaoAds';
 import AdSlot from '@/components/AdSlot.vue';
 import { useABVariant } from '@/composables/useABVariant.js';
@@ -211,6 +215,7 @@ const headerHeight = computed(() => 90)
   bottom: 0;
   z-index: 30;
   background-color: rgba(0, 0, 0, 0.4);
+  transition: opacity var(--transition-normal);
 }
 
 @media (min-width: 768px) {
@@ -222,7 +227,7 @@ const headerHeight = computed(() => 90)
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: var(--color-background-alt);
 }
 
 .main-container {
@@ -235,33 +240,40 @@ const headerHeight = computed(() => 90)
 /* === 헤더 스타일 === */
 .app-header {
   height: 4rem; /* 64px */
-  background-color: white;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-md);
   position: sticky;
   top: 0;
   z-index: 20;
+  border-bottom: 1px solid var(--color-border);
 }
 
 @media (min-width: 768px) {
   .app-header {
     height: 6rem; /* 96px */
-    padding: 0 1.5rem;
+    padding: 0 var(--spacing-lg);
   }
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 .menu-button {
   min-width: auto !important;
-  padding: 8px !important;
+  padding: var(--spacing-sm) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.menu-button:hover {
+  background-color: var(--color-gray-100) !important;
+  color: var(--color-text-primary) !important;
 }
 
 @media (min-width: 768px) {
@@ -271,17 +283,23 @@ const headerHeight = computed(() => 90)
 }
 
 .app-title {
-  font-weight: 700;
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  color: #1f2937;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  color: var(--color-primary);
   margin: 0;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.app-title:hover {
+  color: var(--color-primary-dark);
 }
 
 .header-ad {
   display: flex;
   align-items: center;
-  padding: 0 0.5rem;
+  padding: 0 var(--spacing-sm);
 }
 
 @media (max-width: 1023px) {
@@ -293,13 +311,13 @@ const headerHeight = computed(() => 90)
 .header-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 .github-buttons {
   display: none;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 @media (min-width: 640px) {
@@ -319,56 +337,77 @@ const headerHeight = computed(() => 90)
 }
 
 /* GitHub 버튼 스타일링 */
-.issue-btn {
-  min-width: auto !important;
-  padding: 8px !important;
+.github-repo-btn {
+  font-size: var(--font-size-sm) !important;
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  text-transform: none !important;
 }
 
-.issue-btn .v-btn__content {
-  font-size: 1.25rem !important;
+.issue-btn {
+  min-width: auto !important;
+  padding: var(--spacing-sm) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.issue-btn:hover {
+  background-color: var(--color-gray-100) !important;
+  color: var(--color-text-primary) !important;
 }
 
 .mobile-github-btn {
   min-width: auto !important;
-  padding: 8px !important;
+  padding: var(--spacing-sm) !important;
+  color: var(--color-text-secondary) !important;
 }
 
-.mobile-github-btn .v-btn__content {
-  font-size: 1.25rem !important;
+.mobile-github-btn:hover {
+  background-color: var(--color-gray-100) !important;
+  color: var(--color-text-primary) !important;
 }
 
 .user-name {
-  color: #4b5563;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.user-avatar {
+  border: 2px solid var(--color-border);
+  transition: border-color var(--transition-fast);
+}
+
+.user-avatar:hover {
+  border-color: var(--color-primary);
 }
 
 /* === 콘텐츠 영역 === */
 .content-wrapper {
   flex: 1;
   display: flex;
-  background-color: #f9fafb;
+  background-color: var(--color-background-alt);
   min-width: 0;
 }
 
 .main-content {
   flex: 9;
-  padding: 1rem;
-  background-color: #f9fafb;
+  padding: var(--spacing-md);
+  background-color: var(--color-background-alt);
   min-width: 0;
 }
 
 @media (min-width: 768px) {
   .main-content {
-    padding: 1.5rem;
+    padding: var(--spacing-lg);
   }
 }
 
 .ad-sidebar {
   display: none;
   flex: 1;
-  padding: 1rem;
-  background-color: white;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  border-left: 1px solid #e5e7eb;
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-left: 1px solid var(--color-border);
   min-width: 200px;
 }
 
@@ -390,11 +429,12 @@ const headerHeight = computed(() => 90)
 }
 
 .ad-label {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: #9ca3af;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .ad-container {
@@ -406,21 +446,22 @@ const headerHeight = computed(() => 90)
 .toast-notification {
   position: fixed;
   left: 50%;
-  bottom: 2rem;
+  bottom: var(--spacing-xl);
   z-index: 50;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  background-color: #111827;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-gray-800);
   color: white;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  font-size: 1rem;
-  line-height: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
   transform: translateX(-50%);
+  font-weight: var(--font-weight-medium);
 }
 
 /* === 트랜지션 === */
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal);
 }
 
 .fade-enter-from, .fade-leave-to {
@@ -429,14 +470,15 @@ const headerHeight = computed(() => 90)
 
 /* === 광고 영역 스타일 === */
 .kakao_ad_area {
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
 }
 
 /* 광고 로딩 애니메이션 */
 .kakao_ad_area[style*="display: none"] {
-  background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+  background: linear-gradient(90deg, var(--color-gray-100) 25%, transparent 37%, var(--color-gray-100) 63%);
   background-size: 400% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -453,17 +495,17 @@ const headerHeight = computed(() => 90)
 /* === 추가 반응형 조정 === */
 @media (max-width: 768px) {
   .header-right {
-    gap: 0.75rem;
+    gap: var(--spacing-sm);
   }
 }
 
 @media (max-width: 640px) {
   .app-title {
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
   }
   
   .header-right {
-    gap: 0.5rem;
+    gap: var(--spacing-sm);
   }
   
   .user-name {

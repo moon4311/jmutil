@@ -1,0 +1,288 @@
+/* ===== 최적화된 공통 CSS ===== */
+
+/* === 핵심 디자인 시스템 변수만 === */
+:root {
+  /* 색상 팔레트 */
+  --color-primary: #2563eb;
+  --color-primary-light: #3b82f6;
+  --color-secondary: #64748b;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  
+  /* 배경 & 텍스트 */
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-border: #e5e7eb;
+  
+  /* 스페이싱 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* 타이포그래피 */
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  
+  /* 그림자 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  
+  /* 테두리 반경 */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  
+  /* 전환 */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+}
+
+/* === 다크 모드 === */
+.dark {
+  --color-background: #111827;
+  --color-surface: #1f2937;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-border: #374151;
+}
+
+/* === 기본 스타일 === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === 핵심 컴포넌트 클래스 === */
+.app-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fast);
+}
+
+.app-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  gap: var(--spacing-xs);
+}
+
+.app-btn--primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.app-btn--primary:hover {
+  background: var(--color-primary-light);
+}
+
+.app-btn--secondary {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.app-btn--secondary:hover {
+  background: var(--color-border);
+}
+
+.app-input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  transition: var(--transition-fast);
+}
+
+.app-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* === 레이아웃 === */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* === 유틸리티 === */
+.text-sm { font-size: var(--font-size-sm); }
+.text-lg { font-size: var(--font-size-lg); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-error { color: var(--color-error); }
+
+.bg-surface { background-color: var(--color-surface); }
+
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+
+.m-xs { margin: var(--spacing-xs); }
+.m-sm { margin: var(--spacing-sm); }
+.m-md { margin: var(--spacing-md); }
+.m-lg { margin: var(--spacing-lg); }
+
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+
+/* === 반응형 === */
+@media (max-width: 768px) {
+  .page-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .app-card {
+    padding: var(--spacing-md);
+  }
+}
+
+/* === 특별 스타일 === */
+.feature-grid {
+  margin-top: var(--spacing-xl);
+}
+
+.feature-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 로딩 상태 === */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === 에러 상태 === */
+.error-state {
+  color: var(--color-error);
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+/* === 성공 상태 === */
+.success-state {
+  color: var(--color-success);
+  background-color: rgba(5, 150, 105, 0.1);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+/* === MDI 아이콘 최적화 === */
+.mdi::before,
+.v-icon.mdi::before {
+  font-family: "Material Design Icons", monospace !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+}
+
+.mdi:not([class*="mdi-"])::before {
+  content: "\F0493"; /* 기본 아이콘 */
+}
+
+/* MDI 폰트 폴백 스타일 */
+.mdi-fallback .mdi {
+  font-family: Arial, sans-serif !important;
+  font-size: 0.8em;
+}
+
+.mdi-fallback .mdi-close::before { content: "✕"; }
+.mdi-fallback .mdi-chevron-down::before { content: "▼"; }
+.mdi-fallback .mdi-chevron-right::before { content: "▶"; }
+.mdi-fallback .mdi-timer::before { content: "⏱"; }
+.mdi-fallback .mdi-play::before { content: "▶"; }
+.mdi-fallback .mdi-pause::before { content: "⏸"; }
+.mdi-fallback .mdi-stop::before { content: "⏹"; }
+.mdi-fallback .mdi-download::before { content: "⬇"; }
+.mdi-fallback .mdi-content-copy::before { content: "📋"; }
+.mdi-fallback .mdi-palette::before { content: "🎨"; }
+.mdi-fallback .mdi-qrcode::before { content: "▢"; }
