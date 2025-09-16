@@ -56,6 +56,9 @@
 
 import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue';
 
+// 컴포넌트 인스턴스 카운터 (SSR 안전)
+let instanceCounter = 0
+
 /**
  * 컴포넌트 Props
  * @typedef {Object} Props
@@ -92,10 +95,15 @@ const emit = defineEmits(['update:modelValue', 'mobile-state-changed']);
 const isClient = ref(false);
 
 /**
- * 고유한 패널 ID 생성
+ * 고유한 패널 ID 생성 (SSR 안전)
  */
 const panelId = computed(() => {
-  return `panel_${Math.random().toString(36).substr(2, 9)}`;
+  // title을 기반으로 한 안정적인 ID 생성
+  const titleHash = props.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .substring(0, 10)
+  return `panel_${titleHash}_${++instanceCounter}`
 });
 
 // 현재 화면 크기 상태 추적

@@ -25,9 +25,6 @@ useHead({
     { rel: 'dns-prefetch', href: '//t1.daumcdn.net' },
     // Preconnect for critical resources
     { rel: 'preconnect', href: 'https://cdn.jsdelivr.net', crossorigin: 'anonymous' },
-    // CSS 파일들을 public 폴더에서 로드
-    { rel: 'stylesheet', href: '/css/critical.css' },
-    { rel: 'stylesheet', href: '/css/common.css' },
     // Canonical URL
     { rel: 'canonical', href: config.public.siteUrl }
   ]

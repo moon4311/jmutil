@@ -23,7 +23,11 @@ export function useKakaoAds() {
     // 전역 객체 확인
     const hasGlobalAd = window.adfit || window._adfit || window.kakaoAd
     
-    return hasOriginalScript || hasProxyScript || hasGlobalAd
+    // AdFit 관련 함수 확인
+    const hasAdFunctions = typeof window.adfit !== 'undefined' && 
+                          typeof window.adfit.render === 'function'
+    
+    return hasOriginalScript || hasProxyScript || hasGlobalAd || hasAdFunctions
   }
 
   /**
@@ -44,22 +48,43 @@ export function useKakaoAds() {
         'ins[data-ad-unit]'
       ]
       
+      let adsFound = 0
+      let adsShown = 0
+      
       selectors.forEach(selector => {
         const ads = document.querySelectorAll(selector)
+        adsFound += ads.length
+        
         ads.forEach(ad => {
-          if (ad.style.display === 'none') {
+          // 광고 요소 강제 표시
+          if (ad.style.display === 'none' || ad.style.display === '') {
             ad.style.display = 'block'
+            ad.style.visibility = 'visible'
+            ad.style.opacity = '1'
+          }
+          
+          // AdFit 초기화 함수 호출 (있는 경우)
+          if (typeof window.adfit !== 'undefined') {
+            try {
+              window.adfit.refresh()
+            } catch (e) {
+              console.log('AdFit refresh failed:', e)
+            }
           }
           
           // 광고 로드 실패 시 대체 컨텐츠 표시
           if (adBlockDetected.value && !adLoadSuccess.value) {
-            ad.innerHTML = '<div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; border-radius: 4px;">광고</div>'
+            ad.innerHTML = '<div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; border-radius: 4px; min-height: 100px; display: flex; align-items: center; justify-content: center;">광고</div>'
             ad.style.display = 'block'
           }
+          
+          adsShown++
         })
       })
       
+      console.log(`광고 표시 완료: ${adsShown}/${adsFound} 광고 처리됨`)
       adsInitialized = true
+      
     } catch (error) {
       console.log('광고 로딩 중...', error)
     }
@@ -81,41 +106,72 @@ export function useKakaoAds() {
   }
 
   /**
-   * 광고 초기화 (개선된 버전)
+   * 광고 초기화 (완전히 새로운 버전)
    */
   const initAds = async () => {
     if (typeof window === 'undefined') return
 
     try {
-      // 스크립트 로드
-      await loadAdScript()
+      console.log('useKakaoAds: Starting initialization...')
       
-      // 페이지 로드 후 광고 표시
-      nextTick(async () => {
-        setTimeout(async () => {
-          await refreshAds()
-        }, 1000)
-      })
-
-      // 추가 재시도 로직
-      const maxRetries = 3
-      let retryCount = 0
+      // 1단계: 광고 차단기 감지
+      await detectAdBlock()
       
-      const retryInterval = setInterval(async () => {
-        if (checkAdScript() || retryCount >= maxRetries) {
-          await refreshAds()
-          clearInterval(retryInterval)
+      // 2단계: 스크립트 로드 (우선순위별로)
+      let scriptReady = false
+      
+      // A) 기존 스크립트 확인
+      if (checkAdScript()) {
+        scriptReady = true
+        console.log('useKakaoAds: Script already available')
+      }
+      
+      // B) 스크립트 로드 시도
+      if (!scriptReady) {
+        console.log('useKakaoAds: Loading script...')
+        const loadResult = await loadAdScript()
+        if (loadResult) {
+          scriptReady = true
+          console.log('useKakaoAds: Script loaded successfully')
         }
-        retryCount++
-      }, 1000)
-
-      // 10초 후 타임아웃
-      setTimeout(() => {
-        clearInterval(retryInterval)
-      }, 10000)
+      }
+      
+      // 3단계: 광고 렌더링 준비
+      await nextTick()
+      
+      // 4단계: 실제 광고 표시 시도
+      if (scriptReady || adBlockDetected.value) {
+        console.log('useKakaoAds: Starting ad display...')
+        await showAds()
+        
+        // 추가 렌더링 시도 (일정 간격으로)
+        const renderInterval = setInterval(async () => {
+          const adElements = document.querySelectorAll('[data-ad-unit]')
+          let hasVisibleAds = false
+          
+          adElements.forEach(el => {
+            if (el.offsetHeight > 0 && el.innerHTML.trim().length > 0) {
+              hasVisibleAds = true
+            }
+          })
+          
+          if (hasVisibleAds) {
+            console.log('useKakaoAds: Ads successfully rendered')
+            clearInterval(renderInterval)
+          } else {
+            // 재렌더링 시도
+            await showAds()
+          }
+        }, 2000)
+        
+        // 10초 후 정리
+        setTimeout(() => {
+          clearInterval(renderInterval)
+        }, 10000)
+      }
       
     } catch (error) {
-      console.warn('광고 초기화 실패:', error)
+      console.warn('useKakaoAds: Initialization failed:', error)
     }
   }
 

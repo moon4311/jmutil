@@ -1,5 +1,6 @@
-// useCopy.js - 복사 기능 관련 composable
+// useCopy.js - 복사 기능 관련 composable (리팩토링)
 import { ref } from 'vue';
+import { useNotification, NOTIFICATION_TYPES } from './useNotification.js';
 
 /**
  * 클립보드 복사 기능을 위한 composable
@@ -8,6 +9,7 @@ import { ref } from 'vue';
 export function useCopy() {
   const isSupported = ref(!!navigator.clipboard);
   const copyError = ref(null);
+  const { showNotification } = useNotification();
 
   /**
    * 텍스트를 클립보드에 복사
@@ -46,24 +48,16 @@ export function useCopy() {
         }
       }
 
-      // 성공 알림 표시
-      showNotification(successMessage);
+      // 통합된 알림 시스템 사용
+      showNotification(successMessage, NOTIFICATION_TYPES.SUCCESS, 2000);
       return true;
 
     } catch (error) {
       copyError.value = error.message;
       console.error('복사 실패:', error);
-      showNotification('복사에 실패했습니다');
+      showNotification('복사에 실패했습니다', NOTIFICATION_TYPES.ERROR, 3000);
       return false;
     }
-  };
-
-  /**
-   * 토스트 알림 표시 함수
-   * @param {string} message - 표시할 메시지
-   */
-  const showNotification = (message) => {
-    window.dispatchEvent(new CustomEvent('toast', { detail: message }));
   };
 
   /**

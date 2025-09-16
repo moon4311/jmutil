@@ -33,11 +33,12 @@ export const useLazyLoad = () => {
     return { loaded, error }
   }
 
-  // 스크립트 지연 로딩
-  const lazyScript = (src) => {
+  // 스크립트 지연 로딩 (CORS 해결 버전)
+  const lazyScript = (src, options = {}) => {
     if (!isClient) return Promise.resolve()
     
     return new Promise((resolve, reject) => {
+      // 이미 로드된 스크립트 확인
       if (document.querySelector(`script[src="${src}"]`)) {
         resolve()
         return
@@ -45,8 +46,31 @@ export const useLazyLoad = () => {
       
       const script = document.createElement('script')
       script.src = src
-      script.onload = resolve
-      script.onerror = reject
+      script.async = options.async !== false
+      script.defer = options.defer || false
+      
+      // CORS 설정
+      if (options.crossorigin !== false) {
+        script.crossOrigin = options.crossorigin || 'anonymous'
+      }
+      
+      // 추가 속성 설정
+      if (options.attributes) {
+        Object.entries(options.attributes).forEach(([key, value]) => {
+          script.setAttribute(key, value)
+        })
+      }
+      
+      script.onload = () => {
+        console.log(`Script loaded successfully: ${src}`)
+        resolve()
+      }
+      
+      script.onerror = (error) => {
+        console.warn(`Script load failed: ${src}`, error)
+        reject(error)
+      }
+      
       document.head.appendChild(script)
     })
   }

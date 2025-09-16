@@ -162,16 +162,15 @@ import { useKakaoAds } from '@/composables/useKakaoAds';
 import { useAdProtection } from '@/composables/useAdProtection';
 import AdSlot from '@/components/AdSlot.vue';
 import AdDebugPanel from '@/components/AdDebugPanel.vue';
-import { useABVariant } from '@/composables/useABVariant.js';
 
 // 광고 보호 기능
 const { loadAdScript } = useAdProtection();
 
-// 카카오 애드핏 스크립트 추가 (기본 방법, 폴백용)
+// 카카오 애드핏 스크립트 추가 (CORS 해결, 폴백용)
 useHead({
   script: [
     {
-      src: '//t1.daumcdn.net/kas/static/ba.min.js',
+      src: 'https://t1.daumcdn.net/kas/static/ba.min.js',
       async: true,
       defer: true,
       crossorigin: 'anonymous'
@@ -219,7 +218,6 @@ onUnmounted(() => {
 });
 
 // Header Ad 사이즈 고정(728x90) — 카카오 단위 규격 일치 보장
-const headerVariant = useABVariant('header-ad-size', ['A'])
 const headerUnitId = computed(() => 'DAN-q3apLfzK9uRxRmyA')
 const headerWidth = computed(() => 728)
 const headerHeight = computed(() => 90)

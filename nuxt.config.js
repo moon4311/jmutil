@@ -67,10 +67,9 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    // 최적화된 CSS만 로드
+    // 필수 CSS만 로드
     '@mdi/font/css/materialdesignicons.min.css', // MDI 아이콘 폰트
-    '~/assets/css/critical.css', // 인라인으로 처리됨
-    '~/assets/css/optimized.css', // 경량화된 공통 CSS
+    '~/assets/css/common.css', // 경량화된 공통 CSS
     '~/assets/css/tailwind.css'
   ],
   build: {
@@ -83,18 +82,38 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          // 더 세밀한 청크 분리
-          manualChunks: {
-            vendor: ['vue', 'vue-router'],
-            vuetify: ['vuetify'],
-            utils: ['~/utils/JsonUtil.js', '~/utils/StringUtil.js', '~/utils/DateUtil.js'],
-            // 무거운 라이브러리들을 별도 청크로 분리
-            qrcode: ['qrcode'],
-            crypto: ['crypto-js']
+          // 더 세밀한 청크 분리 및 최적화
+          manualChunks: (id) => {
+            // Vendor 라이브러리 분리
+            if (id.includes('node_modules')) {
+              if (id.includes('vue')) return 'vue-vendor';
+              if (id.includes('vuetify')) return 'vuetify-vendor';
+              if (id.includes('qrcode')) return 'qrcode-vendor';
+              if (id.includes('crypto-js')) return 'crypto-vendor';
+              return 'vendor';
+            }
+            
+            // Utils 분리
+            if (id.includes('/utils/')) {
+              if (id.includes('JsonUtil') || id.includes('CsvUtil')) return 'data-utils';
+              if (id.includes('StringUtil') || id.includes('DateUtil')) return 'text-utils';
+              if (id.includes('ColorUtil') || id.includes('SqlUtil')) return 'tool-utils';
+              return 'base-utils';
+            }
+            
+            // Composables 분리
+            if (id.includes('/composables/')) {
+              return 'composables';
+            }
+            
+            // Components 분리
+            if (id.includes('/components/')) {
+              return 'components';
+            }
           }
         }
       },
-      chunkSizeWarningLimit: 500, // 경고 임계값을 낮춤
+      chunkSizeWarningLimit: 300, // 더 작은 청크 크기 경고
       minify: 'esbuild',
       target: 'es2020',
       sourcemap: false,
@@ -103,11 +122,21 @@ export default defineNuxtConfig({
     },
     esbuild: {
       drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-      treeShaking: true
+      treeShaking: true,
+      target: 'es2020'
     },
     optimizeDeps: {
-      include: ['vue', 'vue-router'],
-      exclude: ['qrcode', 'crypto-js'] // 메인 페이지에서 제외
+      include: ['vue', 'vue-router', '@vue/runtime-core'],
+      exclude: ['qrcode', 'crypto-js'], // 동적 로딩으로 처리
+      esbuildOptions: {
+        target: 'es2020'
+      }
+    },
+    // 개발 서버 최적화
+    server: {
+      hmr: {
+        overlay: false // 성능 향상을 위해 오버레이 비활성화
+      }
     },
     // Cloudflare Workers 호환성
     commonjsOptions: {
@@ -187,7 +216,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'canonical', href: 'https://www.web-util.com' }
-        // MDI 폰트는 font-optimization.client.js에서 지연 로딩으로 처리
+        // MDI 폰트는 CSS에서 직접 로딩
       ]
     }
   },

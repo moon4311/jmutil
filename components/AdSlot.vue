@@ -19,12 +19,18 @@
       <ins
         v-if="inView"
         :class="adClassName"
-        style="display:none;"
         :data-ad-unit="unitId"
         :data-ad-width="width"
         :data-ad-height="height"
         :data-widget-id="`widget-${unitId}`"
         data-content-type="widget"
+        :style="{ 
+          display: 'block',
+          width: '100%',
+          height: '100%',
+          minHeight: typeof height === 'number' ? `${height}px` : String(height)
+        }"
+        ref="adElement"
       />
       <!-- 광고 차단시 대체 컨텐츠 -->
       <div 
@@ -64,6 +70,7 @@ const { startAdLoading, reportAdSuccess, reportAdFailure, reportAdBlocked } = us
 const inView = ref(false)
 const ready = ref(false)
 const targetEl = ref(null)
+const adElement = ref(null)
 const adClassName = ref('kakao_ad_area') // 기본값
 let observer = null
 
@@ -75,68 +82,182 @@ onUnmounted(() => {
   }
 })
 
-// 직접 IntersectionObserver 구현
+// 광고 초기화 함수
+const initializeAd = async () => {
+  console.log(`AdSlot ${props.unitId}: Starting ad initialization...`)
+  
+  // DOM 업데이트 대기
+  await nextTick()
+  
+  // 광고 요소가 DOM에 있는지 확인
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  const currentAdElement = document.querySelector(`[data-ad-unit="${props.unitId}"]`)
+  
+  if (!currentAdElement) {
+    console.error(`AdSlot ${props.unitId}: Ad element not found in DOM`)
+    reportAdFailure(props.unitId, 'Ad element not found')
+    ready.value = true
+    return
+  }
+  
+  console.log(`AdSlot ${props.unitId}: Ad element found, attempting render...`)
+  
+  // AdFit 렌더링 시도 (여러 방법)
+  let renderSuccess = false
+  
+  // 방법 1: adfit.render 사용
+  if (typeof window !== 'undefined' && window.adfit && typeof window.adfit.render === 'function') {
+    try {
+      window.adfit.render(currentAdElement)
+      renderSuccess = true
+      console.log(`AdSlot ${props.unitId}: Rendered using adfit.render`)
+    } catch (renderError) {
+      console.warn(`AdSlot ${props.unitId}: adfit.render failed:`, renderError)
+    }
+  }
+  
+  // 방법 2: 전역 새로고침
+  if (!renderSuccess && typeof window !== 'undefined' && window.adfit && typeof window.adfit.refresh === 'function') {
+    try {
+      window.adfit.refresh()
+      renderSuccess = true
+      console.log(`AdSlot ${props.unitId}: Refreshed using adfit.refresh`)
+    } catch (refreshError) {
+      console.warn(`AdSlot ${props.unitId}: adfit.refresh failed:`, refreshError)
+    }
+  }
+  
+  // 방법 3: useKakaoAds의 refreshAds 사용
+  if (!renderSuccess) {
+    try {
+      await refreshAds()
+      renderSuccess = true
+      console.log(`AdSlot ${props.unitId}: Refreshed using useKakaoAds`)
+    } catch (refreshError) {
+      console.warn(`AdSlot ${props.unitId}: useKakaoAds refresh failed:`, refreshError)
+    }
+  }
+  
+  // 결과 확인 (2초 후)
+  setTimeout(() => {
+    checkAdResult(currentAdElement)
+  }, 2000)
+}
+
+// 광고 결과 확인 함수
+const checkAdResult = (adElement) => {
+  console.log(`AdSlot ${props.unitId}: Checking ad result...`)
+  
+  if (!adElement) {
+    reportAdFailure(props.unitId, 'Ad element lost')
+    ready.value = true
+    return
+  }
+  
+  // 더 정확한 가시성 검사
+  const isVisible = adElement.offsetHeight > 0 && 
+                   adElement.offsetWidth > 0 &&
+                   getComputedStyle(adElement).display !== 'none' &&
+                   getComputedStyle(adElement).visibility !== 'hidden'
+  
+  // AdFit 스크립트가 광고를 실제로 렌더링했는지 확인
+  const hasAdContent = adElement.innerHTML.trim().length > 0 ||
+                      adElement.querySelector('iframe') ||
+                      adElement.querySelector('script') ||
+                      adElement.hasChildNodes()
+  
+  console.log(`AdSlot ${props.unitId}: Check result:`, {
+    visible: isVisible,
+    hasContent: hasAdContent,
+    offsetHeight: adElement.offsetHeight,
+    offsetWidth: adElement.offsetWidth,
+    innerHTML: adElement.innerHTML.substring(0, 100),
+    childNodes: adElement.childNodes.length
+  })
+  
+  if (isVisible && hasAdContent) {
+    reportAdSuccess(props.unitId)
+    console.log(`AdSlot ${props.unitId}: Ad successfully loaded and displayed`)
+  } else if (adBlockDetected.value) {
+    reportAdBlocked(props.unitId)
+    console.log(`AdSlot ${props.unitId}: Ad blocked by ad blocker`)
+  } else {
+    reportAdFailure(props.unitId, `Visibility: ${isVisible}, Content: ${hasAdContent}`)
+    console.log(`AdSlot ${props.unitId}: Ad failed to display properly`)
+  }
+  
+  ready.value = true
+}
+
 onMounted(async () => {
   console.log(`AdSlot ${props.unitId}: Component mounted`)
   
   // DOM 업데이트 완료까지 대기
   await nextTick()
   
-  if (!targetEl.value) {
-    console.error(`AdSlot ${props.unitId}: targetEl still not found after nextTick`)
+  // targetEl이 유효한지 확인
+  if (!targetEl.value || !(targetEl.value instanceof Element)) {
+    console.error(`AdSlot ${props.unitId}: targetEl is not a valid Element:`, targetEl.value)
     return
   }
+  
+  // IntersectionObserver를 통한 지연 로딩
+  const observer = new IntersectionObserver(async ([entry]) => {
+    if (!entry.isIntersecting) return
+    observer.disconnect() // 한번만 실행
+    
+    console.log(`AdSlot ${props.unitId}: In view, starting load process...`)
 
-  observer = new IntersectionObserver(async (entries) => {
-    const entry = entries[0]
-    console.log(`AdSlot ${props.unitId}: Observer callback fired, isIntersecting: ${entry.isIntersecting}`)
-    
-    if (!entry.isIntersecting || inView.value) return
-    
-    console.log(`AdSlot ${props.unitId}: Entering viewport, loading ad...`)
-    inView.value = true
-    
-    // 모니터링 시작
-    startAdLoading(props.unitId)
-    
-    // 난독화된 클래스명 생성 (광고 차단기 우회)
-    adClassName.value = getObfuscatedClassName()
-    
     // 카카오 스크립트 로드 시도 (여러 방법)
     try {
-      const scriptLoaded = await loadAdScript()
-      console.log(`AdSlot ${props.unitId}: Script load result:`, scriptLoaded)
+      // 먼저 기본 스크립트 로드 시도
+      console.log(`AdSlot ${props.unitId}: Loading AdFit script...`)
       
+      let scriptLoaded = false
+      
+      // 1차: 기본 CDN에서 로드
+      if (!document.querySelector('script[src*="kas/static/ba.min.js"]')) {
+        try {
+          await lazyScript('https://t1.daumcdn.net/kas/static/ba.min.js', {
+            crossorigin: 'anonymous',
+            attributes: {
+              'data-adfit-loaded': 'true'
+            }
+          })
+          scriptLoaded = true
+          console.log(`AdSlot ${props.unitId}: CDN script loaded successfully`)
+        } catch (cdnError) {
+          console.warn(`AdSlot ${props.unitId}: CDN loading failed:`, cdnError)
+        }
+      } else {
+        scriptLoaded = true
+        console.log(`AdSlot ${props.unitId}: Script already loaded`)
+      }
+      
+      // 2차: 프록시 시도 (CDN 실패시)
       if (!scriptLoaded) {
-        // 기존 방법으로 폴백
-        if (!document.querySelector('script[src*="kas/static/ba.min.js"]')) {
-          console.log('Loading Kakao ad script via fallback...')
-          await lazyScript('//t1.daumcdn.net/kas/static/ba.min.js')
+        try {
+          const proxyLoaded = await loadAdScript()
+          if (proxyLoaded) {
+            scriptLoaded = true
+            console.log(`AdSlot ${props.unitId}: Proxy script loaded successfully`)
+          }
+        } catch (proxyError) {
+          console.warn(`AdSlot ${props.unitId}: Proxy loading failed:`, proxyError)
         }
       }
       
-      // 스크립트가 있으면 광고 표시 시도
-      setTimeout(async () => {
-        console.log(`AdSlot ${props.unitId}: Refreshing ads...`)
-        await refreshAds()
-        
-        // 광고 로딩 결과 확인
-        setTimeout(() => {
-          const adElement = document.querySelector(`[data-ad-unit="${props.unitId}"]`)
-          const isVisible = adElement && adElement.offsetHeight > 0 && adElement.style.display !== 'none'
-          
-          if (isVisible || adLoadSuccess.value) {
-            reportAdSuccess(props.unitId)
-          } else if (adBlockDetected.value) {
-            reportAdBlocked(props.unitId)
-          } else {
-            reportAdFailure(props.unitId, 'Ad element not visible')
-          }
-          
-          console.log(`AdSlot ${props.unitId}: Ready state = true`)
-          ready.value = true
-        }, 1000)
-      }, 50)
+      if (!scriptLoaded) {
+        console.error(`AdSlot ${props.unitId}: All script loading methods failed`)
+        reportAdFailure(props.unitId, 'Script loading failed')
+        ready.value = true
+        return
+      }
+      
+      // 스크립트 로드 후 광고 초기화 시도
+      console.log(`AdSlot ${props.unitId}: Initializing ad...`)
+      await initializeAd()
       
     } catch (e) {
       // 스크립트 로드 실패
@@ -149,8 +270,13 @@ onMounted(async () => {
     threshold: 0
   })
 
-  observer.observe(targetEl.value)
-  console.log(`AdSlot ${props.unitId}: Observer started`)
+  // targetEl이 여전히 유효한지 다시 확인 후 observer 시작
+  if (targetEl.value && targetEl.value instanceof Element) {
+    observer.observe(targetEl.value)
+    console.log(`AdSlot ${props.unitId}: Observer started`)
+  } else {
+    console.error(`AdSlot ${props.unitId}: Cannot start observer - targetEl invalid`)
+  }
 })
 
 // 광고 컨테이너는 숨기지 않고, 스켈레톤으로만 시각적 안정성 제공

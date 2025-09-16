@@ -316,7 +316,6 @@ import {
   isValidDate, isValidTime, isValidDatetime, formatDate, formatDateTime
 } from '@/utils/DateUtil.js';
 import { getToday, getNowTimestamp, toDatetimeLocal } from '@/utils/CommonUtil.js';
-import { formatDateInput } from '@/utils/InputFormatUtil.js';
 import CopyInput from '@/components/CopyInput.vue';
 import GroupPanel from '@/components/GroupPanel.vue';
 import { useResponsive } from '@/composables/useResponsive.js';

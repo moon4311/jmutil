@@ -41,42 +41,71 @@ export function useAdProtection() {
    * 난독화된 스크립트 URL 생성
    */
   const getObfuscatedScriptUrl = () => {
-    const baseUrl = atob('Ly90MS5kYXVtY2RuLm5ldA==') // base64로 인코딩된 //t1.daumcdn.net
+    // 프로토콜을 명시적으로 지정하여 CORS 문제 해결
+    const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'https:' : 'https:'
+    const baseUrl = atob('dDEuZGF1bWNkbi5uZXQ=') // base64로 인코딩된 t1.daumcdn.net
     const scriptPath = atob('L2thcy9zdGF0aWMvYmEubWluLmpz') // base64로 인코딩된 /kas/static/ba.min.js
-    return baseUrl + scriptPath
+    return `${protocol}//${baseUrl}${scriptPath}`
   }
 
   /**
-   * 프록시된 스크립트 로드
+   * 프록시된 스크립트 로드 (CORS 해결)
    */
   const loadScriptViaProxy = async () => {
     try {
-      // 프록시 URL을 통해 스크립트 로드
+      // 프록시 URL을 통해 스크립트 로드 (script 태그 사용)
       const proxyUrl = '/api/proxy-ad-script'
-      const response = await fetch(proxyUrl)
       
-      if (response.ok) {
-        const scriptContent = await response.text()
+      return new Promise((resolve, reject) => {
+        // 이미 프록시 스크립트가 로드되어 있는지 확인
+        if (document.querySelector('script[data-proxy-loaded="true"]')) {
+          resolve(true)
+          return
+        }
+        
         const script = document.createElement('script')
-        script.textContent = scriptContent
+        script.src = proxyUrl
+        script.async = true
+        script.setAttribute('data-proxy-loaded', 'true')
+        script.setAttribute('data-ad-loaded', 'true')
+        
+        script.onload = () => {
+          console.log('프록시 스크립트 로드 성공')
+          resolve(true)
+        }
+        
+        script.onerror = (error) => {
+          console.warn('프록시 스크립트 로드 실패:', error)
+          resolve(false)
+        }
+        
         document.head.appendChild(script)
-        return true
-      }
+        
+        // 5초 타임아웃
+        setTimeout(() => {
+          if (!script.onload.called) {
+            reject(new Error('Proxy script load timeout'))
+          }
+        }, 5000)
+      })
     } catch (error) {
       console.warn('프록시 스크립트 로드 실패:', error)
+      return false
     }
-    return false
   }
 
   /**
-   * 동적 스크립트 로드 (난독화)
+   * 동적 스크립트 로드 (난독화) - CORS 해결 버전
    */
   const loadAdScript = async () => {
     if (typeof window === 'undefined') return false
 
     try {
       // 이미 로드된 경우 스킵
-      if (document.querySelector('script[data-ad-loaded="true"]')) {
+      const existingScript = document.querySelector('script[data-ad-loaded="true"]') ||
+                           document.querySelector('script[src*="kas/static/ba.min.js"]')
+      
+      if (existingScript) {
         adLoadSuccess.value = true
         return true
       }
@@ -93,19 +122,22 @@ export function useAdProtection() {
         }
       }
 
-      // 일반 로드 시도 (난독화된 URL)
-      const script = document.createElement('script')
-      script.src = getObfuscatedScriptUrl()
-      script.async = true
-      script.setAttribute('data-ad-loaded', 'true')
-      
+      // 일반 로드 시도 (script 태그 방식)
       return new Promise((resolve) => {
+        const script = document.createElement('script')
+        script.src = getObfuscatedScriptUrl()
+        script.async = true
+        script.crossOrigin = 'anonymous' // CORS 설정
+        script.setAttribute('data-ad-loaded', 'true')
+        
         script.onload = () => {
           adLoadSuccess.value = true
+          console.log('AdFit 스크립트 로드 성공 (일반 방식)')
           resolve(true)
         }
         
         script.onerror = () => {
+          console.warn('AdFit 스크립트 로드 실패 (일반 방식)')
           adLoadSuccess.value = false
           resolve(false)
         }
@@ -115,6 +147,7 @@ export function useAdProtection() {
         // 5초 타임아웃
         setTimeout(() => {
           if (!adLoadSuccess.value) {
+            console.warn('AdFit 스크립트 로드 타임아웃')
             resolve(false)
           }
         }, 5000)

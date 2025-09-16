@@ -1,95 +1,186 @@
-/* ===== 공통 CSS - Vue 컴포넌트 간 공통 스타일 ===== */
+/* ===== 경량화된 공통 CSS ===== *//* ===== 공통 CSS - Vue 컴포넌트 간 공통 스타일 ===== */
 
-/* === 디자인 시스템 - CSS 변수 정의 === */
-:root {
-  /* 색상 팔레트 */
-  --color-primary: #2563eb;
-  --color-primary-light: #3b82f6;
-  --color-primary-dark: #1d4ed8;
-  --color-secondary: #64748b;
-  --color-secondary-light: #94a3b8;
-  --color-secondary-dark: #475569;
-  
-  /* 의미론적 색상 */
-  --color-success: #059669;
-  --color-success-light: #10b981;
-  --color-warning: #d97706;
-  --color-warning-light: #f59e0b;
-  --color-error: #dc2626;
-  --color-error-light: #ef4444;
-  --color-info: #0891b2;
-  --color-info-light: #06b6d4;
-  
-  /* 중성 색상 - 라이트 모드 */
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
+
+
+/* 기본 변수 *//* === 디자인 시스템 - CSS 변수 정의 === */
+
+:root {:root {
+
+  --color-primary: #2563eb;  /* 색상 팔레트 */
+
+  --color-success: #059669;  --color-primary: #2563eb;
+
+  --color-warning: #d97706;  --color-primary-light: #3b82f6;
+
+  --color-error: #dc2626;  --color-primary-dark: #1d4ed8;
+
+    --color-secondary: #64748b;
+
+  --color-text: #111827;  --color-secondary-light: #94a3b8;
+
+  --color-text-light: #6b7280;  --color-secondary-dark: #475569;
+
+  --color-border: #e5e7eb;  
+
+  --color-bg: #ffffff;  /* 의미론적 색상 */
+
+  --color-bg-light: #f9fafb;  --color-success: #059669;
+
+    --color-success-light: #10b981;
+
+  --spacing-xs: 0.25rem;  --color-warning: #d97706;
+
+  --spacing-sm: 0.5rem;  --color-warning-light: #f59e0b;
+
+  --spacing-md: 1rem;  --color-error: #dc2626;
+
+  --spacing-lg: 1.5rem;  --color-error-light: #ef4444;
+
+  --spacing-xl: 2rem;  --color-info: #0891b2;
+
+    --color-info-light: #06b6d4;
+
+  --radius: 0.375rem;  
+
+  --font-size-sm: 0.875rem;  /* 중성 색상 - 라이트 모드 */
+
+  --font-size-md: 1rem;  --color-gray-50: #f9fafb;
+
+  --font-size-lg: 1.125rem;  --color-gray-100: #f3f4f6;
+
+}  --color-gray-200: #e5e7eb;
+
   --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
+
+/* 기본 초기화 */  --color-gray-400: #9ca3af;
+
+* {  --color-gray-500: #6b7280;
+
+  box-sizing: border-box;  --color-gray-600: #4b5563;
+
+}  --color-gray-700: #374151;
+
   --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
-  
-  /* 배경 색상 */
-  --color-background: #ffffff;
-  --color-background-alt: #f9fafb;
-  --color-surface: #ffffff;
+
+/* 유틸리티 클래스 */  --color-gray-900: #111827;
+
+.flex-center {  
+
+  display: flex;  /* 배경 색상 */
+
+  align-items: center;  --color-background: #ffffff;
+
+  justify-content: center;  --color-background-alt: #f9fafb;
+
+}  --color-surface: #ffffff;
+
   --color-surface-alt: #f8fafc;
-  
-  /* 텍스트 색상 */
-  --color-text-primary: #111827;
+
+.text-error {  
+
+  color: var(--color-error);  /* 텍스트 색상 */
+
+}  --color-text-primary: #111827;
+
   --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
-  
-  /* 경계선 색상 */
+
+.text-success {  --color-text-muted: #9ca3af;
+
+  color: var(--color-success);  
+
+}  /* 경계선 색상 */
+
   --color-border: #e5e7eb;
-  --color-border-light: #f3f4f6;
-  --color-border-dark: #d1d5db;
-  
+
+.text-muted {  --color-border-light: #f3f4f6;
+
+  color: var(--color-text-light);  --color-border-dark: #d1d5db;
+
+}  
+
   /* 그림자 */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+.border-light {  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  border: 1px solid var(--color-border);  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+}  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* 간격 */
-  --spacing-xs: 0.25rem;   /* 4px */
+
+.rounded {  
+
+  border-radius: var(--radius);  /* 간격 */
+
+}  --spacing-xs: 0.25rem;   /* 4px */
+
   --spacing-sm: 0.5rem;    /* 8px */
-  --spacing-md: 1rem;      /* 16px */
-  --spacing-lg: 1.5rem;    /* 24px */
-  --spacing-xl: 2rem;      /* 32px */
+
+.p-sm {  --spacing-md: 1rem;      /* 16px */
+
+  padding: var(--spacing-sm);  --spacing-lg: 1.5rem;    /* 24px */
+
+}  --spacing-xl: 2rem;      /* 32px */
+
   --spacing-2xl: 3rem;     /* 48px */
-  
-  /* 반경 */
-  --radius-sm: 0.25rem;    /* 4px */
+
+.p-md {  
+
+  padding: var(--spacing-md);  /* 반경 */
+
+}  --radius-sm: 0.25rem;    /* 4px */
+
   --radius-md: 0.375rem;   /* 6px */
-  --radius-lg: 0.5rem;     /* 8px */
-  --radius-xl: 0.75rem;    /* 12px */
-  
+
+.mb-md {  --radius-lg: 0.5rem;     /* 8px */
+
+  margin-bottom: var(--spacing-md);  --radius-xl: 0.75rem;    /* 12px */
+
+}  
+
   /* 타이포그래피 */
-  --font-size-xs: 0.75rem;    /* 12px */
-  --font-size-sm: 0.875rem;   /* 14px */
-  --font-size-base: 1rem;     /* 16px */
+
+.gap-sm {  --font-size-xs: 0.75rem;    /* 12px */
+
+  gap: var(--spacing-sm);  --font-size-sm: 0.875rem;   /* 14px */
+
+}  --font-size-base: 1rem;     /* 16px */
+
   --font-size-lg: 1.125rem;   /* 18px */
-  --font-size-xl: 1.25rem;    /* 20px */
-  --font-size-2xl: 1.5rem;    /* 24px */
-  --font-size-3xl: 1.875rem;  /* 30px */
-  
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
+
+/* 반응형 */  --font-size-xl: 1.25rem;    /* 20px */
+
+@media (max-width: 768px) {  --font-size-2xl: 1.5rem;    /* 24px */
+
+  .mobile-hide {  --font-size-3xl: 1.875rem;  /* 30px */
+
+    display: none;  
+
+  }  --font-weight-normal: 400;
+
+}  --font-weight-medium: 500;
+
   --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+
+/* 애니메이션 */  --font-weight-bold: 700;
+
+.fade-enter-active,  
+
+.fade-leave-active {  --line-height-tight: 1.25;
+
+  transition: opacity 0.2s ease;  --line-height-normal: 1.5;
+
+}  --line-height-relaxed: 1.75;
+
   
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-  
-  /* 애니메이션 */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
+
+.fade-enter-from,  /* 애니메이션 */
+
+.fade-leave-to {  --transition-fast: 150ms ease;
+
+  opacity: 0;  --transition-normal: 250ms ease;
+
+}  --transition-slow: 350ms ease;
 }
 
 /* === 다크 모드 변수 === */
