@@ -209,12 +209,11 @@
     <!-- 광고 영역 -->
     <div class="sidebar-footer">
       <ClientOnly>
-        <ins 
-          class="kakao_ad_area sidebar-ad" 
-          style="display:none;"
-          data-ad-unit="DAN-03qvHyP7MQAvCIUk"
-          data-ad-width="250"
-          data-ad-height="250"
+        <AdSlot 
+          unitId="DAN-03qvHyP7MQAvCIUk"
+          :width="250"
+          :height="250"
+          padding="8px"
         />
       </ClientOnly>
     </div>
@@ -223,6 +222,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import AdSlot from '@/components/AdSlot.vue';
 
 const props = defineProps({
   sidebarOpen: Boolean

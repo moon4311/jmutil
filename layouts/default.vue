@@ -146,6 +146,11 @@
         </div>
       </div>
     </v-main>
+
+    <!-- AdFit 디버그 패널 (개발 환경) -->
+    <ClientOnly>
+      <AdDebugPanel />
+    </ClientOnly>
   </v-app>
 </template>
 
@@ -154,15 +159,22 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import SideBar from '@/components/SideBar.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
 import { useKakaoAds } from '@/composables/useKakaoAds';
+import { useAdProtection } from '@/composables/useAdProtection';
 import AdSlot from '@/components/AdSlot.vue';
+import AdDebugPanel from '@/components/AdDebugPanel.vue';
 import { useABVariant } from '@/composables/useABVariant.js';
 
-// 카카오 애드핏 스크립트 추가
+// 광고 보호 기능
+const { loadAdScript } = useAdProtection();
+
+// 카카오 애드핏 스크립트 추가 (기본 방법, 폴백용)
 useHead({
   script: [
     {
       src: '//t1.daumcdn.net/kas/static/ba.min.js',
-      async: true
+      async: true,
+      defer: true,
+      crossorigin: 'anonymous'
     }
   ]
 });
@@ -187,11 +199,18 @@ function onToastEvent(e) {
     showToast(e.detail || (e instanceof CustomEvent ? e.detail : e));
 }
 
-onMounted(() => {
+onMounted(async () => {
     window.addEventListener('toast', onToastEvent);
     
-    // 광고 초기화
-    initAds();
+    // 개선된 광고 초기화 (차단기 우회 포함)
+    try {
+      await loadAdScript();
+      await initAds();
+    } catch (error) {
+      console.warn('광고 초기화 실패:', error);
+      // 폴백으로 기본 초기화
+      initAds();
+    }
 });
 
 onUnmounted(() => {
